@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="27c1d4c9-3861-43a8-9d1a-36883e2eddb9" name="Default Changelist" comment="" />
+    <list default="true" id="27c1d4c9-3861-43a8-9d1a-36883e2eddb9" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -43,14 +45,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/components/PreLogin/LoginScreen.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
+            <state relative-caret-position="-1180">
               <caret line="9" column="32" lean-forward="true" selection-start-line="9" selection-start-column="32" selection-end-line="9" selection-end-column="32" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="8717">
+              <caret line="379" lean-forward="true" selection-start-line="379" selection-end-line="379" />
             </state>
           </provider>
         </entry>
@@ -77,6 +88,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>native-base</find>
+      <find>AppLoa</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -89,6 +101,7 @@
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/App.js" />
         <option value="$PROJECT_DIR$/src/components/PreLogin/LoginScreen.js" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -169,12 +182,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1548855528431</updated>
-      <workItem from="1548855530016" duration="1583000" />
+      <workItem from="1548855530016" duration="1850000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1583000" />
+    <option name="totallyTimeSpent" value="1850000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1447" height="1177" extended-state="0" />
@@ -247,11 +260,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/components/PreLogin/LoginScreen.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
+        <state relative-caret-position="-1180">
           <caret line="9" column="32" lean-forward="true" selection-start-line="9" selection-start-column="32" selection-end-line="9" selection-end-column="32" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8717">
+          <caret line="379" lean-forward="true" selection-start-line="379" selection-end-line="379" />
         </state>
       </provider>
     </entry>
