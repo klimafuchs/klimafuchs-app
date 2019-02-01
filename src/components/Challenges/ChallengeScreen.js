@@ -1,5 +1,5 @@
 import React from 'react';
-import {Container, Icon} from 'native-base';
+import {Icon} from 'native-base';
 import {SeasonPlanComponent} from "./SeasonPlanComponent";
 import {SeasonComponent} from "./SeasonComponent";
 import {HistoryComponent} from "./HistoryComponent";
@@ -8,7 +8,7 @@ import material from "../../../native-base-theme/variables/material";
 
 //TODO refactor Components in challenge hierarchy to common singleQueryComponent?
 
-const ChallengeViewsNav = createMaterialBottomTabNavigator(
+export const ChallengeViewsNav = createMaterialBottomTabNavigator(
     {
         SeasonPlan: {
             screen: SeasonPlanComponent
@@ -20,26 +20,12 @@ const ChallengeViewsNav = createMaterialBottomTabNavigator(
             screen: HistoryComponent
         }
     }, {
+        navigationOptions: {
+            title: 'Challenge',
+            tabBarIcon: ({focused, tintColor}) => (
+                <Icon name='star' style={{fontSize: 20, color: tintColor}}/>
+            ),
+        },
         barStyle: {backgroundColor: material.tabBgColor},
     }
-)
-
-class ChallengeScreen extends React.Component {
-    static navigationOptions = {
-        title: 'Challenge',
-        tabBarIcon: ({focused, tintColor}) => (
-            <Icon name='star' style={{fontSize: 20, color: tintColor}}/>
-        ),
-    };
-
-    render() {
-        return (
-            <Container>
-                <ChallengeViewsNav/>
-            </Container>
-        );
-    }
-
-};
-
-export default ChallengeScreen;
+);

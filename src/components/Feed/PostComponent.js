@@ -8,7 +8,6 @@ import {
     Content,
     Form,
     H1,
-    Header,
     Icon,
     Input,
     Item,
@@ -16,7 +15,6 @@ import {
     Left,
     Right,
     Text,
-    Title,
     Toast
 } from "native-base";
 import {Dimensions, Image, StyleSheet, View} from "react-native";
@@ -132,19 +130,6 @@ export default PostComponent = ({post, navigateToDetailedView, commentRefetch, c
     } else {
         return (
             <Container>
-                {close && <Header>
-                    <Left>
-                        <Button transparent
-                                onPress={close}>
-                            <Icon name='arrow-back'/>
-                        </Button>
-                    </Left>
-                    <Body>
-                    <Title>{post.title}</Title>
-                    </Body>
-                    <Right/>
-                </Header>
-                }
                 <Content>
                     {card}
                     {commentRefetch && <CommentTreeWidget comments={post.comments} postId={post.id}

@@ -1,13 +1,25 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {Body, Button, Container, Content, Fab, Header, Icon, Left, Right, Text, Title} from "native-base";
 import {Query} from "react-apollo";
 import {LOAD_FEED} from "../../network/Feed.gql";
 import {FlatList, RefreshControl} from "react-native";
-import * as Constants from "expo";
 import material from '../../../native-base-theme/variables/material';
 import PostComponent from "./PostComponent";
 
 export default class FeedComponent extends Component {
+    static navigationOptions = {
+        header: <Fragment>
+            <Header>
+                <Left/>
+                <Body>
+                <Title>News</Title>
+                </Body>
+                <Right/>
+            </Header>
+        </Fragment>,
+
+    };
+
     constructor(props) {
         super(props);
         this.state = {active: true, refreshing: false, endReached: false};
@@ -17,14 +29,6 @@ export default class FeedComponent extends Component {
     render() {
         return (
             <Container>
-                <Header style={{paddingTop: Constants.statusBarHeight}}>
-                    <Left/>
-                    <Body>
-                    <Title>News</Title>
-                    </Body>
-                    <Right/>
-                </Header>
-
                 <Query query={LOAD_FEED}
                        variables={{page: {first: this.pageSize, after: ""}}}
                        fetchPolicy="cache-and-network"
@@ -49,10 +53,14 @@ export default class FeedComponent extends Component {
                                     keyExtractor={(item, index) => item.node.id.toString()}
                                     renderItem={({item}) => {
                                         const post = item.node;
+                                        console.log(post.title);
                                         return (
                                             <PostComponent key={post.id} post={post}
                                                            navigateToDetailedView={function () {
-                                                               this.props.navigation.navigate('Post', {postId: post.id})
+                                                               this.props.navigation.navigate('Post', {
+                                                                   postId: post.id,
+                                                                   postTitle: post.title
+                                                               })
                                                            }.bind(this)}/>
                                         )
                                     }

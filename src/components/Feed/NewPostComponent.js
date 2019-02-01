@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {View} from 'react-native';
 import {
     Body,
@@ -21,6 +21,27 @@ import {ADD_POST} from "../../network/Feed.gql";
 import UploadImage from "../UploadImage";
 
 export default class NewPostComponent extends Component {
+    static navigationOptions = ({navigation}) => {
+        return (
+            {
+                header: <Fragment>
+                    <Header>
+                        <Left>
+                            <Button transparent
+                                    onPress={() => navigation.goBack()}>
+                                <Icon name='arrow-back'/>
+                            </Button>
+                        </Left>
+                        <Body>
+                        <Title>Neuer Beitrag</Title>
+                        </Body>
+                        <Right/>
+                    </Header>
+                </Fragment>
+            }
+        )
+
+    };
 
     constructor(props) {
         super(props);
@@ -35,17 +56,6 @@ export default class NewPostComponent extends Component {
     render() {
         return (
             <Container>
-                <Header>
-                    <Left>
-                        <Button transparent onPress={() => this.props.navigation.navigate('Feed')}>
-                            <Icon name='arrow-back'/>
-                        </Button>
-                    </Left>
-                    <Body>
-                    <Title>Add Post</Title>
-                    </Body>
-                    <Right/>
-                </Header>
                 <Content>
                     <Mutation mutation={ADD_POST}>
                         {(addPost, {data}) => (

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {AsyncStorage, SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import {createStackNavigator, createSwitchNavigator, createAppContainer} from "react-navigation";
+import {createAppContainer, createStackNavigator, createSwitchNavigator} from "react-navigation";
 import {Root, StyleProvider} from 'native-base';
 import LoginScreen from "./src/components/PreLogin/LoginScreen";
 import SignUpScreen from "./src/components/PreLogin/SignUpScreen";
@@ -9,9 +9,11 @@ import {Provider} from "react-redux";
 import getTheme from './native-base-theme/components';
 import material from './native-base-theme/variables/material';
 import store from "./src/persistence/store"
-import {LoggedInScreen} from "./src/components/LoggedInScreen";
+import {AppNav} from "./src/components/LoggedInScreen";
 import {ForgotPasswordScreen} from "./src/components/PreLogin/ForgotPasswordScreen";
-import Expo, {AppLoading, Font} from "expo";
+import {AppLoading, Font} from "expo";
+import ApolloProvider from "react-apollo/ApolloProvider";
+import client from "./src/network/client"
 
 export default class AppRoot extends Component {
 
@@ -39,13 +41,15 @@ export default class AppRoot extends Component {
         }
         return (
             <Provider store={store}>
-                <StyleProvider style={getTheme(material)}>
-                    <SafeAreaView style={styles.safeArea}>
-                        <Root>
-                            <RootContainer/>
-                        </Root>
-                    </SafeAreaView>
-                </StyleProvider>
+                <ApolloProvider client={client}>
+                    <StyleProvider style={getTheme(material)}>
+                        <SafeAreaView style={styles.safeArea}>
+                            <Root>
+                                <RootContainer/>
+                            </Root>
+                        </SafeAreaView>
+                    </StyleProvider>
+                </ApolloProvider>
             </Provider>
         )
     }
@@ -99,7 +103,7 @@ const AuthNav = createStackNavigator({
 
 const RootNavigation = createSwitchNavigator({
     AuthLoading: AuthLoadingScreen,
-    App: LoggedInScreen,
+    App: AppNav,
     Auth: AuthNav
 }, {
     initialRouteName: 'AuthLoading'
