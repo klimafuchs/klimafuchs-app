@@ -260,6 +260,7 @@ class AddCommentWidget extends Component {
 class CommentTreeWidget extends Component {
 
     sortComments = (a, b) => b.sentiment - a.sentiment;
+    maxRecursionDepth = 900;
 
     buildCommentTree = (comments) => {
         let tree = comments.filter((c) => !c.parent);
@@ -267,7 +268,7 @@ class CommentTreeWidget extends Component {
         let childComments = comments.filter((c) => c.parent);
 
         tree.forEach((branchRoot) => {
-            this._buildCommentTree(comments, branchRoot, 9)
+            this._buildCommentTree(comments, branchRoot, this.maxRecursionDepth)
         });
 
         return tree;
@@ -288,7 +289,7 @@ class CommentTreeWidget extends Component {
     };
 
     walkTree = (commentTree) => {
-        let tree = commentTree.map(branch => this._walkTree(branch, 20))
+        let tree = commentTree.map(branch => this._walkTree(branch, this.maxRecursionDepth))
         return tree;
     };
 
