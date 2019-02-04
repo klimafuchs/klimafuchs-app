@@ -33,7 +33,7 @@ class UploadImage extends React.Component {
             console.error('cannot upload undefined image');
             return;
         }
-        if (!this.state.media) {
+        if (this.state.media) {
             console.error('image already uploaded');
             return;
         }
