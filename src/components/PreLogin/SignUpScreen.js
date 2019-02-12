@@ -81,7 +81,7 @@ class SignUpScreen extends Component {
                 <Header>
                     <Left>
                         <Button transparent
-                                onPress={() => navigation.goBack()}>
+                                onPress={() => this.props.navigation.goBack()}>
                             <Icon name='arrow-back'/>
                         </Button>
                     </Left>
@@ -97,40 +97,40 @@ class SignUpScreen extends Component {
                                 <Label style={styles.formlabel}>Email</Label>
                                 <FormItem regular style={styles.formtextbox}>
                                     <Input name="email" onChangeText={(text) => this.setState({email: text})}
-                                   value={this.state.email}/>
-                        </FormItem>
+                                           value={this.state.email}/>
+                                </FormItem>
 
                                 <Label style={styles.formlabel}>Name</Label>
                                 <FormItem regular style={styles.formtextbox}>
-                            <Input name="screenname" onChangeText={(text) => this.setState({screenName: text})}
-                                   value={this.state.screenName}/>
-                        </FormItem>
+                                    <Input name="screenname" onChangeText={(text) => this.setState({screenName: text})}
+                                           value={this.state.screenName}/>
+                                </FormItem>
 
                                 <Label style={styles.formlabel}>Passwort</Label>
                                 <FormItem regular style={styles.formtextbox}>
                                     <Input name="password"
                                            secureTextEntry={true}
                                            onChangeText={(text) => this.setState({password: text})}
-                                   value={this.state.password}/>
-                        </FormItem>
+                                           value={this.state.password}/>
+                                </FormItem>
 
                                 <Label style={styles.formlabel}>Passwort bestätigen</Label>
                                 <FormItem regular last style={styles.formtextbox}>
                                     <Input name="password2"
                                            secureTextEntry={true}
                                            onChangeText={(text) => this.setState({password2: text})}
-                                   value={this.state.password2}/>
-                        </FormItem>
+                                           value={this.state.password2}/>
+                                </FormItem>
 
                                 <Button full primary rounded style={{paddingBottom: 4, marginTop: 20,}}
                                         onPress={() => this.register()}>
                                     <Icon name="md-arrow-round-forward"/>
-                        </Button>
-                    </Form>
+                                </Button>
+                            </Form>
                         </KeyboardAvoidingView>
 
-                </Content>
-            </Container>
+                    </Content>
+                </Container>
             </Fragment>
 
         );
@@ -151,14 +151,12 @@ const styles = StyleSheet.create(
             color: material.textColor,
             fontSize: 12,
             marginBottom: 5
-
         },
 
         formtextbox: {
             color: material.textColor,
             borderColor: material.textColor,
             marginBottom: 20
-
         }
     }
 )
