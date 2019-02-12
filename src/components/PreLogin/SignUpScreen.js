@@ -1,19 +1,28 @@
-import React, {Component} from 'react';
-import {AsyncStorage} from 'react-native'
-import {Button, CheckBox, Container, Content, Form, Header, Input, Item as FormItem, Label, Text} from "native-base";
-import Expo, {Constants} from "expo";
+import React, {Component, Fragment} from 'react';
+import {AsyncStorage, KeyboardAvoidingView, StyleSheet} from 'react-native'
+import {
+    Body,
+    Button,
+    Container,
+    Content,
+    Form,
+    Header,
+    Icon,
+    Input,
+    Item as FormItem,
+    Label,
+    Left,
+    Right,
+    Title
+} from "native-base";
 import Api from "../../network/api";
+import material from '../../../native-base-theme/variables/material';
 
 class SignUpScreen extends Component {
 
-    static navigationOptions = {
-        title: 'Please sign in'
-    };
-
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            loading: true,
             screenName: '',
             password: '',
             password2: '',
@@ -22,15 +31,6 @@ class SignUpScreen extends Component {
         };
     }
 
-    async componentWillMount() {
-        this.setState({email: this.props.navigation.state.params.email});
-        await Expo.Font.loadAsync({
-            Roboto: require("native-base/Fonts/Roboto.ttf"),
-            Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
-            Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
-        });
-        this.setState({loading: false})
-    }
 
     register = async () => {
 
@@ -55,13 +55,13 @@ class SignUpScreen extends Component {
                             }
                         },
                         (err) => {
-                            console.error(err);
+                            console.log(err);
                         });
 
                 }
             },
             (err) => {
-                console.error(err);
+                console.log(err);
             });
 
     };
@@ -76,35 +76,98 @@ class SignUpScreen extends Component {
 
 
     render() {
-        if (this.state.loading) {
-            return (<Expo.AppLoading/>)
-        }
         return (
-            <Container style={{paddingTop: Constants.statusBarHeight}}>
-                <Header/>
-                <Content>
-                    <Form>
-                        <FormItem floatingLabel>
-                            <Label>Email</Label>
-                            <Input name="email" disabled onChangeText={(text) => this.setState({email: text})}
+            <Fragment>
+                <Header>
+                    <Left>
+                        <Button transparent
+                                onPress={() => navigation.goBack()}>
+                            <Icon name='arrow-back'/>
+                        </Button>
+                    </Left>
+                    <Body>
+                    <Title>Registrieren</Title>
+                    </Body>
+                    <Right/>
+                </Header>
+                <Container>
+                    <Content style={{flex: 1}}>
+                        <KeyboardAvoidingView>
+                            <Form style={styles.form}>
+                                <Label style={styles.formlabel}>Email</Label>
+                                <FormItem regular style={styles.formtextbox}>
+                                    <Input name="email" onChangeText={(text) => this.setState({email: text})}
                                    value={this.state.email}/>
                         </FormItem>
-                        <FormItem floatingLabel>
-                            <Label>Name</Label>
+
+                                <Label style={styles.formlabel}>Name</Label>
+                                <FormItem regular style={styles.formtextbox}>
                             <Input name="screenname" onChangeText={(text) => this.setState({screenName: text})}
                                    value={this.state.screenName}/>
                         </FormItem>
-                        <FormItem floatingLabel>
-                            <Label>Passwort</Label>
-                            <Input name="password" onChangeText={(text) => this.setState({password: text})}
+
+                                <Label style={styles.formlabel}>Passwort</Label>
+                                <FormItem regular style={styles.formtextbox}>
+                                    <Input name="password"
+                                           secureTextEntry={true}
+                                           onChangeText={(text) => this.setState({password: text})}
                                    value={this.state.password}/>
                         </FormItem>
-                        <FormItem floatingLabel>
-                            <Label>Passwort bestätigen</Label>
-                            <Input name="password2" onChangeText={(text) => this.setState({password2: text})}
+
+                                <Label style={styles.formlabel}>Passwort bestätigen</Label>
+                                <FormItem regular last style={styles.formtextbox}>
+                                    <Input name="password2"
+                                           secureTextEntry={true}
+                                           onChangeText={(text) => this.setState({password2: text})}
                                    value={this.state.password2}/>
                         </FormItem>
-                        <FormItem onPress={() => this.setState({gdprAccept: !this.state.gdprAccept})}>
+
+                                <Button full primary rounded style={{paddingBottom: 4, marginTop: 20,}}
+                                        onPress={() => this.register()}>
+                                    <Icon name="md-arrow-round-forward"/>
+                        </Button>
+                    </Form>
+                        </KeyboardAvoidingView>
+
+                </Content>
+            </Container>
+            </Fragment>
+
+        );
+    };
+}
+
+const styles = StyleSheet.create(
+    {
+        form: {
+            flex: 1,
+            marginLeft: 20,
+            marginRight: 20,
+            marginTop: 40,
+            marginBottom: 40
+        },
+
+        formlabel: {
+            color: material.textColor,
+            fontSize: 12,
+            marginBottom: 5
+
+        },
+
+        formtextbox: {
+            color: material.textColor,
+            borderColor: material.textColor,
+            marginBottom: 20
+
+        }
+    }
+)
+
+export default SignUpScreen;
+
+/*
+
+ <FormItem onPress={() => this.setState({gdprAccept: !this.state.gdprAccept})}>
                             <CheckBox checked={this.state.gdprAccept}>
                             </CheckBox>
                             <Text> Datenschutz? </Text>
@@ -114,15 +177,5 @@ class SignUpScreen extends Component {
                             </CheckBox>
                             <Text> Newsletter? </Text>
                         </FormItem>
-                        <Button full primary style={{paddingBottom: 4}} onPress={() => this.register()}>
-                            <Text> Next </Text>
-                        </Button>
-                    </Form>
-                </Content>
-            </Container>
-        );
-    };
 
-}
-
-export default SignUpScreen;
+ */
