@@ -4,7 +4,7 @@ import {FeedNavigation} from "./Feed/FeedScreen";
 import {ChallengeViewsNav} from "./Challenges/ChallengeScreen";
 import ProfileScreen from "./Profile/ProfileScreen";
 import {NotificationsScreen} from "./Notifications/NotificationsScreen";
-import {TeamsScreen} from "./Competitve/TeamsScreen";
+import TeamsNav from "./Competitve"
 import material from '../../native-base-theme/variables/material';
 
 export const AppNav = createMaterialBottomTabNavigator({
@@ -18,7 +18,7 @@ export const AppNav = createMaterialBottomTabNavigator({
             screen: ChallengeViewsNav
         },
     CompetitiveTab: {
-        screen: TeamsScreen
+        screen: TeamsNav
     },
     ProfileTab: {
         screen: ProfileScreen

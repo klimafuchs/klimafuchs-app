@@ -353,7 +353,7 @@ class CommentWidget extends Component {
                                         }}
                             >
                                 <Text style={{color: '#000'}}>{comment.sentiment}</Text>
-                                <Icon style={{color: '#000'}} name="ios-heart-outline"/>
+                                <Icon style={{color: '#000'}} name="ios-heart-empty"/>
                             </Button>
                         )
                     }}
