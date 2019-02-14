@@ -41,6 +41,10 @@ export const MY_MEMBERSHIPS = gql`
             team {
                 id,
                 name,
+                avatar {
+                    filename
+                },
+
                 score
             },
             isActive,

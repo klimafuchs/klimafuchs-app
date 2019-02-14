@@ -1,13 +1,18 @@
 import React, {Component} from 'react';
-import {Image, StyleSheet, View} from 'react-native';
-import {Button, Container, H3, Text} from "native-base";
+import {Image, RefreshControl, StyleSheet, View} from 'react-native';
+import {Body, Button, Container, Content, H3, Icon, Left, List, ListItem, Right, Text, Thumbnail} from "native-base";
 import {MY_MEMBERSHIPS} from "../../network/Teams.gql";
 import {Query} from "react-apollo";
 import material from "../../../native-base-theme/variables/material";
 import {CreateTeamModal} from "./CreateTeamModal";
+import env from "../../env";
 
 
 export class TeamsScreen extends Component {
+    state = {
+        refreshing: false,
+    };
+
     static navigationOptions = {
         title: 'Meine Teams',
     };
@@ -40,20 +45,44 @@ export class TeamsScreen extends Component {
         </View>
     );
 
-    renderTeams = (memberships) => (
-        <Text>teams exist</Text>
-    );
+    renderTeams = (memberships, refetch) => {
+        return (
+            <Content
+                style={{
+                    marginTop: 5,
+                    marginBottom: 5,
+                }}
+                refreshControl={<RefreshControl
+                    refreshing={this.state.refreshing}
+                    onRefresh={() => {
+                        this.setState({refreshing: true});
+                        refetch().then(this.setState({refreshing: false}))
+                    }}
+                />
+                }>
+                <List>
+                    {memberships.map((membership) => {
+                        return (
+                            <TeamCard key={membership.id} membership={membership}/>
+                        )
+                    })}
+                </List>
+            </Content>
+        )
+    };
 
     render() {
         return (
             <Container>
                 <Query query={MY_MEMBERSHIPS}>
                     {({loading, error, data, refetch}) => {
-                        if (loading) return <Text>Loading...</Text>;
+                        if (loading) {
+                            return <Text>Loading...</Text>;
+                        }
                         if (error) return <Text>{error.message}</Text>;
                         if (data) {
                             if (data.myMemberships.length > 0) {
-                                return this.renderTeams(data.myMemberships);
+                                return this.renderTeams(data.myMemberships, refetch);
                             } else {
                                 return this.renderTeamsGettingStarted(refetch)
                             }
@@ -64,6 +93,27 @@ export class TeamsScreen extends Component {
         );
     }
 
+}
+
+const TeamCard = ({membership}) => {
+    console.log(membership);
+    const teamAvatarUrl =
+        membership.team.avatar.filename
+            ? `${env.dev.API_IMG_URL}${membership.team.avatar.filename}`
+            : `${env.dev.API_IMG_URL}avatar_default.png`;
+    return (
+        <ListItem avatar>
+            <Left>
+                <Thumbnail source={{uri: teamAvatarUrl}}/>
+            </Left>
+            <Body>
+            <Text>{membership.team.name}</Text>
+            </Body>
+            <Right>
+                <Icon name='md-square' style={{color: membership.isAdmin ? '#ffaa00' : '#555555'}}/>
+            </Right>
+        </ListItem>
+    )
 }
 
 const styles = StyleSheet.create({
