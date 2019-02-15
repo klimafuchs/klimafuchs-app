@@ -34,7 +34,17 @@ export class TeamsScreen extends Component {
             />
             <H3 style={{marginBottom: '5%'}}>Du hast noch kein Team</H3>
 
-            <CreateTeamModal onComplete={refetch}/>
+            <CreateTeamModal
+                ref={(ref) => {
+                    this.teamPicker = ref;
+                }}
+                onComplete={refetch}>
+                <Button block
+                        style={styles.ctaButton}
+                        onPress={() => this.teamPicker.openModal()}>
+                    <Text style={{color: material.tabBarTextColor}}>Team erstellen</Text>
+                </Button>
+            </CreateTeamModal>
             <Button block
                     style={styles.ctaButton}
                     onPress={() => {

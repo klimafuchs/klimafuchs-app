@@ -6,14 +6,20 @@ import {Mutation} from "react-apollo";
 import {CREATE_TEAM} from "../../network/Teams.gql";
 import {StyleSheet} from "react-native";
 import UploadImage from "../UploadImage";
+import PropTypes from 'prop-types';
 
 export class CreateTeamModal extends Component {
+    static propTypes = {
+        children: PropTypes.element.isRequired,
+    };
+
     state = {
         modalVisible: false,
         teamName: '',
         nameError: false,
         mediaId: undefined,
     };
+
 
     closeModal = () => {
         this.setState({modalVisible: false})
@@ -53,8 +59,8 @@ export class CreateTeamModal extends Component {
                                       error={this.state.nameError}>
                                     <Input name="teamName"
                                            placeholder=""
-                                           onChangeText={(text) => this.setState({email: text})}
-                                           value={this.state.email}
+                                           onChangeText={(text) => this.setState({teamName: text})}
+                                           value={this.state.teamName}
                                            placeholderTextColor={material.brandInfo}/>
                                 </Item>
                             </Form>
@@ -95,13 +101,7 @@ export class CreateTeamModal extends Component {
                         </CardItem>
                     </Card>
                 </Modal>
-                <Button block
-                        style={styles.ctaButton}
-                        onPress={() => {
-                            this.openModal();
-                        }}>
-                    <Text style={{color: material.tabBarTextColor}}>Team erstellen</Text>
-                </Button>
+                {this.props.children}
             </Fragment>
         )
     }
@@ -109,13 +109,6 @@ export class CreateTeamModal extends Component {
 
 
 const styles = StyleSheet.create({
-    ctaButton: {
-        paddingLeft: 10,
-        paddingRight: 10,
-        borderRadius: 9,
-        marginLeft: '20%',
-        marginRight: '20%',
-    },
     modal: {
         backgroundColor: 'rgba(0,0,0,0)',
         margin: '5%',
