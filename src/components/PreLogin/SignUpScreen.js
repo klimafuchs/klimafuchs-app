@@ -147,13 +147,13 @@ const styles = StyleSheet.create(
             marginBottom: 40
         },
 
-        formlabel: {
+        formLabel: {
             color: material.textColor,
             fontSize: 12,
             marginBottom: 5
         },
 
-        formtextbox: {
+        formTextbox: {
             color: material.textColor,
             borderColor: material.textColor,
             marginBottom: 20

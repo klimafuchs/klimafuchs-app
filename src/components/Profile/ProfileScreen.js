@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {AsyncStorage} from 'react-native';
 import {Body, Button, Card, CardItem, Container, Content, Footer, Header, Icon, Text} from "native-base";
-import UploadImage from "../UploadImage";
+import UploadImage from "../Common/UploadImage";
 
 class ProfileScreen extends Component {
 

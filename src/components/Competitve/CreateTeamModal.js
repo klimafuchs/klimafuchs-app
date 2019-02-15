@@ -1,12 +1,13 @@
 import React, {Component, Fragment} from "react";
 import Modal from "react-native-modal";
-import {Button, Card, CardItem, Form, H1, Input, Item, Label, Right, Text} from "native-base";
+import {Button, Card, CardItem, Form, H1, Right, Text} from "native-base";
 import material from "../../../native-base-theme/variables/material";
 import {Mutation} from "react-apollo";
 import {CREATE_TEAM} from "../../network/Teams.gql";
 import {StyleSheet} from "react-native";
-import UploadImage from "../UploadImage";
+import UploadImage from "../Common/UploadImage";
 import PropTypes from 'prop-types';
+import {ValidatingTextField} from "../Common/ValidatingTextInput";
 
 export class CreateTeamModal extends Component {
     static propTypes = {
@@ -16,8 +17,10 @@ export class CreateTeamModal extends Component {
     state = {
         modalVisible: false,
         teamName: '',
-        nameError: false,
+        teamNameInput: undefined,
+        nameError: '',
         mediaId: undefined,
+        showErrors: false
     };
 
 
@@ -53,16 +56,15 @@ export class CreateTeamModal extends Component {
 
                         <CardItem>
                             <Form style={{flex: 1, alignItems: 'stretch'}}>
-                                <Label style={styles.formLabel}>Name des Teams</Label>
-                                <Item regular
-                                      style={styles.teamNameInput}
-                                      error={this.state.nameError}>
-                                    <Input name="teamName"
-                                           placeholder=""
-                                           onChangeText={(text) => this.setState({teamName: text})}
-                                           value={this.state.teamName}
-                                           placeholderTextColor={material.brandInfo}/>
-                                </Item>
+                                <ValidatingTextField
+                                    name='teamName'
+                                    label='Name des Teams'
+                                    onChangeText={(text) => this.setState({teamName: text})}
+                                    value={this.state.teamName}
+                                    showErrors={this.state.showErrors}
+                                    externalError={this.state.nameError}
+                                    ref={(ref) => this.teamNameInput = ref}
+                                />
                             </Form>
                         </CardItem>
 
@@ -80,6 +82,13 @@ export class CreateTeamModal extends Component {
                                         return (
                                             <Button transparent
                                                     onPress={() => {
+                                                        this.setState({showErrors: true});
+                                                        let validationError = this.teamNameInput.getErrors();
+                                                        console.log(validationError);
+                                                        if (validationError) {
+                                                            console.log(validationError);
+                                                            return
+                                                        }
                                                         createTeam({
                                                             variables: {
                                                                 name: this.state.teamName,
@@ -90,7 +99,10 @@ export class CreateTeamModal extends Component {
                                                                 this.closeModal();
                                                                 if (this.props.onComplete) this.props.onComplete(res);
                                                             })
-                                                            .catch(err => console.log(err))
+                                                            .catch(err => {
+                                                                console.log(err.message);
+                                                                this.setState({nameError: err.message})
+                                                            })
                                                     }}>
                                                 <Text>Weiter</Text>
                                             </Button>
@@ -126,3 +138,13 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
 });
+
+const validation = {
+    teamName: {
+        presence: {
+            message: '^Bitte gib deinem Team einen Namen'
+        },
+    },
+};
+
+export default validation

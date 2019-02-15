@@ -1,6 +1,20 @@
 import React, {Component} from 'react';
 import {Image, RefreshControl, StyleSheet, View} from 'react-native';
-import {Body, Button, Container, Content, H3, Icon, Left, List, ListItem, Right, Text, Thumbnail} from "native-base";
+import {
+    Body,
+    Button,
+    Container,
+    Content,
+    Fab,
+    H3,
+    Icon,
+    Left,
+    List,
+    ListItem,
+    Right,
+    Text,
+    Thumbnail
+} from "native-base";
 import {MY_MEMBERSHIPS} from "../../network/Teams.gql";
 import {Query} from "react-apollo";
 import material from "../../../native-base-theme/variables/material";
@@ -57,33 +71,47 @@ export class TeamsScreen extends Component {
 
     renderTeams = (memberships, refetch) => {
         return (
-            <Content
-                style={{
-                    marginTop: 5,
-                    marginBottom: 5,
-                }}
-                refreshControl={<RefreshControl
-                    refreshing={this.state.refreshing}
-                    onRefresh={() => {
-                        this.setState({refreshing: true});
-                        refetch().then(this.setState({refreshing: false}))
+            <Container style={{flex: 1}}>
+                <Content
+                    style={{
+                        marginTop: 5,
+                        marginBottom: 5,
                     }}
-                />
-                }>
-                <List>
-                    {memberships.map((membership) => {
-                        return (
-                            <TeamCard key={membership.id} membership={membership}/>
-                        )
-                    })}
-                </List>
-            </Content>
+                    refreshControl={<RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={() => {
+                            this.setState({refreshing: true});
+                            refetch().then(this.setState({refreshing: false}))
+                        }}
+                    />
+                    }>
+                    <List>
+                        {memberships.map((membership) => {
+                            return (
+                                <TeamCard key={membership.id} membership={membership}/>
+                            )
+                        })}
+                    </List>
+                </Content>
+                <CreateTeamModal
+                    ref={(ref) => {
+                        this.teamPicker = ref;
+                    }}
+                    onComplete={refetch}>
+                    <Fab style={{backgroundColor: material.brandPrimary}}
+                         onPress={() => this.teamPicker.openModal()}
+                         position="bottomRight">
+                        <Icon name='md-add'/>
+                    </Fab>
+                </CreateTeamModal>
+
+            </Container>
         )
     };
 
     render() {
         return (
-            <Container>
+            <Container style={{flex: 1}}>
                 <Query query={MY_MEMBERSHIPS}>
                     {({loading, error, data, refetch}) => {
                         if (loading) {
@@ -108,7 +136,7 @@ export class TeamsScreen extends Component {
 const TeamCard = ({membership}) => {
     console.log(membership);
     const teamAvatarUrl =
-        membership.team.avatar.filename
+        membership.team.avatar
             ? `${env.dev.API_IMG_URL}${membership.team.avatar.filename}`
             : `${env.dev.API_IMG_URL}avatar_default.png`;
     return (
@@ -116,7 +144,7 @@ const TeamCard = ({membership}) => {
             <Left>
                 <Thumbnail source={{uri: teamAvatarUrl}}/>
             </Left>
-            <Body>
+            <Body style={{height: '100%'}}>
             <Text>{membership.team.name}</Text>
             </Body>
             <Right>
