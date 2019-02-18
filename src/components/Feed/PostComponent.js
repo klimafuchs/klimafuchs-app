@@ -265,7 +265,6 @@ class CommentTreeWidget extends Component {
     buildCommentTree = (comments) => {
         let tree = comments.filter((c) => !c.parent);
         tree.sort(this.sortComments);
-        let childComments = comments.filter((c) => c.parent);
 
         tree.forEach((branchRoot) => {
             this._buildCommentTree(comments, branchRoot, this.maxRecursionDepth)
