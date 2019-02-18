@@ -18,7 +18,7 @@ import {
 } from "native-base";
 import {Mutation} from "react-apollo";
 import {ADD_POST} from "../../network/Feed.gql";
-import UploadImage from "../UploadImage";
+import UploadImage from "../Common/UploadImage";
 
 export default class NewPostComponent extends Component {
     static navigationOptions = ({navigation}) => {

@@ -96,10 +96,10 @@ class UploadImage extends React.Component {
         let uploadButton;
         if (this.state.media) {
             return (
-                <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                <View style={{flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center'}}>
                     <ImageBackground
-                        style={{flex: 1, height: 300, backgroundColor: "#0ff", alignSelf: 'stretch'}}
-                        resizeMode="cover"
+                        style={{flex: 1, height: '100%', backgroundColor: "#0ff", alignSelf: 'stretch'}}
+                        resizeMode="contain"
                         source={{uri: image.uri}}>
                         <Icon name="md-checkmark" style={{color: '#ffff00', backgroundColor: '#ff00ff'}}/>
                     </ImageBackground>

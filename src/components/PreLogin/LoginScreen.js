@@ -1,15 +1,19 @@
 import React, {Component} from 'react';
-import {AsyncStorage, Image, StyleSheet, View} from 'react-native'
-import {Grid, Row} from "react-native-easy-grid";
-import {Button, Card, CardItem, Container, Form, H1, H3, Input, Item, Text, Toast} from "native-base";
-import Expo, {LinearGradient, AppLoading, Font} from "expo";
+import {AsyncStorage, Image, KeyboardAvoidingView, StyleSheet, View} from 'react-native'
+import {Button, Card, CardItem, Container, Content, Form, H1, H3, Input, Item, Text, Toast} from "native-base";
+import {AppLoading, Font, LinearGradient} from "expo";
 import Api from "../../network/api";
+
+import material from '../../../native-base-theme/variables/material';
+
 
 class LoginScreen extends Component {
 
     static navigationOptions = {
         title: 'Please sign in'
     };
+
+    scrollView;
 
     constructor() {
         super();
@@ -67,28 +71,40 @@ class LoginScreen extends Component {
 
 
     render() {
-        if (this.state.loading) {
+        const {loading} = this.state;
+
+        if (loading) {
             return (<AppLoading/>)
         }
         return (
             <Container>
                 <LinearGradient
-                    colors={['#8dc2db', '#b8d497']}
+                    colors={[
+                        material.brandPrimary,
+                        material.brandInfo
+                    ]}
                     style={{
                         flex: 1,
                         alignItems: 'center',
                         justifyContent: 'center',
                     }}>
-                    <View style={loginScreenStyles.container} contentContainerStyle={loginScreenStyles.row}>
-                        <Grid style={{alignItems: 'flex-start'}}>
-                            <Row size={1} style={{margin: 10}}>
-                                <Image
-                                    style={{flex: 1, height: undefined, width: undefined}}
-                                    resizeMode="contain"
-                                    source={require('../../../assets/KlimafuchsLogo.png')}
-                                />
-                            </Row>
-                            <Row size={2}>
+                    <Content>
+                        <KeyboardAvoidingView>
+                            <View style={loginScreenStyles.container}>
+                                <View style={{
+                                    width: '100%',
+                                    padding: 5,
+                                    flex: 1,
+                                    alignItems: 'center',
+                                    marginBottom: 10
+                                }}>
+                                    <Image
+                                        style={{flex: 1, width: 100, height: 100, margin: 5}}
+                                        resizeMode="contain"
+                                        source={require('../../../assets/KlimafuchsLogo.png')}
+                                    />
+                                    <H1 style={{color: 'white', fontWeight: 'bold'}}>Klimafuchs</H1>
+                                </View>
                                 <Card style={loginScreenStyles.loginCard}>
                                     <CardItem style={loginScreenStyles.loginCardItem}>
                                         <H1>Login</H1>
@@ -99,25 +115,30 @@ class LoginScreen extends Component {
                                                   style={loginScreenStyles.loginFormTextInput}
                                                   error={this.state.loginError}
                                             >
+
                                                 <Input name="email"
                                                        placeholder="eMail"
                                                        onChangeText={(text) => this.setState({email: text})}
-                                                       value={this.state.email}/>
+                                                       value={this.state.email}
+                                                       placeholderTextColor={material.brandInfo}
+                                                />
                                             </Item>
                                             <Item regular
                                                   style={loginScreenStyles.loginFormTextInput}
                                                   error={this.state.loginError}
                                             >
+
                                                 <Input name="password"
-                                                       secureTextEntry={true}
                                                        placeholder="Passwort"
                                                        onChangeText={(text) => this.setState({password: text})}
-                                                       value={this.state.password}/>
+                                                       value={this.state.password}
+                                                       placeholderTextColor={material.brandInfo}
+                                                />
                                             </Item>
                                         </Form>
                                     </CardItem>
                                     <CardItem style={loginScreenStyles.loginCardItem}>
-                                        <H3 style={{color: 'blue'}}
+                                        <H3 style={{color: material.textColor}}
                                             onPress={() => {
                                                 console.log(`${this.constructor.name}: register clicked!`);
                                                 this.props.navigation.navigate('SignUpScreen', {email: this.state.email});
@@ -125,7 +146,7 @@ class LoginScreen extends Component {
                                             Registrieren
                                         </H3>
                                         <H3>|</H3>
-                                        <H3 style={{color: 'blue'}}
+                                        <H3 style={{color: material.textColor}}
                                             onPress={() => {
                                                 console.log(`${this.constructor.name}: forgot_password clicked!`);
                                                 this.props.navigation.navigate('ForgotPasswordScreen', {email: this.state.email});
@@ -135,7 +156,7 @@ class LoginScreen extends Component {
                                         </H3>
                                     </CardItem>
                                     <CardItem style={loginScreenStyles.loginCardItem}>
-                                        <Text style={{color: 'blue'}}
+                                        <Text style={{color: material.textColor}}
                                               onPress={() => {
                                                   console.log(`${this.constructor.name}: eula clicked!`);
 
@@ -143,7 +164,7 @@ class LoginScreen extends Component {
                                             AGBs
                                         </Text>
                                         <Text>|</Text>
-                                        <Text style={{color: 'blue'}}
+                                        <Text style={{color: material.textColor}}
                                               onPress={() => {
                                                   console.log(`${this.constructor.name}: privacy clicked!`)
 
@@ -152,15 +173,15 @@ class LoginScreen extends Component {
                                         </Text>
                                     </CardItem>
                                 </Card>
-                            </Row>
-                            <Row size={1} style={loginScreenStyles.row}>
-                                <Button primary style={loginScreenStyles.loginButton} onPress={() => this.signIn()}>
-                                    <Text>Login</Text>
+                                <Button full primary rounded style={loginScreenStyles.loginButton}
+                                        onPress={() => this.signIn()}>
+                                    <Text style={{fontWeight: 'bold'}}>Login</Text>
                                 </Button>
-                            </Row>
-                        </Grid>
-                    </View>
+                            </View>
+                        </KeyboardAvoidingView>
+                    </Content>
                 </LinearGradient>
+
             </Container>
         );
     };
@@ -169,11 +190,6 @@ class LoginScreen extends Component {
 
 export const loginScreenStyles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-
-        backgroundColor: 'rgba(255,0,255,0)'
     },
     row: {
         alignSelf: 'center',
@@ -188,7 +204,7 @@ export const loginScreenStyles = StyleSheet.create({
         backgroundColor: 'rgba(230, 230, 230, 0.7)',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 5,
+        borderRadius: 9,
         padding: 10,
         margin: 10,
         shadowRadius: 5,
@@ -200,13 +216,15 @@ export const loginScreenStyles = StyleSheet.create({
     loginFormTextInput: {
         backgroundColor: 'rgba(255, 255, 255, .8)',
         margin: 10,
+        color: material.textColor,
+        borderColor: material.brandInfo,
+        marginBottom: 20
     },
     loginButton: {
-        backgroundColor: 'rgb(166,203,0)',
-        padding: '10%',
-        alignSelf: 'center',
-    }
-
+        padding: 10,
+        margin: 10,
+        marginTop: 20,
+    },
 });
 
 export default LoginScreen;
