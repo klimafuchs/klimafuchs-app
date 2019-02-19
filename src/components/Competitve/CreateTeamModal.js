@@ -58,6 +58,7 @@ export class CreateTeamModal extends Component {
                             <Form style={{flex: 1, alignItems: 'stretch'}}>
                                 <ValidatingTextField
                                     name='teamName'
+                                    validateAs='teamName'
                                     label='Name des Teams'
                                     onChangeText={(text) => this.setState({teamName: text})}
                                     value={this.state.teamName}

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {AsyncStorage, Image, KeyboardAvoidingView, StyleSheet, View} from 'react-native'
 import {Button, Card, CardItem, Container, Content, Form, H1, H3, Input, Item, Text, Toast} from "native-base";
-import {AppLoading, Font, LinearGradient} from "expo";
+import {LinearGradient} from "expo";
 import Api from "../../network/api";
 
 import material from '../../../native-base-theme/variables/material';
@@ -13,30 +13,13 @@ class LoginScreen extends Component {
         title: 'Please sign in'
     };
 
-    scrollView;
 
-    constructor() {
-        super();
-        this.state = {
-            loading: true,
-            email: '',
-            password: '',
-            loginError: false,
-        };
-    }
-
-    async componentWillMount() {
-        console.log(this.props.navigation.state.params);
-        if (!!this.props.navigation.state.params && !!this.props.navigation.state.params.email) {
-            this.setState({email: this.props.navigation.state.params.email});
-        }
-        await Font.loadAsync({
-            Roboto: require("native-base/Fonts/Roboto.ttf"),
-            Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
-            Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
-        });
-        this.setState({loading: false});
-    }
+    state = {
+        email: '',
+        password: '',
+        loginError: false,
+        showErrors: false
+    };
 
     signIn = async () => {
 
@@ -61,21 +44,8 @@ class LoginScreen extends Component {
 
     };
 
-    _checkUserExistsAsync = async (email) => {
-        Api.checkEmailExists(email,
-            (res) => {
-            },
-            (err) => {
-            });
-    };
-
-
     render() {
-        const {loading} = this.state;
 
-        if (loading) {
-            return (<AppLoading/>)
-        }
         return (
             <Container>
                 <LinearGradient
@@ -189,8 +159,7 @@ class LoginScreen extends Component {
 }
 
 export const loginScreenStyles = StyleSheet.create({
-    container: {
-    },
+    container: {},
     row: {
         alignSelf: 'center',
         flex: 1,
