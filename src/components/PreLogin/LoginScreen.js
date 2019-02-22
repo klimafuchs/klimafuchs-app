@@ -100,6 +100,7 @@ class LoginScreen extends Component {
 
                                                 <Input name="password"
                                                        placeholder="Passwort"
+                                                       secureTextEntry
                                                        onChangeText={(text) => this.setState({password: text})}
                                                        value={this.state.password}
                                                        placeholderTextColor={material.brandInfo}
