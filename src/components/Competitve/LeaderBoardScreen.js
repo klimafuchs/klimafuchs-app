@@ -68,10 +68,11 @@ export class LeaderBoardScreen extends React.Component {
                 console.log(lastCursor)
                 fetchMore({
                     variables: {
-                        page: {
+                        connectionArgs: {
                             first: this.pageSize,
                             after: lastCursor
-                        }
+                        },
+                        teamSize: this.state.sizeFilter
                     },
                     updateQuery: (prev, {fetchMoreResult}) => {
                         if (!fetchMoreResult) return prev;
