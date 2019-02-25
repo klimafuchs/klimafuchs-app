@@ -92,17 +92,27 @@ export const LEADERBOARD = gql`
                         id,
                         name,
                         score,
+                        place,
                         avatar{filename},
-                        teamSize
+                        teamSize,
+                        members {
+                            id
+                        }
                     }
                     cursor
                 }
             }
         }
-
     }
-
 `;
+
+export const CURRENT_USER_ID = gql`
+    query getCurrentUser {
+        getCurrentUser{
+            id
+        }
+    }
+`
 
 export const TeamSize = {
     SOLO: 0,
