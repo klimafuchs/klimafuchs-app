@@ -7,22 +7,14 @@ export const CREATE_TEAM = gql`
             name,
             inviteId,
             avatar{
-                path,
-                mimetype,
-                width,
-                height
-            },
+                filename            },
             members {
                 id,
                 user {
                     id,
                     screenName,
                     avatar {
-                        path,
-                        mimetype,
-                        width,
-                        height
-                    }
+                        filename                    }
                 },
                 dateCreated,
                 isActive,
@@ -42,9 +34,8 @@ export const MY_MEMBERSHIPS = gql`
                 id,
                 name,
                 avatar {
-                    filename
-                },
-
+                    filename,
+                }
                 score
             },
             isActive,
@@ -60,14 +51,18 @@ export const GET_MY_TEAM = gql`
             name,
             members {
                 user {
-                    avatar,
+                    avatar {
+                        path,
+                    }
                     screenName,
                 }
                 isActive,
                 isAdmin
             },
             score,
-            avatar
+            avatar {
+                path,
+            }
         }
     }
 `;
@@ -87,3 +82,42 @@ export const CONFIRM_MEMBER = gql`
         }
     }
 `;
+
+export const LEADERBOARD = gql`
+    query getLeaderBoard($connectionArgs:ConnectionArgs!, $teamSize:TeamSize! ) {
+        getLeaderBoard(connectionArgs:$connectionArgs, teamSize:$teamSize ) {
+            page {
+                edges {
+                    node {
+                        id,
+                        name,
+                        score,
+                        place,
+                        avatar{filename},
+                        teamSize,
+                        members {
+                            id
+                        }
+                    }
+                    cursor
+                }
+            }
+        }
+    }
+`;
+
+export const CURRENT_USER_ID = gql`
+    query getCurrentUser {
+        getCurrentUser{
+            id
+        }
+    }
+`
+
+export const TeamSize = {
+    SOLO: 0,
+    DUO: 1,
+    SMALL: 2,
+    LARGE: 3,
+    HUGE: 4,
+};

@@ -11,11 +11,13 @@ export class ValidatingTextField extends Component {
 
     static propTypes = {
         name: PropTypes.string.isRequired,
+        validateAs: PropTypes.string.isRequired,
         label: PropTypes.string.isRequired,
         onChangeText: PropTypes.func.isRequired,
         value: PropTypes.string.isRequired,
-        showErrors: PropTypes.bool.isRequired,
-        externalError: PropTypes.string
+        externalError: PropTypes.string,
+        secureTextEntry: PropTypes.bool,
+        onBlur: PropTypes.func
     };
 
     state = {
@@ -27,16 +29,17 @@ export class ValidatingTextField extends Component {
         return this.state.error;
     };
 
-    validate = (fieldName, value) => {
-        let error = validatejs({[fieldName]: value}, constraints);
+    validate = (value) => {
+        let error = validatejs({[this.props.validateAs]: value}, constraints);
+        error = error[this.props.validateAs] ? error[this.props.validateAs][0] : undefined;
         console.log(error);
         return error;
     };
 
     render() {
-        let {label, name, onChangeText, secureTextEntry, showErrors, externalError} = this.props;
+        let {label, name, validateAs, onChangeText, secureTextEntry, externalError, onBlur} = this.props;
         let {error} = this.state;
-        let showsErrors = showErrors && (error || externalError);
+        let showsErrors = (error || externalError);
         console.log(externalError);
         return (
             <Fragment>
@@ -45,13 +48,17 @@ export class ValidatingTextField extends Component {
                     <Input name={name}
                            secureTextEntry={secureTextEntry}
                            onChangeText={(text) => {
-                               let error = this.validate(name, text);
-                               console.log(error)
                                this.setState({
                                    value: text,
-                                   error: error ? error[name][0] : undefined
                                });
                                onChangeText(text);
+                           }}
+                           onBlur={() => {
+                               let error = this.validate(this.state.value);
+                               this.setState({
+                                   error
+                               });
+                               if (onBlur) onBlur(error);
                            }}
                            value={this.state.value}/>
                 </Item>
