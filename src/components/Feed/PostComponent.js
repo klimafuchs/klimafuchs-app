@@ -314,6 +314,7 @@ class CommentTreeWidget extends Component {
         //console.log(result);
         return (
             <View style={{flex: 1, flexShrink: 0, alignItems: 'stretch', width: '100%'}}>
+                {this.buildCommentTree(this.props.comments).map(tree => this._walkTree(tree, this.recursionDepth))}
                 {this.walkTree(this.buildCommentTree(this.props.comments))}
             </View>
         );
