@@ -4,12 +4,24 @@ import {AsyncStorage} from "react-native";
 import {concat} from "apollo-link";
 import ApolloClient from "apollo-client";
 import {InMemoryCache} from "apollo-cache-inmemory";
+import {persistCache} from 'apollo-cache-persist';
+
 
 const uri = "https://enviroommate.org/app-dev/api/gql";
 
 const uploadLink = createUploadLink({
     uri: uri,
 });
+
+const cache = new InMemoryCache();
+
+persistCache({
+    cache,
+    storage: AsyncStorage,
+    trigger: "background",
+    maxSize: 1048576 * 10, // 10MB
+    debug: !!__DEV__
+}).catch(err => console.error(err));
 
 const authLink = setContext(async (_, {headers}) => {
     // get the authentication token from local storage if it exists
@@ -24,9 +36,9 @@ const authLink = setContext(async (_, {headers}) => {
 });
 const link = concat(authLink, uploadLink);
 
-client = new ApolloClient({
-    link: link,
-    cache: new InMemoryCache()
+const client = new ApolloClient({
+    link,
+    cache
 });
 
 export default client;
