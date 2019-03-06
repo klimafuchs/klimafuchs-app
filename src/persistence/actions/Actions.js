@@ -19,6 +19,7 @@ export const actions = createActions({
         DOWNLOAD: undefined,
         SUCCESS: undefined,
         ERROR: undefined,
+        START: undefined,
     },
 });
 
