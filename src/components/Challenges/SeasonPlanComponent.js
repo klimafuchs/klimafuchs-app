@@ -2,9 +2,10 @@ import React, {Component} from 'react';
 import {Body, Button, Container, H3, Header, Icon, Left, Right, Text, Title} from 'native-base';
 import {FlatList, StyleSheet, View} from 'react-native'
 import * as Constants from "expo";
-import {Mutation, Query} from "react-apollo";
-import {COMPLETE_CHALLENGE, CURRENT_CHALLENGES, CURRENT_SEASONPLAN} from "../../network/Challenges.gql";
+import {Query} from "react-apollo";
+import {CURRENT_CHALLENGES, CURRENT_SEASONPLAN} from "../../network/Challenges.gql";
 import material from "../../../native-base-theme/variables/material";
+import {ChallengeDetailsModal} from "./ChallengeDetailsModal";
 
 export class SeasonPlanComponent extends Component {
     static navigationOptions = {
@@ -77,7 +78,7 @@ class ChallengesComponent extends Component {
                                         data={challenges}
                                         keyExtractor={(item, index) => item.id.toString()}
                                         renderItem={({item}) => {
-                                            return <Challenge key={item.id} challenge={item} refetch={refetch}/>
+                                            return <ChallengeButton key={item.id} challenge={item} refetch={refetch}/>
                                         }
                                         }
                                     />
@@ -95,43 +96,36 @@ class ChallengesComponent extends Component {
     }
 }
 
-Challenge = ({challenge, refetch}) => {
+class ChallengeButton extends Component {
 
-    //<Text>
-    //    {JSON.stringify(challenge, null, 2)}
-    //</Text>
+    render() {
+        let {challenge, refetch} = this.props;
+        return (
+            <View style={styles.Challenge}>
 
-    console.log("Challenge render:")
-    console.log(JSON.stringify(challenge, null, 2))
-    return (
-        <Mutation mutation={COMPLETE_CHALLENGE}>
-            {(completeChallenge, {data}) => (
+                <ChallengeDetailsModal
+                    challenge={challenge}
+                    refetch={refetch}
+                    ref={(ref) => {this.modal = ref}}>
 
-                <View style={styles.Challenge}>
                     <Button block
                             light={!challenge.challengeCompletion}
                             primary={!!challenge.challengeCompletion}
-                            disabled={!!challenge.challengeCompletion}
-                            onPress={async () => {
-                                await completeChallenge({
-                                    variables: {
-                                        challengeId: challenge.id
-                                    }
-                                });
-                                refetch();
-                            }}>
+                            onPress={() => this.modal.openModal()}>
                         <Text>{challenge.challenge.title}</Text>
                         {challenge.challengeCompletion &&
                         <Icon name="md-checkmark"/>
                         }
                     </Button>
-                </View>
-            )}
-        </Mutation>
-    )
+
+                </ChallengeDetailsModal>
+
+            </View>
+        )
+    }
 }
 
-ChallengeProgressIndicator = ({challenges}) => {
+const ChallengeProgressIndicator = ({challenges}) => {
     //TODO replace with something actually good and move to parent component for better layout options,
     // also steal overlaying layout code from FAB
     return (

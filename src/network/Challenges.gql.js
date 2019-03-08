@@ -6,13 +6,23 @@ export const CURRENT_CHALLENGES = gql`
             id,
             plan {
                 themenwoche {
-                    title
+                    title,
+                    headerImage {
+                        url
+                    },
+                    content,
+                    
                 }
             },
             challenge {
                 id,
                 title,
-                content
+                content,
+                headerImage {
+                    url
+                },
+                
+
             },
             challengeCompletion {id}
         }
