@@ -11,6 +11,7 @@ export class ChallengeDetailsModal extends Component {
 
     static propTypes = {
         challenge: PropTypes.shape({
+            id: PropTypes.number.isRequired,
             challenge: PropTypes.shape({
                 id: PropTypes.number.isRequired,
                 title: PropTypes.string.isRequired,
@@ -48,6 +49,7 @@ export class ChallengeDetailsModal extends Component {
                     }}>
                     <ChallengeDetailsComponent challenge={this.props.challenge.challenge}
                                                challengeCompletion={this.props.challenge.challengeCompletion}
+                                               targetId={this.props.challenge.id}
                                                refetch={this.props.refetch} closeModal={this.closeModal}/>
                 </Modal>
                 {this.props.children}
@@ -56,7 +58,7 @@ export class ChallengeDetailsModal extends Component {
     }
 }
 
-const ChallengeDetailsComponent = ({challenge, challengeCompletion, refetch, closeModal}) => {
+const ChallengeDetailsComponent = ({challenge, challengeCompletion, targetId, refetch, closeModal}) => {
     console.log(challenge)
     const headerContent = challenge.headerImage ?
         <ImageBackground src={challenge.headerImage.url}>
@@ -95,7 +97,7 @@ const ChallengeDetailsComponent = ({challenge, challengeCompletion, refetch, clo
                                         onPress={async () => {
                                             await completeChallenge({
                                                 variables: {
-                                                    challengeId: challenge.id
+                                                    challengeId: targetId
                                                 }
                                             });
                                             refetch();
@@ -112,7 +114,7 @@ const ChallengeDetailsComponent = ({challenge, challengeCompletion, refetch, clo
             </CardItem>
         </Card>
     )
-}
+};
 
 const styles = StyleSheet.create({
     modal: {
