@@ -9,7 +9,8 @@
   "dependencies": {
     "apollo-boost": "^0.1.27",
     "apollo-cache-inmemory": "^1.4.2",
-    "apollo-cache-redux": "^0.1.2",
+    "apollo-cache-persist": "^0.1.1",
+    "apollo-cache-redux": "0.1.1",
     "apollo-client": "^2.4.12",
     "apollo-link": "^1.2.6",
     "apollo-link-context": "^1.0.12",
@@ -35,7 +36,9 @@
     "react-redux": "^6.0.0",
     "react-spring": "^7.2.10",
     "redux": "^4.0.1",
+    "redux-actions": "^2.6.5",
     "redux-axios-middleware": "^4.0.0",
+    "redux-saga": "^1.0.2",
     "redux-thunk": "^2.3.0",
     "validate.js": "^0.12.0"
   },

@@ -1,17 +1,17 @@
 import React, {Component} from 'react';
 import {AsyncStorage, SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {createAppContainer, createStackNavigator, createSwitchNavigator} from "react-navigation";
-import {Root, StyleProvider} from 'native-base';
+import {Root, Spinner, StyleProvider} from 'native-base';
 import LoginScreen from "./src/components/PreLogin/LoginScreen";
 import SignUpScreen from "./src/components/PreLogin/SignUpScreen";
 import CheckUserExistsScreen from "./src/components/PreLogin/CheckUserExistsScreen";
-import {Provider} from "react-redux";
+import {Provider as ReduxProvider} from "react-redux";
 import getTheme from './native-base-theme/components';
 import material from './native-base-theme/variables/material';
 import store from "./src/persistence/store"
 import {AppNav} from "./src/components/LoggedInScreen";
 import {ForgotPasswordScreen} from "./src/components/PreLogin/ForgotPasswordScreen";
-import {AppLoading, Font} from "expo";
+import {Font} from "expo";
 import ApolloProvider from "react-apollo/ApolloProvider";
 import client from "./src/network/client"
 
@@ -36,11 +36,11 @@ export default class AppRoot extends Component {
     render() {
         if (this.state.loading) {
             return (
-                <AppLoading/>
+                <Spinner/>
             )
         }
         return (
-            <Provider store={store}>
+            <ReduxProvider store={store}>
                 <ApolloProvider client={client}>
                     <StyleProvider style={getTheme(material)}>
                         <SafeAreaView style={styles.safeArea}>
@@ -50,7 +50,7 @@ export default class AppRoot extends Component {
                         </SafeAreaView>
                     </StyleProvider>
                 </ApolloProvider>
-            </Provider>
+            </ReduxProvider>
         )
     }
 }

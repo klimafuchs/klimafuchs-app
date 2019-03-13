@@ -1,23 +1,20 @@
-import {CHECK_EMAIL_EXISTS, LOGIN, REGISTER} from "../actions/types";
+import {AsyncStorage} from "react-native";
+import {handleActions} from 'redux-actions'
+import {actions} from '../actions/Actions'
 
 const token = async() => await AsyncStorage.getItem('token');
 
+const defaultState = {
+    userInfo: {
+        token: '',
+        userId: '',
+    },
+};
 
-const initialState = (token => ({
-    isAuthenticating: false,
-    token: token ? token : null,
-    emailExists: false,
-    authErrorMessage: null
-}))();
+export default handleActions({
+    [actions.auth.login]: (state, payload) => undefined,
+    [actions.auth.register]: (state, payload) => undefined,
+    [actions.auth.success]: (state, payload) => undefined,
+    [actions.auth.error]: (state, payload) => undefined,
 
-export default function (state = initialState, action) {
-    switch (action.type){
-        case CHECK_EMAIL_EXISTS:
-
-        case LOGIN:
-
-        case REGISTER:
-        default:
-            return state;
-    }
-}
+}, defaultState, {});

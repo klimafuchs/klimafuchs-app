@@ -28,7 +28,7 @@ import env from '../../env';
 
 moment.locale('de');
 
-export const defaultAvatar = env.dev.API_IMG_URL + "avatar_default.png"; //TODO replace default avatar with local file
+export const defaultAvatar = __DEV__ ? env.dev.API_IMG_URL + "avatar_default.png" : env.prod.API_IMG_URL + "avatar_default.png"; //TODO replace default avatar with local file
 
 
 export default PostComponent = ({post, navigateToDetailedView, commentRefetch, close}) => {
