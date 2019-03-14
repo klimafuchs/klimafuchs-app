@@ -109,10 +109,10 @@ export default {
     brandDanger: "#d9534f",
     brandWarning: "#f0ad4e",
     brandDark: "#00080D",
-    brandLight: "#f4f4f4",
+    brandLight: "#fafafa",
 
     //Container
-    containerBgColor: "#fff",
+    containerBgColor: "#a7a7a7",
 
     //Date Picker
     datePickerTextColor: "#000",
@@ -142,7 +142,6 @@ export default {
     activeTab: "#fff",
     tabBarTextColor: "#aaa",
     tabBarActiveTextColor: '#000',
-
     tabActiveBgColor: "#8DC2DB",
 
     // Header
