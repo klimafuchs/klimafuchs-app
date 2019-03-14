@@ -117,8 +117,8 @@ class MediaInput extends Component {
     render() {
         if (this.state.awaitsMedia) {
             return (
-                <View style={{flex: 1}}>
-                    <UploadImage style={{height: 400}} onCancel={this.reset} onUploadFinished={(media) => {
+                <View style={{height: 400, width: '100%'}}>
+                    <UploadImage onCancel={this.reset} onUploadFinished={(media) => {
                         if (this.props.onSelected) {
 
                             this.props.onSelected({mediaId: media.id})
