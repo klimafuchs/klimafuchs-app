@@ -18,8 +18,9 @@ import {
 import {MY_MEMBERSHIPS} from "../../network/Teams.gql";
 import {Query} from "react-apollo";
 import material from "../../../native-base-theme/variables/material";
-import {CreateTeamModal} from "./CreateTeamModal";
+import {CreateTeamModal, CreateTeamModalContent} from "./CreateTeamModalContent";
 import env from "../../env";
+import {FSModal} from "../Common/FSModal";
 
 
 export class TeamsScreen extends Component {
@@ -93,17 +94,20 @@ export class TeamsScreen extends Component {
                         })}
                     </List>
                 </Content>
-                <CreateTeamModal
+                <FSModal
                     ref={(ref) => {
                         this.teamPicker = ref;
                     }}
-                    onComplete={refetch}>
+                    body={<CreateTeamModalContent
+                        onComplete={refetch}
+                        requestModalClose={() => this.teamPicker.closeModal()}/>}
+                >
                     <Fab style={{backgroundColor: material.brandPrimary}}
                          onPress={() => this.teamPicker.openModal()}
                          position="bottomRight">
                         <Icon name='md-add'/>
                     </Fab>
-                </CreateTeamModal>
+                </FSModal>
 
             </Container>
         )
