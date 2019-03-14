@@ -19,7 +19,7 @@ const TeamsNav = createMaterialTopTabNavigator(
         navigationOptions: {
             header: (
                 <Fragment>
-                    <Header transparent style={{backgroundColor: material.brandInfo}}>
+                    <Header transparent style={{backgroundColor: material.brandPrimary}}>
                         <Left/>
                         <Body>
                         <Title>Teams</Title>
@@ -32,7 +32,7 @@ const TeamsNav = createMaterialTopTabNavigator(
         },
         tabBarOptions: {
             style: {
-                backgroundColor: material.brandInfo,
+                backgroundColor: material.brandPrimary,
             },
             indicatorStyle: {
                 backgroundColor: material.tabBarTextColor,
