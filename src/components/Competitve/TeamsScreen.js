@@ -102,10 +102,10 @@ export class TeamsScreen extends Component {
                         onComplete={refetch}
                         requestModalClose={() => this.teamPicker.closeModal()}/>}
                 >
-                    <Fab style={{backgroundColor: material.brandPrimary}}
+                    <Fab style={{backgroundColor: material.brandInfo}}
                          onPress={() => this.teamPicker.openModal()}
                          position="bottomRight">
-                        <Icon name='md-add'/>
+                        <Icon name='md-add' style={{color: material.brandDark}}/>
                     </Fab>
                 </FSModal>
 

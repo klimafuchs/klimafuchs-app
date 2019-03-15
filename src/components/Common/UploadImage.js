@@ -5,8 +5,15 @@ import React from 'react';
 import {ImageBackground, TouchableWithoutFeedback, View} from 'react-native';
 import {Button, Icon, Spinner, Text} from 'native-base';
 import {ImagePicker, Permissions} from 'expo';
+import PropTypes from 'prop-types'
 
 class UploadImage extends React.Component {
+    static propTypes = {
+        onCancel: PropTypes.func,
+        onUploadFinished: PropTypes.func,
+        placeholder: PropTypes.string,
+    };
+
     state = {
         image: null,
         width: null,
@@ -92,7 +99,12 @@ class UploadImage extends React.Component {
 
     render() {
         let image = this.state.image;
-
+        let {placeholder} = this.props;
+        let imgSrc = this.image ?
+            {uri: this.image.uri} :
+            (placeholder ?
+                {uri: placeholder} :
+                require('../../../assets/image_select.png'));
         return (
             <Mutation mutation={UPLOAD_IMAGE}>
                 {(upload, {data}) => {

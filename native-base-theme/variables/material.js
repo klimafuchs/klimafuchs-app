@@ -112,7 +112,7 @@ export default {
     brandLight: "#fafafa",
 
     //Container
-    containerBgColor: "#a7a7a7",
+    containerBgColor: "#cfcfcf",
 
     //Date Picker
     datePickerTextColor: "#000",
@@ -140,7 +140,7 @@ export default {
     // FooterTab
     tabBarTextSize: 11,
     activeTab: "#fff",
-    tabBarTextColor: "#aaa",
+    tabBarTextColor: "#626262",
     tabBarActiveTextColor: '#000',
     tabActiveBgColor: "#8DC2DB",
 
