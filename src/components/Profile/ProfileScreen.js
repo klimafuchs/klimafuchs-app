@@ -114,7 +114,7 @@ class ProfileScreen extends Component {
                                             {(updateProfile, data, error) => {
                                                 return (
                                                     <View style={{width: 200, height: 200, marginBottom: 50}}>
-                                                        <UploadImage placeholder={Util.ImageToUri(avatar)}
+                                                        <UploadImage placeholder={Util.AvatarToUri(avatar)}
                                                                      onUploadFinished={(media) => {
                                                                          console.log(media);
                                                                          updateProfile({
