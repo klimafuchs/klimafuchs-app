@@ -107,7 +107,7 @@ export const LEADERBOARD = gql`
 `;
 
 export const CURRENT_USER_ID = gql`
-    query getCurrentUser {
+    query getCurrentUserId {
         getCurrentUser{
             id
         }

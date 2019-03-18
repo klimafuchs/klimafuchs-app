@@ -38,7 +38,7 @@ const link = concat(authLink, uploadLink);
 
 const client = new ApolloClient({
     link,
-    cache
+    cache: new InMemoryCache()
 });
 
 export default client;

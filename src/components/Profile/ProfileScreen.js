@@ -20,8 +20,9 @@ import {
 import UploadImage from "../Common/UploadImage";
 import PropTypes from "prop-types"
 import material from "../../../native-base-theme/variables/material";
-import {Query} from "react-apollo";
-import {CURRENT_USER} from "../../network/UserData.gql";
+import {Mutation, Query} from "react-apollo";
+import {CURRENT_USER, UPDATE_PROFILE} from "../../network/UserData.gql";
+import {Util} from "../../util";
 
 class ProfileScreen extends Component {
 
@@ -81,7 +82,6 @@ class ProfileScreen extends Component {
     render() {
         return (
             <Container>
-
                 <Header>
                     <Left/>
                     <Body>
@@ -102,35 +102,51 @@ class ProfileScreen extends Component {
                 </Header>
                 <Content padder style={{flex: 1}}>
                     <Query query={CURRENT_USER}>
-                        {({data, loading, error}) => {
-
+                        {({data, loading, error, refetch}) => {
                             if (loading) return <Spinner/>;
                             if (error) return <Text>{error}</Text>;
-
-                            let {userName, screenName, avatarPath} = data.getCurrentUser;
+                            let {userName, screenName, avatar} = data.getCurrentUser;
+                            console.log(userName, screenName, avatar)
                             return (
                                 <Fragment>
                                     <View style={{flex: 1, alignItems: 'center'}}>
-                                        <View style={{width: 200, height: 200, marginBottom: 50}}>
-                                            <UploadImage placeholder={avatarPath}
-                                                         onUploadFinished={(media) => console.log(media)}/>
-                                            <Text>Profilbild ändern</Text>
-                                        </View>
+                                        <Mutation mutation={UPDATE_PROFILE}>
+                                            {(updateProfile, data, error) => {
+                                                return (
+                                                    <View style={{width: 200, height: 200, marginBottom: 50}}>
+                                                        <UploadImage placeholder={Util.ImageToUri(avatar)}
+                                                                     onUploadFinished={(media) => {
+                                                                         console.log(media);
+                                                                         updateProfile({
+                                                                             variables: {
+                                                                                 avatarId: media.id
+                                                                             }
+                                                                         }).then(() => {
+                                                                             refetch();
+                                                                         }).catch((err) => console.log(err))
+                                                                     }}/>
 
+                                                        <Text>Profilbild ändern</Text>
+                                                    </View>
+                                                )
+                                            }}
+                                        </Mutation>
                                     </View>
-
                                     <List>
                                         <SettingsField value={userName}
                                                        hint="email"
+                                                       field="userName"
                                                        onValueChanged={(newValue) => console.log("emai changed to " + newValue)}
                                         />
                                         <SettingsField value={screenName}
                                                        hint="screenname"
+                                                       field="screenName"
                                                        onValueChanged={(newValue) => console.log("emai changed to " + newValue)}
                                         />
 
                                         <PasswordSetting value="<hidden>"
                                                          hint="password"
+                                                         field="password"
                                                          onValueChanged={(newValue) => console.log("emai changed to " + newValue)}
                                         />
 
@@ -162,6 +178,7 @@ class SettingsField extends Component {
 
     static propTypes = {
         value: PropTypes.string.isRequired,
+        field: PropTypes.string.isRequired,
         hint: PropTypes.string.isRequired,
         onValueChanged: PropTypes.func.isRequired
     };

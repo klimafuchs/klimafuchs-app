@@ -4,9 +4,10 @@ import gql from 'graphql-tag'
 export const UPDATE_PROFILE = gql`
     mutation updateProfile($userName: String, $screenName: String, $avatarId: Int){
         updateProfile(userName: $userName, screenName: $screenName, avatarId: $avatarId) {
+            id,
             userName,
             screenName,
-            avatar {path},
+            avatar {filename},
         }
     }
 `;
@@ -22,9 +23,10 @@ export const CHANGE_PASSWORD = gql`
 export const CURRENT_USER = gql`
     query getCurrentUser {
         getCurrentUser {
+            id,
             userName,
             screenName,
-            avatar {path},
+            avatar {filename},
         }
     }
 `;

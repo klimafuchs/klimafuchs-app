@@ -35,12 +35,16 @@ class UploadImage extends React.Component {
         }
     }
 
-    pickImage = async ({upload, destroy}) => { //TODO ENHANCEMENT replace with https://github.com/ivpusic/react-native-image-crop-picker? (requires ejecting)
+    pickImage = async (upload, destroy) => { //TODO ENHANCEMENT replace with https://github.com/ivpusic/react-native-image-crop-picker? (requires ejecting)
+        console.log(upload);
         let result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             exif: false,
         });
+        console.log(result);
+        console.log('!');
+
         if (!result.cancelled) {
             const [name, ext] = result.uri.split('\\').pop().split('/').pop().split('.');
             let image = new ReactNativeFile({
@@ -100,11 +104,13 @@ class UploadImage extends React.Component {
     render() {
         let image = this.state.image;
         let {placeholder} = this.props;
+        console.log(placeholder)
         let imgSrc = this.image ?
             {uri: this.image.uri} :
             (placeholder ?
                 {uri: placeholder} :
                 require('../../../assets/image_select.png'));
+        console.log(imgSrc)
         return (
             <Mutation mutation={UPLOAD_IMAGE}>
                 {(upload, {data}) => {
@@ -117,9 +123,9 @@ class UploadImage extends React.Component {
                                     <ImageBackground
                                         style={{flex: 1, height: '100%', alignSelf: 'stretch'}}
                                         resizeMode="cover"
-                                        source={{uri: image.uri}}>
+                                        source={imgSrc}>
                                         <Button style={{position: 'absolute', bottom: 0, right: 0}} info transparent
-                                                onPress={() => this.pickImage({upload, destroy})}>
+                                                onPress={() => this.pickImage(upload, destroy)}>
                                             <Icon name={'md-attach'}/>
                                         </Button>
                                     </ImageBackground>
@@ -139,10 +145,10 @@ class UploadImage extends React.Component {
                             <ImageBackground
                                 style={{height: '100%', width: '100%', backgroundColor: '#ffff00'}}
                                 resizeMode="cover"
-                                source={this.image ? {uri: this.image.uri} : require('../../../assets/image_select.png')}>
+                                source={imgSrc}>
                                 {this.state.uploading ? <Spinner/> :
                                     <Button style={{position: 'absolute', bottom: 0, right: 0}} info transparent
-                                            onPress={() => this.pickImage({upload})}>
+                                            onPress={() => this.pickImage(upload, null)}>
                                         <Icon name={'md-attach'}/>
                                     </Button>}
                             </ImageBackground>
