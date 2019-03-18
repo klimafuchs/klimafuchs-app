@@ -8,21 +8,21 @@ import {
     Content,
     Header,
     Icon,
-    Input,
     Left,
     List,
     ListItem,
     Right,
     Spinner,
     Text,
-    Title
+    Title,
+    Toast
 } from "native-base";
 import UploadImage from "../Common/UploadImage";
 import PropTypes from "prop-types"
-import material from "../../../native-base-theme/variables/material";
 import {Mutation, Query} from "react-apollo";
-import {CURRENT_USER, UPDATE_PROFILE} from "../../network/UserData.gql";
+import {CHANGE_PASSWORD, CURRENT_USER, UPDATE_PROFILE} from "../../network/UserData.gql";
 import {Util} from "../../util";
+import {ValidatingTextField} from "../Common/ValidatingTextInput";
 
 class ProfileScreen extends Component {
 
@@ -136,18 +136,39 @@ class ProfileScreen extends Component {
                                         <SettingsField value={userName}
                                                        hint="email"
                                                        field="userName"
-                                                       onValueChanged={(newValue) => console.log("emai changed to " + newValue)}
+                                                       refetch={refetch}
+                                                       onValueChanged={(newValue) => {
+                                                           console.log("eMail changed to " + newValue)
+                                                           Toast.show({
+                                                               text: "eMail changed to " + newValue,
+                                                               buttonText: 'Okay'
+                                                           })
+                                                       }}
                                         />
                                         <SettingsField value={screenName}
-                                                       hint="screenname"
+                                                       hint="screenName"
                                                        field="screenName"
-                                                       onValueChanged={(newValue) => console.log("emai changed to " + newValue)}
+                                                       refetch={refetch}
+                                                       onValueChanged={(newValue) => {
+                                                           console.log("screenName changed to " + newValue)
+                                                           Toast.show({
+                                                               text: "screenName changed to " + newValue,
+                                                               buttonText: 'Okay'
+                                                           })
+                                                       }}
                                         />
 
                                         <PasswordSetting value="<hidden>"
                                                          hint="password"
                                                          field="password"
-                                                         onValueChanged={(newValue) => console.log("emai changed to " + newValue)}
+                                                         refetch={refetch}
+                                                         onValueChanged={() => {
+                                                             console.log("password changed");
+                                                             Toast.show({
+                                                                 text: "password changed",
+                                                                 buttonText: 'Okay'
+                                                             })
+                                                         }}
                                         />
 
                                         <ListItem itemDivider style={{backgroundColor: 'rgba(0,0,0,0)'}}/>
@@ -180,19 +201,22 @@ class SettingsField extends Component {
         value: PropTypes.string.isRequired,
         field: PropTypes.string.isRequired,
         hint: PropTypes.string.isRequired,
-        onValueChanged: PropTypes.func.isRequired
+        onValueChanged: PropTypes.func.isRequired,
+        refetch: PropTypes.func.isRequired
     };
 
     state = {
         isEditing: false,
-        newValue: this.props.value
+        newValue: this.props.value,
+        error: "not changed",
     };
 
     cancelEdit = () => {
         this.setState({isEditing: false, newValue: this.props.value})
     };
     onSubmit = (mutate) => {
-        this.setState({isEditing: false})
+        this.setState({isEditing: false});
+        this.props.refetch();
         this.props.onValueChanged(this.state.newValue);
     }
 
@@ -212,36 +236,58 @@ class SettingsField extends Component {
         )
     };
 
-    contentEditing = (value, hint, onValueChanged) => {
+    contentEditing = (value, hint, onValueChanged, field) => {
         return (
-            <ListItem>
-                <Body>
-                <Input name="hint"
-                       placeholder={hint}
-                       onChangeText={(text) => this.setState({newValue: text})}
-                       value={this.state.newValue}
-                       placeholderTextColor={material.brandDark}
-                       onBlur={this.cancelEdit}
-                       onSubmitEditing={this.onSubmit}
-                />
-                </Body>
-                <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
-                    <Button transparent dark onPress={this.onSubmit}>
-                        <Icon name="md-create"/>
-                    </Button>
-                    <Button transparent dark onPress={this.cancelEdit}>
-                        <Icon name="close"/>
-                    </Button>
-                </Right>
-            </ListItem>
-        )
+            <Mutation mutation={UPDATE_PROFILE}>
+                {(updateProfile, data, error) => {
+                    return (
+
+                        <ListItem>
+                            <Body>
+
+                            <ValidatingTextField
+                                name={field}
+                                validateAs={field}
+                                label={hint}
+                                onChangeText={(text) => this.setState({newValue: text, error: this.input.getErrors()})}
+                                alwaysShowErrors
+                                value={this.state.newValue}
+                                ref={(ref) => this.input = ref}
+                                onBlur={(error) => {
+                                    this.setState({userNameError: error})
+                                }}
+                            />
+                            </Body>
+                            <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                                <Button transparent dark disabled={!!this.state.error} onPress={() => {
+                                    if (!this.input.getErrors()) {
+                                        updateProfile({
+                                            variables: {
+                                                [this.props.field]: this.state.newValue
+                                            }
+                                        }).then(() => {
+                                            this.onSubmit()
+                                        })
+                                    }
+                                }}>
+                                    <Icon name="md-create"/>
+                                </Button>
+                                <Button transparent dark onPress={this.cancelEdit}>
+                                    <Icon name="close"/>
+                                </Button>
+                            </Right>
+                        </ListItem>
+
+                    )
+                }}
+            </Mutation>)
     };
 
 
     render() {
-        let {value, hint, onValueChanged} = this.props;
+        let {value, hint, onValueChanged, field} = this.props;
         let {isEditing} = this.state;
-        let content = isEditing ? this.contentEditing(value, hint, onValueChanged) : this.contentNotEditing(value, hint)
+        let content = isEditing ? this.contentEditing(value, hint, onValueChanged, field) : this.contentNotEditing(value, hint, field)
         return (
             <Fragment>
                 {content}
@@ -254,59 +300,103 @@ class PasswordSetting extends SettingsField {
 
     state = {
         isEditing: false,
-        newPassword: '',
+        password: '',
+        password2: '',
         oldPassword: '',
+        passwordError: "not changed",
+        oldPasswordError: undefined,
     };
 
+    checkPasswords = () => {
+        let {password, password2} = this.state;
+        if (password !== password2) {
+            this.setState({passwordError: "Die Passwörter stimmen nicht überein"})
+        }
+    };
 
     contentEditing = (value, hint, onValueChanged) => {
         return (
-            <Fragment>
-                <ListItem>
-                    <Body>
-                    <Input name="oldPassword"
-                           placeholder={hint}
-                           onChangeText={(text) => this.setState({newValue: text})}
-                           value={this.state.newValue}
-                           placeholderTextColor={material.brandDark}
-                           onBlur={this.cancelEdit}
-                           onSubmitEditing={this.onSubmit}
-                    />
-                    </Body>
-                    <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
-                        <Button transparent dark onPress={this.onSubmit}>
-                            <Icon name="md-create"/>
-                        </Button>
-                        <Button transparent dark onPress={this.cancelEdit}>
-                            <Icon name="close"/>
-                        </Button>
-                    </Right>
-                </ListItem>
-                <ListItem>
-                    <Body>
-                    <Input name="newPassword"
-                           placeholder={hint}
-                           onChangeText={(text) => this.setState({newValue: text})}
-                           value={this.state.newValue}
-                           placeholderTextColor={material.brandDark}
-                           onBlur={this.cancelEdit}
-                           onSubmitEditing={this.onSubmit}
-                    />
-                    </Body>
-                </ListItem>
-                <ListItem>
-                    <Body>
-                    <Input name="confirmNewPassword"
-                           placeholder={hint}
-                           onChangeText={(text) => this.setState({newValue: text})}
-                           value={this.state.newValue}
-                           placeholderTextColor={material.brandDark}
-                           onBlur={this.cancelEdit}
-                           onSubmitEditing={this.onSubmit}
-                    />
-                    </Body>
-                </ListItem>
-            </Fragment>
+            <Mutation mutation={CHANGE_PASSWORD}>
+                {(changePassword, data, error) => {
+                    return (
+                        <Fragment>
+                            <ListItem>
+                                <Body>
+                                <ValidatingTextField
+                                    name='oldPassword'
+                                    validateAs='password'
+                                    label='oldPassword'
+                                    secureTextEntry
+                                    onChangeText={(text) => this.setState({oldPassword: text})}
+                                    value={this.state.oldPassword}
+                                    externalError={this.state.oldPasswordError}
+                                    ref={(ref) => this.passwordInput = ref}
+                                />
+                                </Body>
+                            </ListItem>
+                            <ListItem>
+                                <Body>
+                                <ValidatingTextField
+                                    name='password'
+                                    validateAs='password'
+                                    label='password'
+                                    secureTextEntry
+                                    onChangeText={(text) => this.setState({password: text})}
+                                    value={this.state.password}
+                                    externalError={this.state.passwordError}
+                                    ref={(ref) => this.passwordInput = ref}
+                                    onBlur={(error) => {
+                                        this.setState({passwordError: error})
+                                    }}
+                                />
+                                </Body>
+                            </ListItem>
+
+                            <ListItem>
+                                <Body>
+                                <ValidatingTextField
+                                    name='password2'
+                                    validateAs='password2'
+                                    label='Passwort bestätigen'
+                                    secureTextEntry
+                                    onChangeText={(text) => this.setState({password2: text})}
+                                    value={this.state.password2}
+                                    externalError={this.state.passwordError}
+                                    ref={(ref) => this.password2Input = ref}
+                                    onBlur={(error) => {
+                                        this.checkPasswords();
+                                    }}
+                                />
+                                </Body>
+                            </ListItem>
+                            <ListItem>
+                                <Body>
+                                </Body>
+                                <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                                    <Button transparent disabled={!!this.state.passwordError} dark onPress={() => {
+                                        if (!this.state.passwordError) {
+                                            changePassword({
+                                                variables: {
+                                                    oldPassword: this.state.oldPassword,
+                                                    newPassword: this.state.password
+                                                }
+                                            }).then(() => {
+                                                this.onSubmit()
+                                            }).catch((err) => console.log(err))
+                                        }
+                                    }}>
+                                        <Icon name="md-create"/>
+                                    </Button>
+                                    <Button transparent dark onPress={this.cancelEdit}>
+                                        <Icon name="close"/>
+                                    </Button>
+                                </Right>
+                            </ListItem>
+                        </Fragment>
+                    )
+                }}
+
+            </Mutation>
         )
     };
 }
