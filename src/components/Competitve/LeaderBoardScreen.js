@@ -1,8 +1,8 @@
 import React, {Fragment} from 'react';
 import {RefreshControl, Text, View} from 'react-native';
 import {Body, Button, Container, Content, List, ListItem, Right, Spinner} from "native-base";
-import {Query} from "react-apollo";
-import {CURRENT_USER_ID, LEADERBOARD} from "../../network/Teams.gql";
+import {Mutation, Query} from "react-apollo";
+import {CURRENT_USER_ID, LEADERBOARD, REQUEST_JOIN_TEAM} from "../../network/Teams.gql";
 import * as env from "../../env"
 
 export class LeaderBoardScreen extends React.Component {
@@ -171,13 +171,29 @@ const TeamCard = ({index, team, currentUserId}) => {
                 </Button>
             </Fragment>
             : <Fragment>
-                <Button transparent onPress={() => {
-                    console.log("moooo")
-                }}>
-                    <Text>
-                        Beitreten
-                    </Text>
-                </Button>
+                <Mutation mutation={REQUEST_JOIN_TEAM}>
+                    {(requestJoinTeam) => {
+                        return (
+                            <Button transparent onPress={() => {
+                                console.log(team)
+                                requestJoinTeam({
+                                    variables: {
+                                        teamId: node.id
+                                    }
+                                }).then((data) => {
+                                    console.log(data)
+                                })
+                                    .catch(error => {
+                                        console.log(error.message);
+                                    })
+                            }}>
+                                <Text>
+                                    Beitreten
+                                </Text>
+                            </Button>
+                        )
+                    }}
+                </Mutation>
             </Fragment>
 
     return (

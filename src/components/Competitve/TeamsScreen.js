@@ -153,6 +153,7 @@ class TeamCard extends Component {
                 }}
                 body={<TeamDetailsModalContent
                     teamId={membership.team.id}
+                    ownStatus={membership}
                     requestModalClose={() => this.teamDetails.closeModal()}
                     ref={(ref) => {
                         this.teamDetailsContent = ref

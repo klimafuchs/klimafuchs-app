@@ -31,6 +31,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-easy-grid": "^0.2.0",
     "react-native-fade-in-image": "^1.4.1",
+    "react-native-material-dialog": "^0.7.6",
     "react-native-modal": "^7.0.2",
     "react-native-paper": "^2.7.0",
     "react-navigation": "^3.0.9",

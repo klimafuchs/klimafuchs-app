@@ -118,9 +118,9 @@ export const CURRENT_USER_ID = gql`
 `
 
 export const TeamSize = {
-    SOLO: 0,
-    DUO: 1,
-    SMALL: 2,
-    LARGE: 3,
-    HUGE: 4,
+    SOLO: {name: 'Solo'},
+    DUO: {name: 'Duo'},
+    SMALL: {name: 'Small'},
+    LARGE: {name: 'Large'},
+    HUGE: {name: 'Huge'},
 };
