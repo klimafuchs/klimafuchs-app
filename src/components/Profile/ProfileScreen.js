@@ -100,13 +100,12 @@ class ProfileScreen extends Component {
                         </Button>
                     </Right>
                 </Header>
-                <Content padder style={{flex: 1}}>
+                <Content style={{flex: 1}}>
                     <Query query={CURRENT_USER}>
                         {({data, loading, error, refetch}) => {
                             if (loading) return <Spinner/>;
                             if (error) return <Text>{error}</Text>;
                             let {userName, screenName, avatar} = data.getCurrentUser;
-                            console.log(userName, screenName, avatar)
                             return (
                                 <Fragment>
                                     <View style={{flex: 1, alignItems: 'center'}}>

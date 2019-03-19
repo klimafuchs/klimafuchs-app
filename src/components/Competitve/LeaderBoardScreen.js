@@ -26,7 +26,7 @@ export class LeaderBoardScreen extends React.Component {
                 {({loading, error, data}) => {
                     if (loading) return <Spinner/>;
                     if (error) return <Text>{error}</Text>
-                    const userId = data.getCurrentUserId.id;
+                    const userId = data.getCurrentUser.id;
                     return (
                         <Container style={{flex: 1}}>
                             <Query query={LEADERBOARD}

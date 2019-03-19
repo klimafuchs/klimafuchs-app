@@ -36,14 +36,11 @@ class UploadImage extends React.Component {
     }
 
     pickImage = async (upload, destroy) => { //TODO ENHANCEMENT replace with https://github.com/ivpusic/react-native-image-crop-picker? (requires ejecting)
-        console.log(upload);
         let result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             exif: false,
         });
-        console.log(result);
-        console.log('!');
 
         if (!result.cancelled) {
             const [name, ext] = result.uri.split('\\').pop().split('/').pop().split('.');
@@ -104,13 +101,11 @@ class UploadImage extends React.Component {
     render() {
         let image = this.state.image;
         let {placeholder} = this.props;
-        console.log(placeholder)
         let imgSrc = this.image ?
             {uri: this.image.uri} :
             (placeholder ?
                 {uri: placeholder} :
                 require('../../../assets/image_select.png'));
-        console.log(imgSrc)
         return (
             <Mutation mutation={UPLOAD_IMAGE}>
                 {(upload, {data}) => {
