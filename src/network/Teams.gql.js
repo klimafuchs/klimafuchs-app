@@ -45,23 +45,26 @@ export const MY_MEMBERSHIPS = gql`
 `;
 
 export const GET_MY_TEAM = gql`
-    query ($teamId:Int!){
-        getMyTeam(teamId:$teamId){
-            id,
-            name,
+    query getMyTeam($teamId: Int!) {
+        getMyTeam(teamId: $teamId) {
+            id
+            name
+            teamSize
+            place
+            score
             members {
+                id
                 user {
                     avatar {
-                        path,
+                        filename
                     }
-                    screenName,
+                    screenName
                 }
-                isActive,
+                isActive
                 isAdmin
-            },
-            score,
+            }
             avatar {
-                path,
+                filename
             }
         }
     }

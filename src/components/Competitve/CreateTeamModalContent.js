@@ -7,6 +7,7 @@ import UploadImage from "../Common/UploadImage";
 import {ValidatingTextField} from "../Common/ValidatingTextInput";
 import {FSModalContentBase} from "../Common/FSModal";
 import PropTypes from 'prop-types';
+import {View} from "react-native";
 
 
 export class CreateTeamModalContent extends FSModalContentBase {
@@ -51,7 +52,9 @@ export class CreateTeamModalContent extends FSModalContentBase {
                 </CardItem>
 
                 <CardItem>
-                    <UploadImage onUploadFinished={(media) => this.setState({mediaId: media.id})}/>
+                    <View style={{height: 200, width: 200}}>
+                        <UploadImage onUploadFinished={(media) => this.setState({mediaId: media.id})}/>
+                    </View>
                 </CardItem>
 
                 <CardItem footer>

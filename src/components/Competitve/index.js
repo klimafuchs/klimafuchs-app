@@ -35,7 +35,7 @@ const TeamsNav = createMaterialTopTabNavigator(
                 backgroundColor: material.brandPrimary,
             },
             indicatorStyle: {
-                backgroundColor: material.tabBarTextColor,
+                backgroundColor: material.brandLight,
             }
         },
         initialRouteName: 'Teams',

@@ -39,7 +39,7 @@ export class LeaderBoardScreen extends React.Component {
                                         return <Text>Loading...</Text>;
                                     }
                                     if (error) return <Text>{error.message}</Text>;
-                                    if (data) {
+                                    if (data.getLeaderBoard) {
                                         if (data.getLeaderBoard.page.edges.length > 0) {
                                             return (
                                                 <Fragment>
@@ -54,6 +54,24 @@ export class LeaderBoardScreen extends React.Component {
                                                 </Fragment>
                                             )
                                         }
+                                    } else {
+                                        return (
+                                            <Content
+                                                style={{
+                                                    marginTop: 5,
+                                                    marginBottom: 5,
+                                                }}
+                                                refreshControl={<RefreshControl
+                                                    refreshing={this.state.refreshing}
+                                                    onRefresh={() => {
+                                                        this.setState({refreshing: true});
+                                                        refetch().then(this.setState({refreshing: false}))
+                                                    }}
+                                                />
+                                                }>
+                                                <Text>hmm...</Text>
+                                            </Content>
+                                        )
                                     }
                                 }}
                             </Query>
