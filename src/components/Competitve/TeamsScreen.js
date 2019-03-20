@@ -18,8 +18,10 @@ import {
 import {MY_MEMBERSHIPS} from "../../network/Teams.gql";
 import {Query} from "react-apollo";
 import material from "../../../native-base-theme/variables/material";
-import {CreateTeamModal} from "./CreateTeamModal";
+import {CreateTeamModal, CreateTeamModalContent} from "./CreateTeamModalContent";
 import env from "../../env";
+import {FSModal} from "../Common/FSModal";
+import {TeamDetailsModalContent} from "./TeamDetailsModalContent";
 
 
 export class TeamsScreen extends Component {
@@ -93,17 +95,20 @@ export class TeamsScreen extends Component {
                         })}
                     </List>
                 </Content>
-                <CreateTeamModal
+                <FSModal
                     ref={(ref) => {
                         this.teamPicker = ref;
                     }}
-                    onComplete={refetch}>
-                    <Fab style={{backgroundColor: material.brandPrimary}}
+                    body={<CreateTeamModalContent
+                        onComplete={refetch}
+                        requestModalClose={() => this.teamPicker.closeModal()}/>}
+                >
+                    <Fab style={{backgroundColor: material.brandInfo}}
                          onPress={() => this.teamPicker.openModal()}
                          position="bottomRight">
-                        <Icon name='md-add'/>
+                        <Icon name='md-add' style={{color: material.brandDark}}/>
                     </Fab>
-                </CreateTeamModal>
+                </FSModal>
 
             </Container>
         )
@@ -133,25 +138,49 @@ export class TeamsScreen extends Component {
 
 }
 
-const TeamCard = ({membership}) => {
-    console.log(membership);
-    const teamAvatarUrl =
-        membership.team.avatar
-            ? `${env.dev.API_IMG_URL}${membership.team.avatar.filename}`
-            : `${env.dev.API_IMG_URL}avatar_default.png`;
-    return (
-        <ListItem avatar>
-            <Left>
-                <Thumbnail source={{uri: teamAvatarUrl}}/>
-            </Left>
-            <Body style={{height: '100%'}}>
-            <Text>{membership.team.name}</Text>
-            </Body>
-            <Right>
-                <Icon name='md-square' style={{color: membership.isAdmin ? '#ffaa00' : '#555555'}}/>
-            </Right>
-        </ListItem>
-    )
+class TeamCard extends Component {
+    render() {
+        const {membership} = this.props;
+        const teamAvatarUrl =
+            membership.team.avatar
+                ? `${env.dev.API_IMG_URL}${membership.team.avatar.filename}`
+                : `${env.dev.API_IMG_URL}avatar_default.png`;
+        return (
+
+            <FSModal
+                ref={(ref) => {
+                    this.teamDetails = ref;
+                }}
+                body={<TeamDetailsModalContent
+                    teamId={membership.team.id}
+                    ownStatus={membership}
+                    requestModalClose={() => this.teamDetails.closeModal()}
+                    ref={(ref) => {
+                        this.teamDetailsContent = ref
+                    }}
+                />}
+            >
+                <ListItem avatar onPress={() => {
+                    this.teamDetails.openModal()
+                }}>
+                    <Left>
+                        <Thumbnail source={{uri: teamAvatarUrl}}/>
+                    </Left>
+                    <Body style={{height: '100%'}}>
+                    <Text>{membership.team.name}</Text>
+                    </Body>
+                    <Right>
+                        <Icon name='md-square' style={{color: membership.isAdmin ? '#ffaa00' : '#555555'}}/>
+                    </Right>
+                </ListItem>
+            </FSModal>
+
+
+        )
+    }
+
+
+
 }
 
 const styles = StyleSheet.create({

@@ -10,7 +10,7 @@ export const LOAD_FEED = gql`
                         title,
                         author {
                             screenName,
-                            avatar {path}
+                            avatar {filename}
                         },
                         body,
                         sentiment,
@@ -41,7 +41,7 @@ export const LOAD_POST = gql`
             title,
             body,
             author {
-                screenName, avatar {path}
+                screenName, avatar {filename}
             },
             sentiment,
             dateCreated,
@@ -116,7 +116,8 @@ export const ADD_COMMENT = gql`
         addComment(comment: {body:$body, post:$postId, parent:$parentId}) {
             id,
             author {
-                screenName
+                screenName,
+                avatar {filename}
             },
             body,
             children {

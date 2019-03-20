@@ -1,8 +1,8 @@
 import React, {Fragment} from 'react';
 import {RefreshControl, Text, View} from 'react-native';
 import {Body, Button, Container, Content, List, ListItem, Right, Spinner} from "native-base";
-import {Query} from "react-apollo";
-import {CURRENT_USER_ID, LEADERBOARD} from "../../network/Teams.gql";
+import {Mutation, Query} from "react-apollo";
+import {CURRENT_USER_ID, LEADERBOARD, REQUEST_JOIN_TEAM} from "../../network/Teams.gql";
 import * as env from "../../env"
 
 export class LeaderBoardScreen extends React.Component {
@@ -39,7 +39,7 @@ export class LeaderBoardScreen extends React.Component {
                                         return <Text>Loading...</Text>;
                                     }
                                     if (error) return <Text>{error.message}</Text>;
-                                    if (data) {
+                                    if (data.getLeaderBoard) {
                                         if (data.getLeaderBoard.page.edges.length > 0) {
                                             return (
                                                 <Fragment>
@@ -54,6 +54,24 @@ export class LeaderBoardScreen extends React.Component {
                                                 </Fragment>
                                             )
                                         }
+                                    } else {
+                                        return (
+                                            <Content
+                                                style={{
+                                                    marginTop: 5,
+                                                    marginBottom: 5,
+                                                }}
+                                                refreshControl={<RefreshControl
+                                                    refreshing={this.state.refreshing}
+                                                    onRefresh={() => {
+                                                        this.setState({refreshing: true});
+                                                        refetch().then(this.setState({refreshing: false}))
+                                                    }}
+                                                />
+                                                }>
+                                                <Text>hmm...</Text>
+                                            </Content>
+                                        )
                                     }
                                 }}
                             </Query>
@@ -153,13 +171,29 @@ const TeamCard = ({index, team, currentUserId}) => {
                 </Button>
             </Fragment>
             : <Fragment>
-                <Button transparent onPress={() => {
-                    console.log("moooo")
-                }}>
-                    <Text>
-                        Beitreten
-                    </Text>
-                </Button>
+                <Mutation mutation={REQUEST_JOIN_TEAM}>
+                    {(requestJoinTeam) => {
+                        return (
+                            <Button transparent onPress={() => {
+                                console.log(team)
+                                requestJoinTeam({
+                                    variables: {
+                                        teamId: node.id
+                                    }
+                                }).then((data) => {
+                                    console.log(data)
+                                })
+                                    .catch(error => {
+                                        console.log(error.message);
+                                    })
+                            }}>
+                                <Text>
+                                    Beitreten
+                                </Text>
+                            </Button>
+                        )
+                    }}
+                </Mutation>
             </Fragment>
 
     return (

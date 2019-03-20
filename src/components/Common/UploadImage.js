@@ -1,12 +1,19 @@
 import gql from 'graphql-tag'
-import {graphql} from 'react-apollo'
+import {Mutation} from 'react-apollo'
 import {ReactNativeFile} from 'apollo-upload-client';
 import React from 'react';
-import {Dimensions, Image, ImageBackground, View} from 'react-native';
-import {Button, Icon, Text} from 'native-base';
+import {ImageBackground, TouchableWithoutFeedback, View} from 'react-native';
+import {Button, Icon, Spinner, Text} from 'native-base';
 import {ImagePicker, Permissions} from 'expo';
+import PropTypes from 'prop-types'
 
 class UploadImage extends React.Component {
+    static propTypes = {
+        onCancel: PropTypes.func,
+        onUploadFinished: PropTypes.func,
+        placeholder: PropTypes.string,
+    };
+
     state = {
         image: null,
         width: null,
@@ -28,48 +35,13 @@ class UploadImage extends React.Component {
         }
     }
 
-    uploadImage = async () => {
-        if (!this.state.image) {
-            console.error('cannot upload undefined image');
-            return;
-        }
-        if (this.state.media) {
-            console.error('image already uploaded');
-            return;
-        }
-        this.setState({uploading: true});
-        console.log(`[INFO] ${this.constructor.name}: File ${JSON.stringify(this.state.image, null, 2)}, width: ${this.state.width}, heigth: ${this.state.height} uploading`);
-
-        this.props.mutate({
-            variables: {
-                file: this.state.image,
-                height: this.state.height,
-                width: this.state.width
-            },
-        })
-            .then(media => {
-                this.setState({uploading: false});
-                console.log(`[INFO] ${this.constructor.name}: File ${JSON.stringify(media, null, 2)} uploaded`);
-
-                this.setState({media});
-                if (this.props.onUploadFinished) {
-                    this.props.onUploadFinished(media.data.upload);
-                } else {
-                    console.log(`[WARN] ${this.constructor.name}: No onUpladFinished callback set in properties`);
-                }
-            })
-            .catch(err => {
-                this.setState({uploading: false});
-                console.error(err)
-            });
-    }
-
-    pickImage = async () => { //TODO ENHANCEMENT replace with https://github.com/ivpusic/react-native-image-crop-picker? (requires ejecting)
+    pickImage = async (upload, destroy) => { //TODO ENHANCEMENT replace with https://github.com/ivpusic/react-native-image-crop-picker? (requires ejecting)
         let result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             exif: false,
         });
+
         if (!result.cancelled) {
             const [name, ext] = result.uri.split('\\').pop().split('/').pop().split('.');
             let image = new ReactNativeFile({
@@ -81,6 +53,41 @@ class UploadImage extends React.Component {
             if (this.props.onSelected) {
                 this.props.onSelected(this.state.image);
             }
+
+            if (destroy) {
+                console.log(`[INFO] ${this.constructor.name}: Deleting ${(this.state.media)}`);
+                destroy({
+                    variables: {
+                        mediaId: this.state.media.id
+                    }
+                })
+            }
+
+            this.setState({uploading: true});
+            console.log(`[INFO] ${this.constructor.name}: File ${JSON.stringify(this.state.image, null, 2)}, width: ${this.state.width}, heigth: ${this.state.height} uploading`);
+
+            upload({
+                variables: {
+                    file: this.state.image,
+                    height: this.state.height,
+                    width: this.state.width
+                },
+            })
+                .then(media => {
+                    this.setState({uploading: false});
+                    console.log(`[INFO] ${this.constructor.name}: File ${JSON.stringify(media, null, 2)} uploaded`);
+
+                    this.setState({media: media.data.upload});
+                    if (this.props.onUploadFinished) {
+                        this.props.onUploadFinished(media.data.upload);
+                    } else {
+                        console.log(`[WARN] ${this.constructor.name}: No onUpladFinished callback set in properties`);
+                    }
+                })
+                .catch(err => {
+                    this.setState({uploading: false});
+                    console.error(err)
+                });
         }
     };
 
@@ -93,62 +100,63 @@ class UploadImage extends React.Component {
 
     render() {
         let image = this.state.image;
-        let uploadButton;
-        if (this.state.media) {
-            return (
-                <View style={{flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center'}}>
-                    <ImageBackground
-                        style={{flex: 1, height: '100%', backgroundColor: "#0ff", alignSelf: 'stretch'}}
-                        resizeMode="contain"
-                        source={{uri: image.uri}}>
-                        <Icon name="md-checkmark" style={{color: '#ffff00', backgroundColor: '#ff00ff'}}/>
-                    </ImageBackground>
-                </View>
-            )
-        }
-        if (image) {
-            const imageAspectRatio = this.state.height / this.state.width;
-            console.log(imageAspectRatio, this.state.height, this.state.width);
-            const width = (Dimensions.get('window').width);
-
-            return (
-                <View style={{flex: 0, alignItems: 'center', justifyContent: 'center', height: 300}}>
-                    <View style={{flex: 1, flexDirection: 'row'}}>
-                        <Button warning onPress={this.reset}>
-                            <Text>Abbrechen</Text>
-                        </Button>
-                        <Button info disabled={!this.state.permissionsGranted} onPress={this.pickImage}>
-                            <Text>Wähle ein anderes Bild</Text>
-                        </Button>
-                    </View>
-                    <Image
-                        style={{
-                            width: '100%',
-                            height: width * imageAspectRatio,
-                            backgroundColor: "#0ff",
-                        }}
-                        resizeMode="contain"
-                        source={{uri: image.uri}}
-                    />
-
-                    <Button primary block onPress={this.uploadImage}>
-                        <Text>Bild hochladen</Text>
-                    </Button>
-                </View>
-            )
-        } else {
-            return (
-                <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                    <Button primary onPress={this.pickImage}>
-                        <Text>Wähle ein Bild</Text>
-                    </Button>
-                </View>
-            )
-        }
+        let {placeholder} = this.props;
+        let imgSrc = this.image ?
+            {uri: this.image.uri} :
+            (placeholder ?
+                {uri: placeholder} :
+                require('../../../assets/image_select.png'));
+        return (
+            <Mutation mutation={UPLOAD_IMAGE}>
+                {(upload, {data}) => {
+                    const a = this.state.media ?
+                        <Mutation mutation={DELETE_IMAGE}>
+                            {(destroy, {loading, error}) => {
+                                if (error) return (<Text>{JSON.stringify(error)}</Text>)
+                                return (<View
+                                    style={{flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center'}}>
+                                    <ImageBackground
+                                        style={{flex: 1, height: '100%', alignSelf: 'stretch'}}
+                                        resizeMode="cover"
+                                        source={imgSrc}>
+                                        <Button style={{position: 'absolute', bottom: 0, right: 0}} info transparent
+                                                onPress={() => this.pickImage(upload, destroy)}>
+                                            <Icon name={'md-attach'}/>
+                                        </Button>
+                                    </ImageBackground>
+                                </View>)
+                            }
+                            }
+                        </Mutation>
+                        : <TouchableWithoutFeedback
+                            style={{
+                                flex: 1,
+                                height: '100%',
+                                width: '100%',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                            onPress={() => this.pickImage(upload)}>
+                            <ImageBackground
+                                style={{height: '100%', width: '100%', backgroundColor: '#ffff00'}}
+                                resizeMode="cover"
+                                source={imgSrc}>
+                                {this.state.uploading ? <Spinner/> :
+                                    <Button style={{position: 'absolute', bottom: 0, right: 0}} info transparent
+                                            onPress={() => this.pickImage(upload, null)}>
+                                        <Icon name={'md-attach'}/>
+                                    </Button>}
+                            </ImageBackground>
+                        </TouchableWithoutFeedback>;
+                    return (a)
+                }}
+            </Mutation>
+        )
     }
+
 }
 
-export default graphql(gql`
+const UPLOAD_IMAGE = gql`
     mutation upload($file: Upload!, $height: Int!, $width: Int!) {
         upload(file: $file, height: $height, width: $width) {
             id
@@ -160,4 +168,20 @@ export default graphql(gql`
             height
         }
     }
-`)(UploadImage)
+`;
+
+const DELETE_IMAGE = gql`
+    mutation destroy($mediaId: Int!) {
+        delete(mediaId: $mediaId) {
+            id
+            filename
+            mimetype
+            path
+            uploadedAt,
+            width,
+            height
+        }
+    }
+`;
+
+export default UploadImage

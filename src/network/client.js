@@ -5,7 +5,7 @@ import {concat} from "apollo-link";
 import ApolloClient from "apollo-client";
 import {InMemoryCache} from "apollo-cache-inmemory";
 import {persistCache} from 'apollo-cache-persist';
-
+import {onError} from "apollo-link-error";
 
 const uri = "https://enviroommate.org/app-dev/api/gql";
 
@@ -34,11 +34,23 @@ const authLink = setContext(async (_, {headers}) => {
         }
     }
 });
+
+const errorLink = onError(({graphQLErrors, networkError}) => {
+    if (graphQLErrors)
+        graphQLErrors.map(({message, locations, path}) =>
+            console.log(
+                `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+            ),
+        );
+
+    if (networkError) console.log(`[Network error]: ${networkError}`);
+});
+
 const link = concat(authLink, uploadLink);
 
 const client = new ApolloClient({
     link,
-    cache
+    cache: new InMemoryCache()
 });
 
 export default client;

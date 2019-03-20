@@ -17,12 +17,13 @@ export class ValidatingTextField extends Component {
         value: PropTypes.string.isRequired,
         externalError: PropTypes.string,
         secureTextEntry: PropTypes.bool,
-        onBlur: PropTypes.func
+        onBlur: PropTypes.func,
+        alwaysShowErrors: PropTypes.bool
     };
 
     state = {
         error: undefined,
-        value: ''
+        value: this.props.value
     };
 
     getErrors = () => {
@@ -30,6 +31,7 @@ export class ValidatingTextField extends Component {
     };
 
     validate = (value) => {
+        console.log(`validate ${this.props.validateAs}: ${value}`);
         let error = validatejs({[this.props.validateAs]: value}, constraints);
         error = error[this.props.validateAs] ? error[this.props.validateAs][0] : undefined;
         console.log(error);
@@ -37,10 +39,9 @@ export class ValidatingTextField extends Component {
     };
 
     render() {
-        let {label, name, validateAs, onChangeText, secureTextEntry, externalError, onBlur} = this.props;
+        let {label, name, onChangeText, secureTextEntry, externalError, onBlur, alwaysShowErrors} = this.props;
         let {error} = this.state;
         let showsErrors = (error || externalError);
-        console.log(externalError);
         return (
             <Fragment>
                 <Label style={showsErrors ? styles.formLabelError : styles.formLabel}>{label}</Label>
@@ -51,6 +52,12 @@ export class ValidatingTextField extends Component {
                                this.setState({
                                    value: text,
                                });
+                               if (alwaysShowErrors) {
+                                   let error = this.validate(text);
+                                   this.setState({
+                                       error
+                                   });
+                               }
                                onChangeText(text);
                            }}
                            onBlur={() => {

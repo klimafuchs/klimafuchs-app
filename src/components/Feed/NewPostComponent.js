@@ -14,6 +14,7 @@ import {
     Left,
     Right,
     Text,
+    Textarea,
     Title
 } from "native-base";
 import {Mutation} from "react-apollo";
@@ -55,40 +56,49 @@ export default class NewPostComponent extends Component {
 
     render() {
         return (
-            <Container>
+            <Container style={{backgroundColor: '#fff', paddingLeft: 5, paddingRight: 5}}>
                 <Content>
                     <Mutation mutation={ADD_POST}>
                         {(addPost, {data}) => (
-                            <Form>
+                            <Form style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
                                 <MediaInput onSelected={this.addHeader}/>
                                 <Item floatingLabel>
                                     <Label>Titel</Label>
                                     <Input name="title" onChangeText={(text) => this.setState({title: text})}
                                            value={this.state.title}/>
                                 </Item>
-                                <Item floatingLabel>
-                                    <Label>Text</Label>
-                                    <Input name="body" multiline onChangeText={(text) => this.setState({body: text})}
-                                           value={this.state.body}/>
-                                </Item>
-                                <Button full primary style={{paddingBottom: 4}} onPress={() => {
-                                    console.log({
-                                        variables: {
-                                            title: this.state.title,
-                                            body: this.state.body,
-                                            mediaId: this.state.mediaId
-                                        }
-                                    });
-                                    addPost({
-                                        variables: {
-                                            title: this.state.title,
-                                            body: this.state.body,
-                                            mediaId: this.state.mediaId
-                                        }
-                                    });
-                                    this.props.navigation.navigate('Feed')
-                                }}>
-                                    <Text> Next </Text>
+                                <Textarea rowSpan={5}
+                                          name="body"
+                                          bordered
+                                          placeholder="Text eingeben"
+                                          onChangeText={(text) => this.setState({body: text})}
+                                          value={this.state.body}
+                                          style={{width: '100%'}}
+                                />
+                                <Button primary block style={{
+                                    marginLeft: '30%',
+                                    marginRight: '30%',
+                                    marginTop: 20,
+                                    elevation: 1,
+                                }}
+                                        onPress={() => {
+                                            console.log({
+                                                variables: {
+                                                    title: this.state.title,
+                                                    body: this.state.body,
+                                                    mediaId: this.state.mediaId
+                                                }
+                                            });
+                                            addPost({
+                                                variables: {
+                                                    title: this.state.title,
+                                                    body: this.state.body,
+                                                    mediaId: this.state.mediaId
+                                                }
+                                            });
+                                            this.props.navigation.navigate('Feed')
+                                        }}>
+                                    <Text>Posten</Text>
                                 </Button>
                             </Form>
                         )}
@@ -115,18 +125,19 @@ class MediaInput extends Component {
     }
 
     render() {
-        if (this.state.awaitsMedia) {
-            return (
-                <View style={{flex: 1}}>
-                    <UploadImage style={{height: 400}} onCancel={this.reset} onUploadFinished={(media) => {
-                        if (this.props.onSelected) {
+        //if (this.state.awaitsMedia) {
+        return (
+            <View style={{height: 200, width: '100%'}}>
+                <UploadImage placeholder={'#'} onCancel={this.reset} onUploadFinished={(media) => {
+                    if (this.props.onSelected) {
 
-                            this.props.onSelected({mediaId: media.id})
-                        }
-                    }}/>
-                </View>
-            )
-        }
+                        this.props.onSelected({mediaId: media.id})
+                    }
+                }}/>
+            </View>
+        )
+        //}
+        /*
         if (this.state.awaitsYt) {
             return (
                 <Text>yt</Text>
@@ -149,6 +160,7 @@ class MediaInput extends Component {
                 </Button>
             </View>
         )
+        */
     }
 
 

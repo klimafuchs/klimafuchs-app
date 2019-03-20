@@ -24,10 +24,11 @@ export const AppNav = createMaterialBottomTabNavigator({
         screen: ProfileScreen
     },
     }, {
-
-    activeTintColor: material.activeTab,
-    inactiveTintColor: "#AFD4E6",
+    initialRouteName: 'FeedTab',
+    activeTintColor: material.tabBarActiveTextColor,
+    inactiveTintColor: material.tabBarTextColor,
     barStyle: {backgroundColor: material.tabDefaultBg},
+    labeled: false,
     }
 );
 

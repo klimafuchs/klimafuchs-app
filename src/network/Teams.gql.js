@@ -45,23 +45,26 @@ export const MY_MEMBERSHIPS = gql`
 `;
 
 export const GET_MY_TEAM = gql`
-    query ($teamId:Int!){
-        getMyTeam(teamId:$teamId){
-            id,
-            name,
+    query getMyTeam($teamId: Int!) {
+        getMyTeam(teamId: $teamId) {
+            id
+            name
+            teamSize
+            place
+            score
             members {
+                id
                 user {
                     avatar {
-                        path,
+                        filename
                     }
-                    screenName,
+                    screenName
                 }
-                isActive,
+                isActive
                 isAdmin
-            },
-            score,
+            }
             avatar {
-                path,
+                filename
             }
         }
     }
@@ -107,7 +110,7 @@ export const LEADERBOARD = gql`
 `;
 
 export const CURRENT_USER_ID = gql`
-    query getCurrentUser {
+    query getCurrentUserId {
         getCurrentUser{
             id
         }
@@ -115,9 +118,9 @@ export const CURRENT_USER_ID = gql`
 `
 
 export const TeamSize = {
-    SOLO: 0,
-    DUO: 1,
-    SMALL: 2,
-    LARGE: 3,
-    HUGE: 4,
+    SOLO: {name: 'Solo'},
+    DUO: {name: 'Duo'},
+    SMALL: {name: 'Small'},
+    LARGE: {name: 'Large'},
+    HUGE: {name: 'Huge'},
 };

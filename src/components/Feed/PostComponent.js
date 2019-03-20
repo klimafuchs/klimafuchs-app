@@ -25,10 +25,9 @@ import moment from 'moment/min/moment-with-locales';
 import de from 'moment/locale/de';
 import material from '../../../native-base-theme/variables/material';
 import env from '../../env';
+import {Util} from "../../util";
 
 moment.locale('de');
-
-export const defaultAvatar = __DEV__ ? env.dev.API_IMG_URL + "avatar_default.png" : env.prod.API_IMG_URL + "avatar_default.png"; //TODO replace default avatar with local file
 
 
 export default PostComponent = ({post, navigateToDetailedView, commentRefetch, close}) => {
@@ -89,7 +88,7 @@ export default PostComponent = ({post, navigateToDetailedView, commentRefetch, c
                             height: 32,
                             borderRadius: 16
                         }}
-                        source={{uri: post.author.avatar ? post.author.avatar.path : defaultAvatar}}
+                        source={{uri: Util.AvatarToUri(post.author.avatar)}}
                         resizeMode="contain"
                     />
                     <Body style={{justifyContent: 'center', alignItems: 'center'}}>
