@@ -1,11 +1,12 @@
-import React, {Fragment} from 'react';
+import React, {Component, Fragment} from 'react';
 import {RefreshControl, Text, View} from 'react-native';
-import {Body, Button, Container, Content, List, ListItem, Right, Spinner} from "native-base";
+import {Body, Button, Container, Content, Form, Icon, List, ListItem, Picker, Right, Spinner} from "native-base";
 import {Mutation, Query} from "react-apollo";
-import {CURRENT_USER_ID, LEADERBOARD, REQUEST_JOIN_TEAM} from "../../network/Teams.gql";
+import {CURRENT_USER_ID, LEADERBOARD, REQUEST_JOIN_TEAM, TeamSize} from "../../network/Teams.gql";
 import * as env from "../../env"
+import {MaterialDialog} from 'react-native-material-dialog';
 
-export class LeaderBoardScreen extends React.Component {
+export class LeaderBoardScreen extends Component {
     static navigationOptions = {
         title: 'Leaderboard',
     };
@@ -13,8 +14,13 @@ export class LeaderBoardScreen extends React.Component {
     state = {
         refreshing: false,
         endReached: false,
-        sizeFilter: "SOLO",
+        sizeFilter: TeamSize.SOLO.value,
         user: undefined
+    };
+
+    sizeOptions = () => {
+        return Object.keys(TeamSize).map(option =>
+            <Picker.Item key={option} label={TeamSize[option].name} value={TeamSize[option].value}/>)
     };
 
     pageSize = 10;
@@ -29,6 +35,20 @@ export class LeaderBoardScreen extends React.Component {
                     const userId = data.getCurrentUser.id;
                     return (
                         <Container style={{flex: 1}}>
+                            <Form>
+                                <Picker mode="dropdown"
+                                        iosHeader="Team größe"
+                                        iosIcon={<Icon name="arrow-down"/>}
+                                        style={{width: undefined}}
+                                        selectedValue={this.state.sizeFilter}
+                                        onValueChange={(value) => {
+                                            console.log(value);
+                                            this.setState({sizeFilter: value})
+                                        }}
+                                >
+                                    {this.sizeOptions()}
+                                </Picker>
+                            </Form>
                             <Query query={LEADERBOARD}
                                    variables={{
                                        connectionArgs: {first: this.pageSize},
@@ -138,83 +158,106 @@ export class LeaderBoardScreen extends React.Component {
             </Container>
         )
     };
+
+
 }
 
 
-const TeamCard = ({index, team, currentUserId}) => {
-    let {node, cursor} = team;
-    const teamAvatarUrl =
-        node.avatar
-            ? `${env.dev.API_IMG_URL}${node.avatar.filename}`
-            : `${env.dev.API_IMG_URL}avatar_default.png`;
-    const isMember = node.members.some((member) => member.id === currentUserId);
-    const pendingRequest = false; // TODO implement checking for pending team join request
+class TeamCard extends Component {
 
-    const rightContent = isMember
-        ? <Fragment>
-            <Button transparent onPress={() => {
-                console.log("moooo")
-            }}>
-                <Text>
-                    Mitglied
-                </Text>
-            </Button>
-        </Fragment>
-        : pendingRequest
+    state = {
+        showJoinDialog: false,
+    };
+
+    render() {
+        let {index, team, currentUserId} = this.props;
+        let {node, cursor} = team;
+        const teamAvatarUrl =
+            node.avatar
+                ? `${env.dev.API_IMG_URL}${node.avatar.filename}`
+                : `${env.dev.API_IMG_URL}avatar_default.png`;
+        const isMember = node.members.some((member) => (member.user.id === currentUserId) && member.isActive);
+        const pendingRequest = node.members.some((member) => (member.user.id === currentUserId) && !member.isActive);
+
+        const rightContent = isMember
             ? <Fragment>
                 <Button transparent onPress={() => {
                     console.log("moooo")
                 }}>
                     <Text>
-                        Anfrage gesendet
+                        Mitglied
                     </Text>
                 </Button>
             </Fragment>
-            : <Fragment>
-                <Mutation mutation={REQUEST_JOIN_TEAM}>
-                    {(requestJoinTeam) => {
-                        return (
-                            <Button transparent onPress={() => {
-                                console.log(team)
-                                requestJoinTeam({
-                                    variables: {
-                                        teamId: node.id
-                                    }
-                                }).then((data) => {
-                                    console.log(data)
-                                })
-                                    .catch(error => {
-                                        console.log(error.message);
-                                    })
-                            }}>
-                                <Text>
-                                    Beitreten
-                                </Text>
-                            </Button>
-                        )
-                    }}
-                </Mutation>
-            </Fragment>
+            : pendingRequest
+                ? <Fragment>
+                    <Button transparent onPress={() => {
+                        console.log("moooo")
+                    }}>
+                        <Text>
+                            Anfrage gesendet
+                        </Text>
+                    </Button>
+                </Fragment>
+                : <Fragment>
+                    <Mutation mutation={REQUEST_JOIN_TEAM}
+                              refetchQueries={[{query: LEADERBOARD}]}
+                    >
+                        {(requestJoinTeam) => {
+                            return (
+                                <Button transparent onPress={() => {
+                                    this.setState({showJoinDialog: true})
+                                }}>
+                                    <Text>
+                                        Beitreten
+                                    </Text>
+                                    <MaterialDialog
+                                        title="Join team {team.name}?"
+                                        visible={this.state.showJoinDialog}
+                                        onOk={() => {
+                                            console.log(team)
+                                            requestJoinTeam({
+                                                variables: {
+                                                    teamId: node.id
+                                                }
+                                            }).then((data) => {
+                                                console.log(data)
+                                            })
+                                                .catch(error => {
+                                                    console.log(error.message);
+                                                })
+                                            this.setState({showJoinDialog: false})
+                                        }}
+                                        onCancel={() => this.setState({showJoinDialog: false})}>
+                                        <Text>
+                                            Join team {team.name}?
+                                        </Text>
+                                    </MaterialDialog>
+                                </Button>
+                            )
+                        }}
+                    </Mutation>
+                </Fragment>
 
-    return (
-        <ListItem>
-            <Body style={{height: '100%'}}>
-            <View style={{flex: 1, flexDirection: 'row'}}>
-                <View>
-                    <Text style={{color: '#008523'}}>Teamrang: </Text>
-                    <Text>Teamname: </Text>
+        return (
+            <ListItem>
+                <Body style={{height: '100%'}}>
+                <View style={{flex: 1, flexDirection: 'row'}}>
+                    <View>
+                        <Text style={{color: '#008523'}}>Teamrang: </Text>
+                        <Text>Teamname: </Text>
+                    </View>
+                    <View>
+                        <Text>{node.place}</Text>
+                        <Text>{node.name}</Text>
+                    </View>
                 </View>
-                <View>
-                    <Text>{node.place}</Text>
-                    <Text>{node.name}</Text>
-                </View>
-            </View>
-            </Body>
-            <Right style={{}}>
-                <Text> </Text>
-                {rightContent}
-            </Right>
-        </ListItem>
-    )
+                </Body>
+                <Right style={{}}>
+                    <Text> </Text>
+                    {rightContent}
+                </Right>
+            </ListItem>
+        )
+    }
 }
-
