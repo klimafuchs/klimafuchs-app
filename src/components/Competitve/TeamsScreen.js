@@ -139,6 +139,42 @@ export class TeamsScreen extends Component {
 }
 
 class TeamCard extends Component {
+
+    overflowActionsConfig = {
+        config:
+            {
+                options: [
+                    {text: "Entfernen", icon: "md-alert", iconColor: "#fa213b"},
+                    {text: "Zum Admin befördern", icon: "md-star", iconColor: "#25de5b"},
+                    {text: "Abbrechen", icon: "cancel", iconColor: "#25de5b"}
+                ],
+                cancelButtonIndex: 2,
+                destructiveButtonIndex: 0,
+                title: ""
+            },
+        callback: (buttonIndex) => {
+            this.overflowActionsConfig.actions[buttonIndex]();
+            this.actionSheetAction({
+                index: buttonIndex,
+                pressed: this.overflowActionsConfig.config.options[buttonIndex]
+            });
+        },
+        actions: [
+            () => {
+               
+            },
+            () => {
+                console.log("action cancelled")
+            },
+
+        ],
+    };
+
+    actionSheetAction(param) {
+        this.overflowActionsConfig.actions[param.index]();
+    }
+
+
     render() {
         const {membership} = this.props;
         const teamAvatarUrl =
