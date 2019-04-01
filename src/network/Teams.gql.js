@@ -14,7 +14,8 @@ export const CREATE_TEAM = gql`
                     id,
                     screenName,
                     avatar {
-                        filename                    }
+                        filename
+                    }
                 },
                 dateCreated,
                 isActive,
@@ -55,6 +56,7 @@ export const GET_MY_TEAM = gql`
             members {
                 id
                 user {
+                    id,
                     avatar {
                         filename
                     }
@@ -73,7 +75,12 @@ export const GET_MY_TEAM = gql`
 export const REQUEST_JOIN_TEAM = gql`
     mutation ($teamId:Int!){
         requestJoinTeam(teamId:$teamId) {
-            id
+            id,
+            user {
+                id
+            }
+            isActive,
+            isAdmin
         }
     }
 `;
@@ -99,7 +106,12 @@ export const LEADERBOARD = gql`
                         avatar{filename},
                         teamSize,
                         members {
-                            id
+                            id,
+                            user {
+                                id
+                            }
+                            isActive,
+                            isAdmin
                         }
                     }
                     cursor
@@ -118,9 +130,9 @@ export const CURRENT_USER_ID = gql`
 `
 
 export const TeamSize = {
-    SOLO: {name: 'Solo'},
-    DUO: {name: 'Duo'},
-    SMALL: {name: 'Small'},
-    LARGE: {name: 'Large'},
-    HUGE: {name: 'Huge'},
+    SOLO: {name: 'Solo', value: 'SOLO'},
+    DUO: {name: 'Duo', value: 'DUO'},
+    SMALL: {name: 'Small', value: 'SMALL'},
+    LARGE: {name: 'Large', value: 'LARGE'},
+    HUGE: {name: 'Huge', value: 'HUGE'},
 };
