@@ -18,7 +18,7 @@ import {
 import {MY_MEMBERSHIPS} from "../../network/Teams.gql";
 import {Query} from "react-apollo";
 import material from "../../../native-base-theme/variables/material";
-import {CreateTeamModal, CreateTeamModalContent} from "./CreateTeamModalContent";
+import {CreateTeamModalContent} from "./CreateTeamModalContent";
 import env from "../../env";
 import {FSModal} from "../Common/FSModal";
 import {TeamDetailsModalContent} from "./TeamDetailsModalContent";
@@ -50,17 +50,23 @@ export class TeamsScreen extends Component {
             />
             <H3 style={{marginBottom: '5%'}}>Du hast noch kein Team</H3>
 
-            <CreateTeamModal
+            <FSModal
                 ref={(ref) => {
                     this.teamPicker = ref;
                 }}
-                onComplete={refetch}>
+                body={<CreateTeamModalContent
+                    onComplete={refetch}
+                    requestModalClose={() => this.teamPicker.closeModal()}/>}
+            >
                 <Button block
                         style={styles.ctaButton}
                         onPress={() => this.teamPicker.openModal()}>
                     <Text style={{color: material.tabBarTextColor}}>Team erstellen</Text>
                 </Button>
-            </CreateTeamModal>
+            </FSModal>
+
+
+
             <Button block
                     style={styles.ctaButton}
                     onPress={() => {
