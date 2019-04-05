@@ -73,7 +73,7 @@ export const GET_MY_TEAM = gql`
 `;
 
 export const REQUEST_JOIN_TEAM = gql`
-    mutation ($teamId:Int!){
+    mutation requestJoinTeam($teamId:Int!){
         requestJoinTeam(teamId:$teamId) {
             id,
             user {
@@ -86,7 +86,7 @@ export const REQUEST_JOIN_TEAM = gql`
 `;
 
 export const CONFIRM_MEMBER = gql`
-    mutation ($membershipId:Int!) {
+    mutation confirmMember($membershipId:Int!) {
         confirmMember(membershipId:$membershipId) {
             id
         }

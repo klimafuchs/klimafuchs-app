@@ -23,6 +23,7 @@ import {Mutation, Query} from "react-apollo";
 import {CHANGE_PASSWORD, CURRENT_USER, UPDATE_PROFILE} from "../../network/UserData.gql";
 import {Util} from "../../util";
 import {ValidatingTextField} from "../Common/ValidatingTextInput";
+import client from "../../network/client"
 
 class ProfileScreen extends Component {
 
@@ -75,6 +76,7 @@ class ProfileScreen extends Component {
     _signOutAsync = async () => {
         await AsyncStorage.removeItem('uId');
         await AsyncStorage.removeItem('token');
+        await client.clearStore();
         console.log("signed out");
         this.props.navigation.navigate('Auth');
     };
