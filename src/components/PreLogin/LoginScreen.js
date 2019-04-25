@@ -11,7 +11,7 @@ import material from '../../../native-base-theme/variables/material';
 class LoginScreen extends Component {
 
     static navigationOptions = {
-        title: 'Please sign in'
+        title: L.get("loginscreen_title")
     };
 
 
@@ -78,7 +78,7 @@ class LoginScreen extends Component {
                                 </View>
                                 <Card style={loginScreenStyles.loginCard}>
                                     <CardItem style={loginScreenStyles.loginCardItem}>
-                                        <H1>Login</H1>
+                                        <H1>{L.get("login_card_title")}</H1>
                                     </CardItem>
                                     <CardItem style={loginScreenStyles.loginCardItem}>
                                         <Form style={{flex: 1}}>
@@ -88,7 +88,7 @@ class LoginScreen extends Component {
                                             >
 
                                                 <Input name="email"
-                                                       placeholder="eMail"
+                                                       placeholder={L.get("email_placeholder")}
                                                        onChangeText={(text) => this.setState({email: text})}
                                                        value={this.state.email}
                                                        placeholderTextColor={material.brandInfo}
@@ -100,7 +100,7 @@ class LoginScreen extends Component {
                                             >
 
                                                 <Input name="password"
-                                                       placeholder="Passwort"
+                                                       placeholder={L.get("password_placeholder")}
                                                        secureTextEntry
                                                        onChangeText={(text) => this.setState({password: text})}
                                                        value={this.state.password}
