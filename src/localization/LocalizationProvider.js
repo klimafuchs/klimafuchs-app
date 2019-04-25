@@ -21,7 +21,7 @@ export class LocalizationProvider {
         let template = localization[key];
         if(template) {
             if(template[lang]) {
-                return this.makeTemplateString(template[lang], values)
+                return this.makeTemplateString(key, template[lang], values)
             }
             else {
                 let error = `MISSING string for ${lang} in ${key}!`;
@@ -35,10 +35,16 @@ export class LocalizationProvider {
         }
     }
 
-    static makeTemplateString(string, values) {
+    static makeTemplateString(key, string, values) {
         try {
             values = values || {};
-            return new Function(...Object.keys(values), "return `"+string+"`;")(...Object.values(values));
+            let template = new Function(...Object.keys(values), "return `"+string+"`;")(...Object.values(values));
+            if(template.length < 1) {
+                let error = `MISSING string for ${lang} in ${key}!`;
+                console.warn(error);
+                return error;
+            }
+            return template;
         } catch (e) {
             console.warn(e.message);
             return string;

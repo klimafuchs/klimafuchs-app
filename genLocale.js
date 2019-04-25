@@ -10,7 +10,9 @@ stdin.on('end', () => {
 function makeLocale(dataArray) {
     let locale = {};
     dataArray.forEach((entry) => {
+        if(!entry.name) return;
         locale[entry.name] = entry;
+        delete locale[entry.name].Anmerkungen;
         delete locale[entry.name].name;
     });
     return locale

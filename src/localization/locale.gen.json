@@ -1,10 +1,22 @@
 {
-  "cancel": {
-    "default": "Abbrechen",
-    "de": "Abbrechen"
+  "loginscreen_title": {
+    "default": "please sign in",
+    "de": ""
   },
   "login": {
     "default": "Anmelden",
     "de": "Anmelden"
+  },
+  "email_placeholder": {
+    "default": "eMail",
+    "de": "eMail"
+  },
+  "password_placeholder": {
+    "default": "password",
+    "de": "Passwort"
+  },
+  "login_card_title": {
+    "default": "login",
+    "de": "Login"
   }
 }
