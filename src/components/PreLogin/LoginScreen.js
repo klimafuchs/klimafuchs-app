@@ -3,6 +3,7 @@ import {AsyncStorage, Image, KeyboardAvoidingView, StyleSheet, View} from 'react
 import {Button, Card, CardItem, Container, Content, Form, H1, H3, Input, Item, Text, Toast} from "native-base";
 import {LinearGradient} from "expo";
 import Api from "../../network/api";
+import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 
 import material from '../../../native-base-theme/variables/material';
 
@@ -146,7 +147,7 @@ class LoginScreen extends Component {
                                 </Card>
                                 <Button full primary rounded style={loginScreenStyles.loginButton}
                                         onPress={() => this.signIn()}>
-                                    <Text style={{fontWeight: 'bold'}}>Login</Text>
+                                    <Text style={{fontWeight: 'bold'}}>{L.get('login')}</Text>
                                 </Button>
                             </View>
                         </KeyboardAvoidingView>

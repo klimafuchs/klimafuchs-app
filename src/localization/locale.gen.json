@@ -1,0 +1,10 @@
+{
+  "cancel": {
+    "default": "Abbrechen",
+    "de": "Abbrechen"
+  },
+  "login": {
+    "default": "Anmelden",
+    "de": "Anmelden"
+  }
+}

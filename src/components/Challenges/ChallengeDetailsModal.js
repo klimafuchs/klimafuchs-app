@@ -6,6 +6,7 @@ import material from "../../../native-base-theme/variables/material";
 import {Mutation} from "react-apollo";
 import PropTypes from 'prop-types';
 import {COMPLETE_CHALLENGE} from "../../network/Challenges.gql";
+import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 
 export class ChallengeDetailsModal extends Component {
 
@@ -84,7 +85,7 @@ const ChallengeDetailsComponent = ({challenge, challengeCompletion, targetId, re
             <CardItem footer>
                 <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
                     <Button transparent onPress={() => closeModal()}>
-                        <Text>Abbrechen</Text>
+                        <Text>{L.get('cancel')}</Text>
                     </Button>
                     <Mutation mutation={COMPLETE_CHALLENGE}>
                         {(completeChallenge, {data}) => (
