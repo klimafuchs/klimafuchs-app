@@ -62,6 +62,7 @@ export const CURRENT_SEASONPLAN = gql`
     query globalCurrentChallenges {
         globalCurrentChallenges {
             themenwoche {
+                
                 title
                 content
                 headerImage {url}

@@ -1,11 +1,15 @@
 import React, {Component} from 'react';
-import {Body, Button, Container, H3, Header, Icon, Left, Right, Text, Title} from 'native-base';
-import {FlatList, StyleSheet, View} from 'react-native'
+import {Body, Button, Container, Content, H3, Header, Icon, Left, Right, Text, Title} from 'native-base';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native'
 import * as Constants from "expo";
 import {Query} from "react-apollo";
 import {CURRENT_CHALLENGES, CURRENT_SEASONPLAN} from "../../network/Challenges.gql";
 import material from "../../../native-base-theme/variables/material";
 import {ChallengeDetailsModal} from "./ChallengeDetailsModal";
+import * as PropTypes from "prop-types";
+
+let refetchers = [];
+
 
 export class SeasonPlanComponent extends Component {
     static navigationOptions = {
@@ -15,23 +19,51 @@ export class SeasonPlanComponent extends Component {
         ),
     };
 
+    challengeProgressIndicator;
+
+    state = {
+        refreshing: false
+    };
+    reload = () => {
+        refetchers.map(refetch => {
+            console.debug('refetch' + refetch);
+            refetch()
+        });
+    }
+
     render() {
         return (
             <Container>
                 <Header style={{paddingTop: Constants.statusBarHeight}}>
                     <Left/>
                     <Body>
-                    <Title>Challenges</Title>
+                        <Title>Challenges</Title>
                     </Body>
                     <Right/>
                 </Header>
+
+                <ChallengeProgressIndicator challengeCompletions={[]} ref={ref => this.challengeProgressIndicator}/>
+
                 <Query query={CURRENT_SEASONPLAN}>
                     {({loading, error, data, refetch}) => {
+                        refetchers.push(refetch);
                         if (loading) return <Text>Loading...</Text>;
                         if (error) return <Text>Error {error.message}</Text>;
                         if (data.globalCurrentChallenges) {
                             const themenwoche = data.globalCurrentChallenges.themenwoche;
-                            return <RenderThemenwocheComponent themenwoche={themenwoche}/>
+                            return (
+                                <Content
+                                    refreshControl={
+                                        <RefreshControl
+                                            refreshing={this.state.refreshing || loading}
+                                            onRefresh={() => this.reload()}
+                                        />
+                                    }
+                                    style={{backgroundColor: '#f0f'}}
+                                >
+                                    <RenderThemenwocheComponent themenwoche={themenwoche}/>
+                                </Content>
+                            )
                         }
                         return (
                             <Text>no current challenges!</Text>
@@ -39,7 +71,7 @@ export class SeasonPlanComponent extends Component {
                     }}
                 </Query>
 
-                <ChallengesComponent/>
+                <ChallengesComponent progressIndicator={this.challengeProgressIndicator}/>
             </Container>
         );
     }
@@ -62,18 +94,19 @@ RenderThemenwocheComponent = ({themenwoche}) => {
 
 class ChallengesComponent extends Component {
     render() {
+        let {challengeProgressIndicator} = this.props;
         return (
             <Container style={styles.ChallengesComponent}>
                 <Query query={CURRENT_CHALLENGES}>
                     {({loading, error, data, refetch}) => {
+                        refetchers.push(refetch);
+
                         if (loading) return <Text>Loading...</Text>;
                         if (error) return <Text>Error {error.message}</Text>;
                         if (data.currentChallenges) {
                             const challenges = data.currentChallenges;
-                            console.log(challenges)
                             return (
                                 <View style={{flex: 1}}>
-                                    <ChallengeProgressIndicator challenges={challenges}/>
                                     <FlatList
                                         data={challenges}
                                         keyExtractor={(item, index) => item.id.toString()}
@@ -106,7 +139,9 @@ class ChallengeButton extends Component {
                 <ChallengeDetailsModal
                     challenge={challenge}
                     refetch={refetch}
-                    ref={(ref) => {this.modal = ref}}>
+                    ref={(ref) => {
+                        this.modal = ref
+                    }}>
 
                     <Button block
                             light={!challenge.challengeCompletion}
@@ -125,24 +160,57 @@ class ChallengeButton extends Component {
     }
 }
 
-const ChallengeProgressIndicator = ({challenges}) => {
-    //TODO replace with something actually good and move to parent component for better layout options,
-    // also steal overlaying layout code from FAB
-    return (
-        <View style={{height: 32}}>
-            <View style={{flex: 1, flexDirection: 'row'}}>
-                <Icon style={styles.ChallengeProgressIndicatorSegment}
-                      name={challenges[0].challengeCompletion ? "md-square" : "md-square-outline"}/>
-                <Icon style={styles.ChallengeProgressIndicatorSegment}
-                      name={challenges[1].challengeCompletion ? "md-square" : "md-square-outline"}/>
-                <Icon style={styles.ChallengeProgressIndicatorSegment}
-                      name={challenges[2].challengeCompletion ? "md-square" : "md-square-outline"}/>
-                <Icon style={styles.ChallengeProgressIndicatorSegment}
-                      name={challenges[3].challengeCompletion ? "md-square" : "md-square-outline"}/>
-            </View>
-        </View>
-    )
-};
+class ChallengeProgressIndicator extends Component {
+    render() {
+        //TODO replace with something actually good and move to parent component for better layout options,
+        // also steal overlaying layout code from FAB
+
+
+        return (
+            <Query query={CURRENT_CHALLENGES}>
+                {({loading, error, data, refetch}) => {
+                    refetchers.push(refetch);
+
+                    if (loading) return <Text>Loading...</Text>;
+                    if (error) return <Text>Error {error.message}</Text>;
+                    if (data.currentChallenges) {
+
+                        const challenges = data.currentChallenges;
+
+                        const challengeCompletions = challenges.map(challenge => challenge.challengeCompletion).filter(Boolean);
+
+                        console.log(`Challenges completed: ${challengeCompletions.length}/${challenges.length}`);
+
+
+                        return (
+                            <View style={{height: 32}}>
+                                <View style={{flex: 1, flexDirection: 'row'}}>
+                                    <Icon style={styles.ChallengeProgressIndicatorSegment}
+                                          name={challengeCompletions[0] ? "md-square" : "md-square-outline"}/>
+                                    <Icon style={styles.ChallengeProgressIndicatorSegment}
+                                          name={challengeCompletions[1] ? "md-square" : "md-square-outline"}/>
+                                    <Icon style={styles.ChallengeProgressIndicatorSegment}
+                                          name={challengeCompletions[2] ? "md-square" : "md-square-outline"}/>
+                                    <Icon style={styles.ChallengeProgressIndicatorSegment}
+                                          name={challengeCompletions[3] ? "md-square" : "md-square-outline"}/>
+                                </View>
+
+                            </View>
+                        )
+
+                    }
+                    return (
+                        <Text>no current challenges!</Text>
+                    )
+
+                }}
+            </Query>
+
+        )
+    }
+}
+
+ChallengeProgressIndicator.propTypes = {challengeCompletions: PropTypes.any}
 
 const styles = StyleSheet.create({
     ChallengesComponent: {
