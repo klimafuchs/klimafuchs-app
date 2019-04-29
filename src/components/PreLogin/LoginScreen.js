@@ -133,7 +133,7 @@ class LoginScreen extends Component {
                                                   console.log(`${this.constructor.name}: eula clicked!`);
 
                                               }}>
-                                            AGBs
+                                            {L.get("eula")}
                                         </Text>
                                         <Text>|</Text>
                                         <Text style={{color: material.textColor}}
@@ -141,7 +141,7 @@ class LoginScreen extends Component {
                                                   console.log(`${this.constructor.name}: privacy clicked!`)
 
                                               }}>
-                                            Datenschutzerklärung
+                                            {L.get("privacy_policy")}
                                         </Text>
                                     </CardItem>
                                 </Card>

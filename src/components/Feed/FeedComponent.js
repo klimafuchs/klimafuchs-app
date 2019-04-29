@@ -5,6 +5,7 @@ import {LOAD_FEED} from "../../network/Feed.gql";
 import {FlatList, RefreshControl} from "react-native";
 import material from '../../../native-base-theme/variables/material';
 import PostComponent from "./PostComponent";
+import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 
 export default class FeedComponent extends Component {
     static navigationOptions = {
@@ -12,7 +13,7 @@ export default class FeedComponent extends Component {
             <Header>
                 <Left/>
                 <Body>
-                <Title>News</Title>
+                <Title>{L.get("feed_navigation_title")}</Title>
                 </Body>
                 <Right/>
             </Header>
@@ -36,11 +37,11 @@ export default class FeedComponent extends Component {
                     {({loading, error, data, refetch, fetchMore}) => {
                         let spinner;
                         if (loading) {
-                            spinner = <Text>Loading...</Text>
+                            spinner = <Text>{L.get("feed_loading")}</Text>
                         } else {
-                            spinner = <Text>More</Text>
+                            spinner = <Text>{L.get("feed_load_more")}</Text>
                         }
-                        if (error) return <Text>`Error ${error.message}`</Text>;
+                        if (error) return <Text>{L.get("error_gql", {error})}</Text>;
                         return (
 
                             <Content refreshControl={<RefreshControl
@@ -68,7 +69,7 @@ export default class FeedComponent extends Component {
                                 />
                                 {data.paginatedPosts && this.state.endReached
                                     ? <Button full light disabled>
-                                        <Text>Keine weiteren Einträge</Text>
+                                        <Text>{L.get("feed_end_reached")}</Text>
                                     </Button>
                                     : <Button full light disabled={loading} onPress={() => {
                                         const lastCursor = data.paginatedPosts.page.edges[data.paginatedPosts.page.edges.length - 1].cursor;

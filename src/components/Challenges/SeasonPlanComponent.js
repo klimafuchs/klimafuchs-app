@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {Body, Button, Container, Content, H3, Header, Icon, Left, Right, Text, Title} from 'native-base';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native'
+import {FlatList, Image, RefreshControl, StyleSheet, View} from 'react-native'
 import * as Constants from "expo";
 import {Query} from "react-apollo";
 import {CURRENT_CHALLENGES, CURRENT_SEASONPLAN} from "../../network/Challenges.gql";
@@ -26,7 +26,6 @@ export class SeasonPlanComponent extends Component {
     };
     reload = () => {
         refetchers.map(refetch => {
-            console.debug('refetch' + refetch);
             refetch()
         });
     }
@@ -77,7 +76,7 @@ export class SeasonPlanComponent extends Component {
     }
 }
 
-RenderThemenwocheComponent = ({themenwoche}) => {
+const RenderThemenwocheComponent = ({themenwoche}) => {
     //TODO hier müssen noch deutlich mehr Sachen berücksichtigt werden,
     // das Design sieht aber nicht mehr vor.
     // Mindestens der Titel und die Laufzeit des aktuellen SPs sollen dargestellt werden
@@ -183,18 +182,12 @@ class ChallengeProgressIndicator extends Component {
 
 
                         return (
-                            <View style={{height: 32}}>
-                                <View style={{flex: 1, flexDirection: 'row'}}>
-                                    <Icon style={styles.ChallengeProgressIndicatorSegment}
-                                          name={challengeCompletions[0] ? "md-square" : "md-square-outline"}/>
-                                    <Icon style={styles.ChallengeProgressIndicatorSegment}
-                                          name={challengeCompletions[1] ? "md-square" : "md-square-outline"}/>
-                                    <Icon style={styles.ChallengeProgressIndicatorSegment}
-                                          name={challengeCompletions[2] ? "md-square" : "md-square-outline"}/>
-                                    <Icon style={styles.ChallengeProgressIndicatorSegment}
-                                          name={challengeCompletions[3] ? "md-square" : "md-square-outline"}/>
-                                </View>
-
+                            <View style={{
+                                height: 48,
+                                padding: 10,
+                                paddingBottom: 10,
+                            }}>
+                                <ChallengeProgressBar progress={challengeCompletions.length}/>
                             </View>
                         )
 
@@ -212,6 +205,118 @@ class ChallengeProgressIndicator extends Component {
 
 ChallengeProgressIndicator.propTypes = {challengeCompletions: PropTypes.any}
 
+class ChallengeProgressBar extends Component {
+    makeProgressImages = (progress) => {
+        return (
+            <Fragment>
+                <Image
+                    style={{
+                        flex: 1,
+                        width: 32,
+                        height: 32,
+                        margin: 5,
+                    }}
+                    resizeMode="contain"
+                    source={require('../../../assets/leaf_brown.png')}
+                />
+                <Image
+                    style={{
+                        flex: 1,
+                        width: 32,
+                        height: 32,
+                        margin: 5,
+                    }}
+                    resizeMode="contain"
+                    source={require('../../../assets/leaf_yellow.png')}
+                />
+                <Image
+                    style={{
+                        flex: 1,
+                        width: 32,
+                        height: 32,
+                        margin: 5,
+                    }}
+                    resizeMode="contain"
+                    source={require('../../../assets/leaf_green.png')}
+                />
+                <Image
+                    style={{
+                        flex: 1,
+                        width: 32,
+                        height: 32,
+                        margin: 5,
+                    }}
+                    resizeMode="contain"
+                    source={require('../../../assets/leaf_dark_green.png')}
+                />
+            </Fragment>
+        )
+    };
+
+    render() {
+        let {progress} = this.props;
+        progress = 0
+        let progressFill = Math.max(0, ((progress - 1) / 3) * 100);
+        let progressImages = this.makeProgressImages(progress);
+        console.debug(progress, progressFill + '%');
+        return (
+            <View style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginLeft: '10%',
+                marginRight: '10%',
+            }}>
+                <View style={{
+                    height: 32,
+                    flex: 1,
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    width: '30%'
+                }}>
+                    <View style={{
+                        height: 5,
+
+                        marginLeft: '12%',
+                        marginRight: '12%'
+                    }}>
+                        <View style={{
+                            backgroundColor: 'gray',
+                            position: 'absolute',
+                            width: '100%',
+                            height: '100%'
+                        }}/>
+                        <View style={{
+                            backgroundColor: material.brandInfo,
+                            position: 'absolute',
+                            width: `${progressFill}%`,
+                            height: '100%'
+                        }}/>
+                    </View>
+                    <View style={{
+                        position: 'absolute',
+                        flex: 1,
+                        flexDirection: 'row',
+                        alignItems: 'space-between',
+                    }}>
+                        {progressImages}
+                    </View>
+                </View>
+                <View style={{
+                    marginLeft: '10%',
+                }}>
+                    <Button info rounded style={{height: 24, width: 24}}>
+                        <Icon style={{width: 24, fontSize: 18}} name='md-help'/>
+                    </Button>
+                </View>
+            </View>
+        )
+    }
+}
+
+ChallengeProgressBar.propTypes = {progress: PropTypes.number}
+
 const styles = StyleSheet.create({
     ChallengesComponent: {
         flex: 3,
@@ -226,5 +331,6 @@ const styles = StyleSheet.create({
     },
     ChallengeProgressIndicatorSegment: {
         margin: 2,
-    }
+    },
+    ChallengeProgressBarBar: {}
 })

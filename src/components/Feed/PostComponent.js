@@ -26,6 +26,7 @@ import de from 'moment/locale/de';
 import material from '../../../native-base-theme/variables/material';
 import env from '../../env';
 import {Util} from "../../util";
+import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 
 moment.locale('de');
 
@@ -59,7 +60,7 @@ export default PostComponent = ({post, navigateToDetailedView, commentRefetch, c
             </Left>
             <Button transparent
                     onPress={navigateToDetailedView}>
-                <Text>{post.commentCount} Kommentare</Text>
+                <Text>{L.get("feed_comments", {commentCount: post.commentCount})}</Text>
             </Button>
             <Right>
                 <Button icon transparent
@@ -93,7 +94,8 @@ export default PostComponent = ({post, navigateToDetailedView, commentRefetch, c
                     />
                     <Body style={{justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{alignSelf: 'center', flex: 1, alignItems: 'center'}}>
-                        {`Gepostet von ${post.author.screenName} ${displayedTime}`}
+                        {L.get("feed_post_author_description",
+                            {screenName: post.author.screenName, displayedTime: displayedTime})}
                     </Text>
                     </Body>
                 </Left>
@@ -264,7 +266,6 @@ class CommentTreeWidget extends Component {
     buildCommentTree = (comments) => {
         let tree = comments.filter((c) => !c.parent);
         tree.sort(this.sortComments);
-        let childComments = comments.filter((c) => c.parent);
 
         tree.forEach((branchRoot) => {
             this._buildCommentTree(comments, branchRoot, this.maxRecursionDepth)
@@ -314,6 +315,7 @@ class CommentTreeWidget extends Component {
         //console.log(result);
         return (
             <View style={{flex: 1, flexShrink: 0, alignItems: 'stretch', width: '100%'}}>
+                {this.buildCommentTree(this.props.comments).map(tree => this._walkTree(tree, this.recursionDepth))}
                 {this.walkTree(this.buildCommentTree(this.props.comments))}
             </View>
         );
@@ -371,7 +373,10 @@ class CommentWidget extends Component {
                     <Text style={{
                         fontSize: 10,
                         fontStyle: 'italic'
-                    }}>{`Gepostet von ${comment.author.screenName} ${displayedTime}`}</Text>
+                    }}>
+                        {L.get("feed_post_author_description",
+                            {screenName: comment.author.screenName, displayedTime: displayedTime})}
+                    </Text>
                 </View>
                 <View style={styles.commentCardText}>
                     <Text>{comment.body}</Text>
