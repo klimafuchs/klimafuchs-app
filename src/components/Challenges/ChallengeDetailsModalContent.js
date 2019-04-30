@@ -14,7 +14,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
         loading: false
     };
 
-    getCompletionActionButton = (challengeTitle, challengeCompletion, targetId, refetch) => {
+    getCompletionActionButton = (challengeTitle, challengeCompletion, targetId, refetch, modalNotify) => {
         if (challengeCompletion) {
             return (
                 <Mutation mutation={UNCOMPLETE_CHALLENGE}>
@@ -31,6 +31,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                                             challengeCompletionId: challengeCompletion.id
                                         }
                                     });
+                                    modalNotify(false);
                                     refetch()
                                 }}/>
                     </View>
@@ -66,11 +67,10 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
     };
 
     render() {
-        let {userChallenge, refetch, requestModalClose} = this.props;
+        let {userChallenge, refetch, requestModalClose, modalNotify} = this.props;
         const targetId = userChallenge.id;
         const challengeCompletion = userChallenge.challengeCompletion;
         let challenge = userChallenge.challenge;
-        console.log("challenge title: " + JSON.stringify(challenge));
         const headerContent = challenge.headerImage ?
             <ImageBackground src={challenge.headerImage.url}>
                 <H1>{challenge.challenge.title}</H1>
@@ -99,7 +99,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                         }}>
                             <Text>{L.get('cancel')}</Text>
                         </Button>
-                        {this.getCompletionActionButton(challenge.title, challengeCompletion, targetId, refetch)}
+                        {this.getCompletionActionButton(challenge.title, challengeCompletion, targetId, refetch, modalNotify)}
                     </Right>
                 </CardItem>
             </Card>

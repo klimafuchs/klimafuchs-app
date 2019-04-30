@@ -26,8 +26,7 @@ import {CreateTeamModalContent} from "../Competitve/CreateTeamModalContent";
 import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 import {MaterialDialog} from "react-native-material-dialog";
 
-let refetchers = [];
-
+let refetchers = []; //TODO this needs to go
 
 export class SeasonPlanComponent extends Component {
     static navigationOptions = {
@@ -38,8 +37,14 @@ export class SeasonPlanComponent extends Component {
     };
 
     state = {
-        refreshing: false
+        refreshing: false,
+        modalOpen: false
     };
+
+    notifyModalChange = (newModalOpen) => {
+        this.setState({modalOpen: newModalOpen});
+    };
+
     reload = () => {
         this.setState({refreshing: true});
         refetchers.map(refetch => {
@@ -95,10 +100,9 @@ export class SeasonPlanComponent extends Component {
                             if (error) return <Text>Error {error.message}</Text>;
                             if (data.currentChallenges) {
                                 const challenges = data.currentChallenges;
-                                console.log(challenges);
                                 return (
                                     <Fragment>
-                                        <ChallengeProgressIndicator challenges={challenges}/>
+                                        <ChallengeProgressIndicator challenges={challenges} shouldUpdate={!this.state.modalOpen}/>
                                         <View style={{
                                             flex: 1,
                                             margin: 10,
@@ -111,7 +115,7 @@ export class SeasonPlanComponent extends Component {
                                             margin: 10,
                                         }}>
 
-                                            <ChallengesComponent challenges={challenges} refetch={refetch}/>
+                                            <ChallengesComponent challenges={challenges} refetch={refetch} modalNotify={this.notifyModalChange}/>
                                         </View>
                                     </Fragment>
                                 )
@@ -142,15 +146,14 @@ const RenderThemenwocheComponent = ({themenwoche}) => {
 };
 
 const ChallengesComponent = (props) => {
-    let {challenges, refetch} = props;
-    console.log("ChallengesComponent: " + challenges);
+    let {challenges, refetch, modalNotify} = props;
     return (
         <View style={{flex: 1}}>
             <FlatList
                 data={challenges}
                 keyExtractor={(item, index) => item.id.toString()}
                 renderItem={({item}) => {
-                    return <ChallengePreview key={item.id} challenge={item} refetch={refetch}/>
+                    return <ChallengePreview key={item.id} challenge={item} refetch={refetch} modalNotify={modalNotify}/>
                 }
                 }
             />
@@ -161,7 +164,7 @@ const ChallengesComponent = (props) => {
 class ChallengePreview extends Component {
 
     render() {
-        let {challenge, refetch} = this.props;
+        let {challenge, refetch, modalNotify} = this.props;
         return (
             <View style={styles.Challenge}>
                 <FSModal
@@ -171,11 +174,18 @@ class ChallengePreview extends Component {
                     body={<ChallengeDetailsModalContent
                         userChallenge={challenge}
                         refetch={refetch}
+                        modalNotify={modalNotify}
+                        requestModalClose={() => {
+                            this.challengeModal.closeModal();
+                            modalNotify(false);
 
-                        requestModalClose={() => this.challengeModal.closeModal()}/>}
+                        }}/>}
                 >
                     <Card>
-                        <CardItem button onPress={() => this.challengeModal.openModal()}>
+                        <CardItem button onPress={() => {
+                            this.challengeModal.openModal();
+                            modalNotify(true);
+                        }}>
                             <Body style={{flex: 3, flexDirection: 'column',}}>
                                 <Text style={{
                                     fontSize: 12,
@@ -217,23 +227,43 @@ class ChallengePreview extends Component {
     }
 }
 
-function ChallengeProgressIndicator(props) {
-    //TODO replace with something actually good and move to parent component for better layout options,
-    // also steal overlaying layout code from FAB
+class ChallengeProgressIndicator extends Component {
+    state = {
+        oldChallenges: null,
+        shouldUpdate: true
+    };
 
-    const {challenges} = props;
-    const challengeCompletions = challenges.map(challenge => challenge.challengeCompletion).filter(Boolean);
-    console.log(`Challenges completed: ${challengeCompletions.length}/${challenges.length}`);
-    return (
-        <View style={{
-            height: 48,
-            padding: 10,
-            marginTop: 10,
-            marginBottom: 10,
-        }}>
-            <ChallengeProgressBar progress={challengeCompletions.length}/>
-        </View>
-    )
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        console.log(nextProps);
+        if (!prevState.oldChallenges)
+            return {oldChallenges: nextProps.challenges, shouldUpdate: nextProps.shouldUpdate};
+        else if(nextProps.shouldUpdate){
+            return {oldChallenges: nextProps.challenges, shouldUpdate: nextProps.shouldUpdate};
+        } else {
+            return {shouldUpdate: nextProps.shouldUpdate};
+
+        }
+    }
+
+
+    render() {
+        //TODO replace with something actually good and move to parent component for better layout options,
+        // also steal overlaying layout code from FAB
+
+        const {challenges, shouldUpdate} = this.props;
+        const challengeCompletions = shouldUpdate ? challenges.map(challenge => challenge.challengeCompletion).filter(Boolean) : this.state.oldChallenges.map(challenge => challenge.challengeCompletion).filter(Boolean);
+        return (
+            <View style={{
+                height: 48,
+                padding: 10,
+                marginTop: 10,
+                marginBottom: 10,
+            }}>
+                <ChallengeProgressBar progress={challengeCompletions.length}/>
+            </View>
+        )
+    }
 }
 
 class RenderProgressDot extends Component {
@@ -319,7 +349,6 @@ class ChallengeProgressBar extends Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        console.log("animating ChallengeProgressBar!");
         let progressSteps = (nextProps.progress - 1);
         let progressFill = Math.max(0, ((nextProps.progress - 1) / 3));
 
@@ -369,7 +398,6 @@ class ChallengeProgressBar extends Component {
             })
         };
         let progressImages = this.makeProgressImages(progress);
-        console.debug(progress, progressFill + '%');
         return (
             <View style={{
                 flex: 1,
