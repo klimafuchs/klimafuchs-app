@@ -15,6 +15,10 @@
     "default": "week",
     "de": "Woche"
   },
+  "okay": {
+    "default": "okay",
+    "de": "okay"
+  },
   "email_placeholder": {
     "default": "eMail",
     "de": "eMail"
@@ -94,5 +98,13 @@
   "feed_loading": {
     "default": "Loading...",
     "de": "Loading..."
+  },
+  "hint_seasonplan_progress": {
+    "default": "Die Blattfarben repräsentieren deinen Fortschritt beim Erledigen der wöchentlichen Aufgaben.",
+    "de": "Die Blattfarben repräsentieren deinen Fortschritt beim Erledigen der wöchentlichen Aufgaben."
+  },
+  "hint_seasonplan_progress_title": {
+    "default": "Blattfarben",
+    "de": "Blattfarben"
   }
 }

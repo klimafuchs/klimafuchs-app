@@ -24,6 +24,7 @@ import * as PropTypes from "prop-types";
 import {FSModal} from "../Common/FSModal";
 import {CreateTeamModalContent} from "../Competitve/CreateTeamModalContent";
 import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
+import {MaterialDialog} from "react-native-material-dialog";
 
 let refetchers = [];
 
@@ -87,39 +88,39 @@ export class SeasonPlanComponent extends Component {
                 </Header>
 
                 <Content>
-                <Query query={CURRENT_CHALLENGES}>
-                    {({loading, error, data, refetch}) => {
-                        refetchers.push(refetch);
+                    <Query query={CURRENT_CHALLENGES}>
+                        {({loading, error, data, refetch}) => {
+                            refetchers.push(refetch);
 
-                        if (loading) return <Text>Loading...</Text>;
-                        if (error) return <Text>Error {error.message}</Text>;
-                        if (data.currentChallenges) {
-                            const challenges = data.currentChallenges;
-                            console.log(challenges);
-                            return (
-                                <Fragment>
-                                    <ChallengeProgressIndicator challenges={challenges}/>
-                                    <View style={{
-                                        flex: 1,
-                                        margin: 10,
-                                    }}>
+                            if (loading) return <Text>Loading...</Text>;
+                            if (error) return <Text>Error {error.message}</Text>;
+                            if (data.currentChallenges) {
+                                const challenges = data.currentChallenges;
+                                console.log(challenges);
+                                return (
+                                    <Fragment>
+                                        <ChallengeProgressIndicator challenges={challenges}/>
+                                        <View style={{
+                                            flex: 1,
+                                            margin: 10,
+                                        }}>
 
-                                        {this.renderCurrentTopic()}
-                                    </View>
-                                    <View style={{
-                                        flex: 3,
-                                        margin: 10,
-                                    }}>
+                                            {this.renderCurrentTopic()}
+                                        </View>
+                                        <View style={{
+                                            flex: 3,
+                                            margin: 10,
+                                        }}>
 
-                                        <ChallengesComponent challenges={challenges} refetch={refetch}/>
-                                    </View>
-                                </Fragment>
-                            )
-                        } else {
-                            return (<Text>ERR</Text>)
-                        }
-                    }}
-                </Query>
+                                            <ChallengesComponent challenges={challenges} refetch={refetch}/>
+                                        </View>
+                                    </Fragment>
+                                )
+                            } else {
+                                return (<Text>ERR</Text>)
+                            }
+                        }}
+                    </Query>
                 </Content>
             </Container>
         );
@@ -177,7 +178,11 @@ class ChallengePreview extends Component {
                     <Card>
                         <CardItem button onPress={() => this.challengeModal.openModal()}>
                             <Body style={{flex: 3, flexDirection: 'column',}}>
-                                <Text style={{fontSize: 12, marginBottom: 5, color: material.textLight}}> { `${L.get('season')} 1 ${L.get('week')} ${challenge.plan.position}`}</Text>
+                                <Text style={{
+                                    fontSize: 12,
+                                    marginBottom: 5,
+                                    color: material.textLight
+                                }}> {`${L.get('season')} 1 ${L.get('week')} ${challenge.plan.position}`}</Text>
 
                                 <H3>{challenge.challenge.title}</H3>
                                 <Body style={{
@@ -199,9 +204,10 @@ class ChallengePreview extends Component {
                             </Body>
                             <Right>
                                 {challenge.challengeCompletion ?
-                                    <Icon name='md-checkbox-outline' style={{ fontSize: 30, color: material.brandPrimary}}/>
+                                    <Icon name='md-checkbox-outline'
+                                          style={{fontSize: 30, color: material.brandPrimary}}/>
                                     :
-                                    <Icon name='md-square-outline' style={{fontSize: 30,color: '#c7c7c7'}}/>
+                                    <Icon name='md-square-outline' style={{fontSize: 30, color: '#c7c7c7'}}/>
                                 }
                             </Right>
                         </CardItem>
@@ -309,8 +315,8 @@ class ChallengeProgressBar extends Component {
 
 
     state = {
-        fillAnim: new Animated.Value(0)
-
+        fillAnim: new Animated.Value(0),
+        showHint: false
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -412,6 +418,8 @@ class ChallengeProgressBar extends Component {
                 <View style={{
                     marginLeft: '5%',
                 }}>
+
+
                     <TouchableOpacity style={{
                         flex: 1,
                         alignItems: 'center',
@@ -423,10 +431,31 @@ class ChallengeProgressBar extends Component {
                         marginTop: 2,
                         marginBottom: 2,
 
-                    }}>
+                    }} onPress={() => {
+                        this.setState({showHint: true})
+                    }}
+                    >
                         <Icon style={{color: '#404040'}} name='md-information-circle'/>
-                    </TouchableOpacity>
-                </View>
+                        <MaterialDialog
+                            title={L.get('hint_seasonplan_progress_title')}
+                            visible={this.state.showHint}
+                            cancelLabel=''
+                            onCancel={() => {
+                                this.setState({showHint: false})
+                            }}
+                            okLabel={L.get('okay')}
+                            onOk={() => {
+                                this.setState({showHint: false})
+                            }}
+                            colorAccent={material.textLight}
+                        >
+
+                        <Text>
+                            {L.get("hint_seasonplan_progress")}
+                        </Text>
+                    </MaterialDialog>
+                </TouchableOpacity>
+            </View>
             </View>
         )
     }
