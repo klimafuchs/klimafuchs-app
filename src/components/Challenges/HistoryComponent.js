@@ -16,13 +16,6 @@ export class HistoryComponent extends Component {
     render() {
         return (
             <Container>
-                <Header style={{paddingTop: Constants.statusBarHeight}}>
-                    <Left/>
-                    <Body>
-                    <Title>Verlauf/Trophäen</Title>
-                    </Body>
-                    <Right/>
-                </Header>
                 <H1>TODO</H1>
                 <Query query={SEASONS}>
                     {({loading, error, data, refetch}) => {

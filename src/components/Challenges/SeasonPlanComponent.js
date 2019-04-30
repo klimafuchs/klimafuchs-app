@@ -41,9 +41,12 @@ export class SeasonPlanComponent extends Component {
         refreshing: false
     };
     reload = () => {
+        this.setState({refreshing: true});
         refetchers.map(refetch => {
             refetch()
         });
+        this.setState({refreshing: false});
+
     }
 
     renderCurrentTopic = () => {
@@ -79,15 +82,11 @@ export class SeasonPlanComponent extends Component {
     render() {
         return (
             <Container>
-                <Header style={{paddingTop: Constants.statusBarHeight}}>
-                    <Left/>
-                    <Body>
-                        <Title>Challenges</Title>
-                    </Body>
-                    <Right/>
-                </Header>
-
-                <Content>
+                <Content refreshControl={<RefreshControl
+                    refreshing={this.state.refreshing}
+                    onRefresh={() => this.reload()}
+                    />}
+                >
                     <Query query={CURRENT_CHALLENGES}>
                         {({loading, error, data, refetch}) => {
                             refetchers.push(refetch);

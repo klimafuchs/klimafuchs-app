@@ -83,6 +83,14 @@ export const COMPLETE_CHALLENGE = gql`
     }
 `;
 
+export const UNCOMPLETE_CHALLENGE = gql`
+    mutation uncompleteChallenge($challengeCompletionId: Int!) {
+        uncompleteChallenge(challengeCompletionId:$challengeCompletionId) {
+            createdAt
+        }
+    }
+`;
+
 
 export const REJECT_CHALLENGE = gql`
     mutation rejectChallenge($challengeId: Int!) {

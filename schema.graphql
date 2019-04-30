@@ -179,6 +179,7 @@ type Mutation {
     resetLeaderBoard: [Team!]!
     syncWikiData: String!
     syncWikiPage(pageId: Float!): String!
+    uncompleteChallenge(challengeCompletionId: Int!): ChallengeCompletion
     unlikeComment(commentId: Int!): FeedComment!
     unlikePost(postId: Int!): FeedPost!
     unmodMember(membershipId: Int!): Membership!

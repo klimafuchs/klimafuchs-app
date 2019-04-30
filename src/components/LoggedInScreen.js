@@ -1,7 +1,7 @@
 import React from 'react';
 import {createMaterialBottomTabNavigator} from "react-navigation-material-bottom-tabs";
 import {FeedNavigation} from "./Feed/FeedScreen";
-import {ChallengeViewsNav} from "./Challenges/ChallengeScreen";
+import {ChallengeNav, ChallengeViewsNav} from "./Challenges/ChallengeScreen";
 import ProfileScreen from "./Profile/ProfileScreen";
 import {NotificationsScreen} from "./Notifications/NotificationsScreen";
 import TeamsNav from "./Competitve"
@@ -15,7 +15,7 @@ export const AppNav = createMaterialBottomTabNavigator({
         screen: NotificationsScreen
     },
         ChallengeTab: {
-            screen: ChallengeViewsNav
+            screen: ChallengeNav
         },
     CompetitiveTab: {
         screen: TeamsNav
