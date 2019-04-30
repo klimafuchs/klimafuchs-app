@@ -22,9 +22,6 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "android": {
-      "package": "org.klimafuchs.app"
-    },
     "ios": {
       "supportsTablet": true
     },

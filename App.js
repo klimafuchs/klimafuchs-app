@@ -119,6 +119,6 @@ const styles = StyleSheet.create({
     },
     safeArea: {
         flex: 1,
-        backgroundColor: material.brandLight
+        backgroundColor: material.brandInfo
     }
 });
