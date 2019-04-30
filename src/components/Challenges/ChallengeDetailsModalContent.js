@@ -1,7 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import {ImageBackground, StyleSheet, View, Switch} from 'react-native'
 import Modal from "react-native-modal";
-import {Button, Card, CardItem, H1, Icon, Right, Text} from "native-base";
+import {Button, Content, Container, Card, CardItem, H1, H3, Icon, Right, Body, Left, Text} from "native-base";
 import material from "../../../native-base-theme/variables/material";
 import {Mutation} from "react-apollo";
 import PropTypes from 'prop-types';
@@ -71,10 +71,6 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
         const targetId = userChallenge.id;
         const challengeCompletion = userChallenge.challengeCompletion;
         let challenge = userChallenge.challenge;
-        const headerContent = challenge.headerImage ?
-            <ImageBackground src={challenge.headerImage.url}>
-                <H1>{challenge.challenge.title}</H1>
-            </ImageBackground> : <H1>{challenge.title}</H1>;
         return (
             <Card style={{
                 margin: '10%',
@@ -82,25 +78,49 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                 justifyContent: 'space-between',
                 alignItems: 'stretch'
             }}>
-                <CardItem header style={{backgroundColor: material.brandPrimary}}>
-                    {headerContent}
-                </CardItem>
-
-                <CardItem>
-                    <Text>
-                        {challenge.content}
-                    </Text>
+                <View header style={{backgroundColor: material.brandInfo, flex: 2}}>
+                    <ImageBackground source={challenge.headerImage ? {uri: challenge.headerImage.url} : require('../../../assets/asset_missing.png')} style={{width: '100%', height: '100%'}}>
+                        <View>
+                            <Button transparent info onPress={() => {
+                                requestModalClose();
+                            }}>
+                                <Icon style={{fontSize: 30, color: material.textLight}}name="md-close"/>
+                            </Button>
+                        </View>
+                    </ImageBackground>
+                </View>
+                <CardItem style={{flex:3, flexDirection: 'column',alignItems: 'stretch'}}>
+                    <View style={{flex:1, flexDirection: 'column', alignItems: 'flex-end'}}>
+                    {this.getCompletionActionButton(challenge.title, challengeCompletion, targetId, refetch, modalNotify)}
+                    </View>
+                    <H3 style={{flex:2}}>
+                        {challenge.title}
+                    </H3>
+                    <Container  style={{flex:6}}>
+                    <Content>
+                        <Text style={{ color: material.textLight}}>
+                            {challenge.content}
+                        </Text>
+                    </Content>
+                    </Container>
                 </CardItem>
 
                 <CardItem footer>
-                    <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                    <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-start'}}>
                         <Button transparent onPress={() => {
                             requestModalClose();
                         }}>
-                            <Text>{L.get('cancel')}</Text>
+                            <Text style={{color: material.textLight}}>{L.get('reject_challenge')}</Text>
                         </Button>
-                        {this.getCompletionActionButton(challenge.title, challengeCompletion, targetId, refetch, modalNotify)}
                     </Right>
+
+                    <Left style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                        <Button transparent onPress={() => {
+                            requestModalClose();
+                        }}>
+                            <Text style={{color: material.textLight}}>{L.get('okay')}</Text>
+                        </Button>
+                    </Left>
                 </CardItem>
             </Card>
         )

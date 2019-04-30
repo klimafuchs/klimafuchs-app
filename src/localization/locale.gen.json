@@ -106,5 +106,9 @@
   "hint_seasonplan_progress_title": {
     "default": "Blattfarben",
     "de": "Blattfarben"
+  },
+  "reject_challenge": {
+    "default": "Ablehen",
+    "de": "Ablehen"
   }
 }
