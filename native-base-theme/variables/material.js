@@ -242,6 +242,7 @@ export default {
 
     // Text
     textColor: "#2f2f2f",
+    textLight: "#535353",
     inverseTextColor: "#fff",
     noteFontSize: 14,
     get defaultTextColor() {

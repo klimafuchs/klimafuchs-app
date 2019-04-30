@@ -11,13 +11,14 @@ import {FSModalContentBase} from "../Common/FSModal";
 
 export class ChallengeDetailsModalContent extends FSModalContentBase {
     render() {
-        const {challenge, refetch, requestModalClose} = this.props;
-        const targetId = challenge.id;
-        const challengeCompletion = challenge.challengeCompletion;
-        console.log(challenge, challengeCompletion, targetId, refetch, requestModalClose);
+        let {userChallenge, refetch, requestModalClose} = this.props;
+        const targetId = userChallenge.id;
+        const challengeCompletion = userChallenge.challengeCompletion;
+        let challenge = userChallenge.challenge;
+        console.log("challenge title: " + JSON.stringify(challenge));
         const headerContent = challenge.headerImage ?
             <ImageBackground src={challenge.headerImage.url}>
-                <H1>{challenge.title}</H1>
+                <H1>{challenge.challenge.title}</H1>
             </ImageBackground> : <H1>{challenge.title}</H1>;
         return (
             <Card style={{
@@ -75,7 +76,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
 }
 
 ChallengeDetailsModalContent.propTypes = {
-    challenge: PropTypes.any,
+    userChallenge: PropTypes.any,
     challengeCompletion: PropTypes.any,
     targetId: PropTypes.any,
     refetch: PropTypes.any,

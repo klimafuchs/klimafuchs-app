@@ -1,6 +1,20 @@
 import React, {Component, Fragment} from 'react';
-import {Body, Button, Container, Content, H3, Header, Icon, Left, Right, Text, Title} from 'native-base';
-import {Animated, Easing, FlatList, Image, RefreshControl, StyleSheet, View} from 'react-native'
+import {
+    Body,
+    Button,
+    Container,
+    Content,
+    H3,
+    Header,
+    Icon,
+    Left,
+    Right,
+    Text,
+    Title,
+    Card,
+    CardItem
+} from 'native-base';
+import {Animated, Easing, TouchableOpacity, FlatList, Image, RefreshControl, StyleSheet, View} from 'react-native'
 import * as Constants from "expo";
 import {Query} from "react-apollo";
 import {CURRENT_CHALLENGES, CURRENT_SEASONPLAN} from "../../network/Challenges.gql";
@@ -9,6 +23,7 @@ import {ChallengeDetailsModal, ChallengeDetailsModalContent} from "./ChallengeDe
 import * as PropTypes from "prop-types";
 import {FSModal} from "../Common/FSModal";
 import {CreateTeamModalContent} from "../Competitve/CreateTeamModalContent";
+import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 
 let refetchers = [];
 
@@ -71,7 +86,7 @@ export class SeasonPlanComponent extends Component {
                     <Right/>
                 </Header>
 
-
+                <Content>
                 <Query query={CURRENT_CHALLENGES}>
                     {({loading, error, data, refetch}) => {
                         refetchers.push(refetch);
@@ -84,20 +99,20 @@ export class SeasonPlanComponent extends Component {
                             return (
                                 <Fragment>
                                     <ChallengeProgressIndicator challenges={challenges}/>
-                                    <Container style={{
+                                    <View style={{
                                         flex: 1,
                                         margin: 10,
                                     }}>
 
                                         {this.renderCurrentTopic()}
-                                    </Container>
-                                    <Container style={{
+                                    </View>
+                                    <View style={{
                                         flex: 3,
                                         margin: 10,
                                     }}>
 
                                         <ChallengesComponent challenges={challenges} refetch={refetch}/>
-                                    </Container>
+                                    </View>
                                 </Fragment>
                             )
                         } else {
@@ -105,7 +120,7 @@ export class SeasonPlanComponent extends Component {
                         }
                     }}
                 </Query>
-
+                </Content>
             </Container>
         );
     }
@@ -121,7 +136,7 @@ const RenderThemenwocheComponent = ({themenwoche}) => {
     return (
         <View style={styles.RenderThemenwocheComponent}>
             <H3 style={{color: material.brandDark, paddingBottom: 10}}>Thema:</H3>
-            <Text>{themenwoche.content}</Text>
+            <Text style={{color: material.textLight}}>{themenwoche.content}</Text>
         </View>
     )
 };
@@ -135,7 +150,7 @@ const ChallengesComponent = (props) => {
                 data={challenges}
                 keyExtractor={(item, index) => item.id.toString()}
                 renderItem={({item}) => {
-                    return <ChallengeButton key={item.id} challenge={item} refetch={refetch}/>
+                    return <ChallengePreview key={item.id} challenge={item} refetch={refetch}/>
                 }
                 }
             />
@@ -143,7 +158,7 @@ const ChallengesComponent = (props) => {
     )
 }
 
-class ChallengeButton extends Component {
+class ChallengePreview extends Component {
 
     render() {
         let {challenge, refetch} = this.props;
@@ -154,20 +169,43 @@ class ChallengeButton extends Component {
                         this.challengeModal = ref;
                     }}
                     body={<ChallengeDetailsModalContent
-                        challenge={challenge}
+                        userChallenge={challenge}
                         refetch={refetch}
 
                         requestModalClose={() => this.challengeModal.closeModal()}/>}
                 >
-                    <Button block
-                            light={!challenge.challengeCompletion}
-                            primary={!!challenge.challengeCompletion}
-                            onPress={() => this.challengeModal.openModal()}>
-                        <Text>{challenge.challenge.title}</Text>
-                        {challenge.challengeCompletion &&
-                        <Icon name="md-checkmark"/>
-                        }
-                    </Button>
+                    <Card>
+                        <CardItem button onPress={() => this.challengeModal.openModal()}>
+                            <Body style={{flex: 3, flexDirection: 'column',}}>
+                                <Text style={{fontSize: 12, marginBottom: 5, color: material.textLight}}> { `${L.get('season')} 1 ${L.get('week')} ${challenge.plan.position}`}</Text>
+
+                                <H3>{challenge.challenge.title}</H3>
+                                <Body style={{
+                                    flex: 1,
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-start',
+                                    marginTop: 2,
+                                    width: '100%'
+                                }}>
+                                    <Icon name="md-arrow-dropright" size={5}
+                                          style={{fontSize: 20, marginRight: 10, color: 'gray'}}/>
+                                    <Text style={{fontSize: 12, color: material.textLight}}>
+                                        {challenge.challenge.content.length > 40
+                                            ? `${challenge.challenge.content.substr(0, 40)}...`
+                                            : challenge.challenge.content}
+                                    </Text>
+                                </Body>
+                            </Body>
+                            <Right>
+                                {challenge.challengeCompletion ?
+                                    <Icon name='md-checkbox-outline' style={{ fontSize: 30, color: material.brandPrimary}}/>
+                                    :
+                                    <Icon name='md-square-outline' style={{fontSize: 30,color: '#c7c7c7'}}/>
+                                }
+                            </Right>
+                        </CardItem>
+                    </Card>
                 </FSModal>
             </View>
         )
@@ -185,7 +223,8 @@ function ChallengeProgressIndicator(props) {
         <View style={{
             height: 48,
             padding: 10,
-            paddingBottom: 10,
+            marginTop: 10,
+            marginBottom: 10,
         }}>
             <ChallengeProgressBar progress={challengeCompletions.length}/>
         </View>
@@ -219,15 +258,19 @@ class RenderProgressDot extends Component {
         let {assetUri} = this.props;
         let {fadeAnim} = this.state;
 
-        let imgOpacityStyle = {opacity: fadeAnim.interpolate({
-                inputRange: [0,1],
+        let imgOpacityStyle = {
+            opacity: fadeAnim.interpolate({
+                inputRange: [0, 1],
                 outputRange: [0, 1]
-            })};
+            })
+        };
 
-        let dotOpacityStyle = {opacity: fadeAnim.interpolate({
-                inputRange: [0,1],
+        let dotOpacityStyle = {
+            opacity: fadeAnim.interpolate({
+                inputRange: [0, 1],
                 outputRange: [1, 0]
-            })};
+            })
+        };
 
         return (
             <Animated.View style={{flex: 1}}>
@@ -238,7 +281,7 @@ class RenderProgressDot extends Component {
                         borderRadius: 32 / 2,
                         margin: 5,
                         backgroundColor: '#cfcfcf'
-                    },dotOpacityStyle]}
+                    }, dotOpacityStyle]}
                 />
                 <Animated.Image
                     style={[{
@@ -247,7 +290,7 @@ class RenderProgressDot extends Component {
                         height: 32,
                         margin: 5,
                         position: 'absolute',
-                    },imgOpacityStyle]}
+                    }, imgOpacityStyle]}
                     resizeMode="contain"
                     source={assetUri()}
                 />
@@ -263,7 +306,6 @@ RenderProgressDot.propTypes = {
 }
 
 class ChallengeProgressBar extends Component {
-
 
 
     state = {
@@ -312,13 +354,15 @@ class ChallengeProgressBar extends Component {
     render() {
         let {progress} = this.props;
         let {fillAnim} = this.state;
-       // progress = 2;
+        // progress = 2;
         let progressFill = Math.max(0, ((progress - 1) / 3) * 100);
 
-        let animatedStyle = {width: fillAnim.interpolate({
-                inputRange: [0,1],
+        let animatedStyle = {
+            width: fillAnim.interpolate({
+                inputRange: [0, 1],
                 outputRange: ['0%', '100%']
-            })};
+            })
+        };
         let progressImages = this.makeProgressImages(progress);
         console.debug(progress, progressFill + '%');
         return (
@@ -338,9 +382,9 @@ class ChallengeProgressBar extends Component {
                     width: '30%'
                 }}>
                     <View style={{
-                        height: 5,
+                        height: 3,
 
-                        marginLeft: '12%',
+                        marginLeft: '10%',
                         marginRight: '15%'
                     }}>
                         <View style={{
@@ -366,11 +410,22 @@ class ChallengeProgressBar extends Component {
                     </View>
                 </View>
                 <View style={{
-                    marginLeft: '10%',
+                    marginLeft: '5%',
                 }}>
-                    <Button info rounded style={{height: 24, width: 24}}>
-                        <Icon style={{width: 24, fontSize: 18}} name='md-help'/>
-                    </Button>
+                    <TouchableOpacity style={{
+                        flex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: 'darkgray',
+                        height: 24,
+                        width: 24,
+                        borderRadius: 24 / 2,
+                        marginTop: 2,
+                        marginBottom: 2,
+
+                    }}>
+                        <Icon style={{color: '#404040'}} name='md-information-circle'/>
+                    </TouchableOpacity>
                 </View>
             </View>
         )

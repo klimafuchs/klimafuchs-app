@@ -7,6 +7,14 @@
     "default": "Abbrechen",
     "de": "Abbrechen"
   },
+  "season": {
+    "default": "Season",
+    "de": "Season"
+  },
+  "week": {
+    "default": "week",
+    "de": "Woche"
+  },
   "email_placeholder": {
     "default": "eMail",
     "de": "eMail"

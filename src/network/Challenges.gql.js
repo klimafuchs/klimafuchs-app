@@ -12,7 +12,8 @@ export const CURRENT_CHALLENGES = gql`
                     },
                     content,
                     
-                }
+                },
+                position
             },
             challenge {
                 id,
