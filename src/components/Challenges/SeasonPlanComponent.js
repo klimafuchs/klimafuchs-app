@@ -12,7 +12,8 @@ import {
     Text,
     Title,
     Card,
-    CardItem
+    CardItem,
+    Spinner
 } from 'native-base';
 import {Animated, Easing, TouchableOpacity, FlatList, Image, RefreshControl, StyleSheet, View} from 'react-native'
 import * as Constants from "expo";
@@ -26,8 +27,6 @@ import {CreateTeamModalContent} from "../Competitve/CreateTeamModalContent";
 import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 import {MaterialDialog} from "react-native-material-dialog";
 
-let refetchers = []; //TODO this needs to go
-
 export class SeasonPlanComponent extends Component {
     static navigationOptions = {
         title: 'Woche',
@@ -38,7 +37,8 @@ export class SeasonPlanComponent extends Component {
 
     state = {
         refreshing: false,
-        modalOpen: false
+        modalOpen: false,
+        refetchers: []
     };
 
     notifyModalChange = (newModalOpen) => {
@@ -47,7 +47,7 @@ export class SeasonPlanComponent extends Component {
 
     reload = () => {
         this.setState({refreshing: true});
-        refetchers.map(refetch => {
+        this.state.refetchers.map(refetch => {
             refetch()
         });
         this.setState({refreshing: false});
@@ -58,8 +58,12 @@ export class SeasonPlanComponent extends Component {
         return (
             <Query query={CURRENT_SEASONPLAN}>
                 {({loading, error, data, refetch}) => {
-                    refetchers.push(refetch);
-                    if (loading) return <Text>Loading...</Text>;
+                    this.state.refetchers.push(refetch);
+                    if (loading) return (
+                        <Container>
+                            <Spinner/>
+                        </Container>
+                    );
                     if (error) return <Text>Error {error.message}</Text>;
                     if (data.globalCurrentChallenges) {
                         const themenwoche = data.globalCurrentChallenges.themenwoche;
@@ -94,12 +98,17 @@ export class SeasonPlanComponent extends Component {
                 >
                     <Query query={CURRENT_CHALLENGES}>
                         {({loading, error, data, refetch}) => {
-                            refetchers.push(refetch);
+                            this.state.refetchers.push(refetch);
 
-                            if (loading) return <Text>Loading...</Text>;
+                            if (loading) return (
+                                <Container>
+                                    <Spinner/>
+                                </Container>
+                            );
                             if (error) return <Text>Error {error.message}</Text>;
                             if (data.currentChallenges) {
                                 const challenges = data.currentChallenges;
+                                console.log(challenges.map(c => {return c.replaceable}));
                                 return (
                                     <Fragment>
                                         <ChallengeProgressIndicator challenges={challenges} shouldUpdate={!this.state.modalOpen}/>
@@ -235,14 +244,12 @@ class ChallengeProgressIndicator extends Component {
 
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        console.log(nextProps);
         if (!prevState.oldChallenges)
             return {oldChallenges: nextProps.challenges, shouldUpdate: nextProps.shouldUpdate};
         else if(nextProps.shouldUpdate){
             return {oldChallenges: nextProps.challenges, shouldUpdate: nextProps.shouldUpdate};
         } else {
             return {shouldUpdate: nextProps.shouldUpdate};
-
         }
     }
 
@@ -346,7 +353,7 @@ class ChallengeProgressBar extends Component {
     state = {
         fillAnim: new Animated.Value(0),
         showHint: false
-    }
+    };
 
     static getDerivedStateFromProps(nextProps, prevState) {
         let progressSteps = (nextProps.progress - 1);
@@ -506,4 +513,4 @@ const styles = StyleSheet.create({
         margin: 2,
     },
     ChallengeProgressBarBar: {}
-})
+});

@@ -19,6 +19,14 @@
     "default": "okay",
     "de": "okay"
   },
+  "yes": {
+    "default": "Yes",
+    "de": "Ja"
+  },
+  "no": {
+    "default": "No",
+    "de": "Nein"
+  },
   "email_placeholder": {
     "default": "eMail",
     "de": "eMail"
@@ -110,5 +118,13 @@
   "reject_challenge": {
     "default": "Ablehen",
     "de": "Ablehen"
+  },
+  "hint_seasonplan_challenge_reject_title": {
+    "default": "Challenge ablehnen",
+    "de": "Challenge ablehnen"
+  },
+  "hint_seasonplan_challenge_reject": {
+    "default": "Wenn du die Challenge ablehnst, wird einer von ${jokerCount} Jokern verbraucht. Du erhältst eine zufällige Ersatzchallenge.\nBist du sicher, dass du die Challenge ablehnen möchtest?",
+    "de": "Wenn du die Challenge ablehnst, wird einer von ${jokerCount} Jokern verbraucht. Du erhältst eine zufällige Ersatzchallenge.\nBist du sicher, dass du die Challenge ablehnen möchtest?"
   }
 }

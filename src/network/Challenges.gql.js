@@ -22,9 +22,8 @@ export const CURRENT_CHALLENGES = gql`
                 headerImage {
                     url
                 },
-                
-
             },
+            replaceable,
             challengeCompletion {id}
         }
     }
@@ -79,6 +78,7 @@ export const COMPLETE_CHALLENGE = gql`
     mutation completeChallenge($challengeId: Int!) {
         completeChallenge(challengeId:$challengeId) {
             id
+            
         }
     }
 `;
