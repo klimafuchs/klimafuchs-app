@@ -10,6 +10,7 @@ interface IUserChallenge {
     challengeCompletion: ChallengeCompletion
     id: Int!
     plan: SeasonPlan!
+    replaceable: Boolean
 }
 
 type Challenge {
@@ -30,7 +31,7 @@ type Challenge {
 
 type ChallengeCompletion {
     createdAt: DateTime!
-    id: Int!
+    id: Int
     owner: User!
     replacementChallenge: ChallengeReplacement
     seasonPlanChallenge: SeasonPlanChallenge
@@ -54,6 +55,7 @@ type ChallengeReplacement implements IUserChallenge {
     id: Int!
     owner: User!
     plan: SeasonPlan!
+    replaceable: Boolean
     updatedAt: DateTime!
 }
 
@@ -282,6 +284,7 @@ type SeasonPlanChallenge implements IUserChallenge {
     id: Int!
     plan: SeasonPlan!
     rejections: ChallengeRejection!
+    replaceable: Boolean
 }
 
 type Team {

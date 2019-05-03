@@ -17,13 +17,6 @@ export class SeasonComponent extends Component {
     render() {
         return (
             <Container>
-                <Header style={{paddingTop: Constants.statusBarHeight}}>
-                    <Left/>
-                    <Body>
-                    <Title>Season</Title>
-                    </Body>
-                    <Right/>
-                </Header>
                 <Query query={CURRENT_SEASON}>
                     {({loading, error, data, refetch}) => {
                         if (loading) return <Text>Loading...</Text>;

@@ -194,23 +194,24 @@ export class SeasonProgressComponent extends React.Component {
     }
 
     drawTree = (loc, rot, scale) => {
-        const { w, h } = scale;
-        const x = loc.x - w / 2;
-        const y = loc.y - h / 2;
+        const x = loc.x;
+        const y = loc.y;
+
         return (
-            <Image
+
+         <Image
                 style={[
                     styles.sprite,
                     {
                         top: y,
                         left: x,
-                        height: w,
-                        width: h,
                         transform: [{ rotateZ: rot + 'rad' }],
+                        backgroundColor: "#0ff"
                     },
                 ]}
-                source={require('../../../assets/tree.png')}
-            />
+                source={require('../../../assets/vector/Baum_Season/baum_monat1.png')}
+            >
+            </Image>
         );
     };
 
@@ -221,6 +222,7 @@ export class SeasonProgressComponent extends React.Component {
         const x = loc.x - w / 2;
         const y = loc.y - h / 2;
         return (
+            <View style={{flex:1}}>
             <Image key={key}
                    style={[
                        styles.sprite,
@@ -233,7 +235,9 @@ export class SeasonProgressComponent extends React.Component {
                        },
                    ]}
                    source={require('../../../assets/leaf.png')}
+                   resizeMode="cover"
             />
+            </View>
         );
 
     };
@@ -273,14 +277,10 @@ export class SeasonProgressComponent extends React.Component {
     render() {
         const tree = this.drawTree(
             {
-                x: 350,
-                y: 200,
+                x: 0,
+                y: 0,
             },
             0,
-            {
-                w: 135 * 3,
-                h: 35 * 3,
-            }
         );
 
         var leafs = () => {
