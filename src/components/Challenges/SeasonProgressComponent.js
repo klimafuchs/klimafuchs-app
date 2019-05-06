@@ -1,16 +1,16 @@
 import * as React from 'react';
-import {Button, Image, StyleSheet, Text, View} from 'react-native';
+import {Button, Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 import {Icon} from "native-base";
 // You can import from local files
 // or any pure javascript modules available in npm
 class Sprite extends React.PureComponent {
     render() {
-        const { loc, rot, scale, img } = this.props;
-        const { w, h } = scale;
+        const {loc, rot, scale, img} = this.props;
+        const {w, h} = scale;
         const x = loc.x - w / 2;
         const y = loc.y - h / 2;
-        console.log("render sprite with: " + JSON.stringify({ loc, rot, scale}));
+        console.log("render sprite with: " + JSON.stringify({loc, rot, scale}));
         return (
             <FadeIn>
                 <View
@@ -19,7 +19,7 @@ class Sprite extends React.PureComponent {
                         {
                             left: x,
                             top: y,
-                            transform: [{ rotateZ: rot + 'rad' }],
+                            transform: [{rotateZ: rot + 'rad'}],
                             width: w,
                             height: h,
                         },
@@ -36,7 +36,7 @@ export class SeasonProgressComponent extends React.Component {
     static navigationOptions = {
         title: 'Fortschritt',
         tabBarIcon: ({focused, tintColor}) => (
-            <Icon name='leaf'y   style={{fontSize: 20, color: tintColor}}/>
+            <Icon name='leaf' y style={{fontSize: 20, color: tintColor}}/>
         ),
     };
 
@@ -186,11 +186,27 @@ export class SeasonProgressComponent extends React.Component {
         },
     ];
 
+    state = {
+        leafCount: 0,
+        bgImageUri: () => {return require('../../../assets/vector/Backgrounds_Season/background1.png')}
+    };
+
+    getBackgroundImage = (season) => {
+        switch (season) {
+            case 'SPRING':
+                return () => {return require('../../../assets/vector/Backgrounds_Season/background1.png')};
+            case 'SUMMER':
+                return () => {return require('../../../assets/vector/Backgrounds_Season/background2.png')};
+            case 'FALL':
+                return () => {return require('../../../assets/vector/Backgrounds_Season/background3.png')};
+            case 'WINTER':
+                return () => {return require('../../../assets/vector/Backgrounds_Season/background4.png')};
+
+        }
+    };
+
     constructor(props) {
         super(props);
-        this.state = { leafCount: 0 };
-        this.onPressAddLeaf = this.onPressAddLeaf.bind(this);
-        this.onPressSubLeaf = this.onPressSubLeaf.bind(this);
     }
 
     drawTree = (loc, rot, scale) => {
@@ -198,82 +214,75 @@ export class SeasonProgressComponent extends React.Component {
         const y = loc.y;
 
         return (
+            <View style={{
+                top: '15%',
+                left: x,
+                height: '80%',
+                width: '100%',
+                position: 'absolute',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center'
 
-         <Image
-                style={[
-                    styles.sprite,
-                    {
-                        top: y,
-                        left: x,
-                        transform: [{ rotateZ: rot + 'rad' }],
-                        backgroundColor: "#0ff"
-                    },
-                ]}
-                source={require('../../../assets/vector/Baum_Season/baum_monat1.png')}
-            >
-            </Image>
+            }}>
+
+                <Image
+                    style={[
+                        {
+                            transform: [{rotateZ: rot + 'rad'}],
+                            flex: 1,
+                            height: '100%',
+                            width: '100%',
+                        }
+                    ]}
+                    source={require('../../../assets/vector/Baum_Season/baum_monat1.png')}
+                    resizeMode="contain"
+                >
+                </Image>
+            </View>
         );
     };
 
     drawLeaf = (key, {loc, rot, scale}) => {
         console.log(JSON.stringify({key: key, t: {loc, rot, scale}}));
 
-        const { w, h } = scale;
+        const {w, h} = scale;
         const x = loc.x - w / 2;
         const y = loc.y - h / 2;
         return (
-            <View style={{flex:1}}>
-            <Image key={key}
-                   style={[
-                       styles.sprite,
-                       {
-                           top: y,
-                           left: x,
-                           height: w,
-                           width: h,
-                           transform: [{ rotateZ: rot + 'deg' }],
-                       },
-                   ]}
-                   source={require('../../../assets/leaf.png')}
-                   resizeMode="cover"
-            />
+            <View style={{flex: 1}} key={key}>
+                <Image
+                    style={[
+                        styles.sprite,
+                        {
+                            top: y,
+                            left: x,
+                            height: w,
+                            width: h,
+                            transform: [{rotateZ: rot + 'deg'}],
+                            position: 'absolute'
+                        },
+                    ]}
+                    source={require('../../../assets/leaf.png')}
+                    resizeMode="cover"
+                />
             </View>
         );
 
     };
-    /*
-    drawLeaf(id, transform) {
-      return (
-        <Sprite key={id}
-          loc={transform.loc}
-          rot={transform.rot}
-          scale={transform.scale}
-          img={
-            <Image
-            style={[
-              styles.sprite,
-              {
-                height: 20,
-                width: 20,
-              },
-            ]}
-            source={require('./assets/leaf.png')}
-            />
-          }
-        />
-      );
-    }
-    */
-    onPressAddLeaf() {
+
+    onPressAddLeaf = () => {
         if (this.state.leafCount < 12) {
-            this.setState({ leafCount: this.state.leafCount + 1 });
+            this.setState({leafCount: this.state.leafCount + 1});
         }
-    }
-    onPressSubLeaf() {
+    };
+
+    onPressSubLeaf = () => {
         if (this.state.leafCount > 0) {
-            this.setState({ leafCount: this.state.leafCount - 1 });
+            this.setState({leafCount: this.state.leafCount - 1});
         }
-    }
+    };
+
     render() {
         const tree = this.drawTree(
             {
@@ -283,10 +292,10 @@ export class SeasonProgressComponent extends React.Component {
             0,
         );
 
-        var leafs = () => {
+        let leafs = () => {
 
-            var leafs = [];
-            for (var i = 0; this.state.leafCount > i; i++) {
+            let leafs = [];
+            for (let i = 0; this.state.leafCount > i; i++) {
                 leafs.push(this.drawLeaf(i, this.leafTransforms[i]))
             }
             return (
@@ -297,8 +306,26 @@ export class SeasonProgressComponent extends React.Component {
         const leaf = this.drawLeaf(999, this.leafTransforms[0]);
         return (
             <View style={styles.container}>
+
+                <Image
+                    style={{
+                        top: -0,
+                        left: 0,
+                        width: '100%',
+                        height: "145%",
+                        position: 'absolute'
+                    }}
+                    source={this.state.bgImageUri()}
+                    imageStyle={{overflow: 'hidden'}}
+                    resizeMode="cover"
+
+                >
+
+                </Image>
                 {tree}{leafs()}
-                <View>
+
+                <View opacity={0.5} style={{height: 100, width: 200}}>
+                    <Text>Leafs: {this.state.leafCount}</Text>
                     <Button
                         style={styles.buttons}
                         onPress={this.onPressAddLeaf}
@@ -311,7 +338,19 @@ export class SeasonProgressComponent extends React.Component {
                         title="- Leaf"
                         color="#aa4444"
                     />
-                    <Text>Leafs: {this.state.leafCount}</Text>
+                    <Text>Tree ctl</Text>
+                    <Button
+                        style={styles.buttons}
+                        onPress={this.onPressAddLeaf}
+                        title=""
+                        color="#44aa44"
+                    />
+                    <Button
+                        style={styles.button}
+                        onPress={this.onPressSubLeaf}
+                        title="- Leaf"
+                        color="#aa4444"
+                    />
                 </View>
             </View>
         );
