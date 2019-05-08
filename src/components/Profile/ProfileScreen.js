@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from 'react';
-import {AsyncStorage, Switch, View} from 'react-native';
+import {AsyncStorage, Switch, View, StyleSheet} from 'react-native';
+import {SafeAreaView} from 'react-navigation'
 import {
     ActionSheet,
     Body,
@@ -24,6 +25,7 @@ import {CHANGE_PASSWORD, CURRENT_USER, UPDATE_PROFILE} from "../../network/UserD
 import {Util} from "../../util";
 import {ValidatingTextField} from "../Common/ValidatingTextInput";
 import client from "../../network/client"
+import material from "../../../native-base-theme/variables/material";
 
 class ProfileScreen extends Component {
 
@@ -83,6 +85,7 @@ class ProfileScreen extends Component {
 
     render() {
         return (
+            <SafeAreaView style={styles.container} forceInset={{ top: 'always' }}>
             <Container>
                 <Header>
                     <Left/>
@@ -190,7 +193,7 @@ class ProfileScreen extends Component {
 
                 </Content>
             </Container>
-
+            </SafeAreaView>
 
         );
     };
@@ -402,4 +405,10 @@ class PasswordSetting extends SettingsField {
     };
 }
 
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: material.brandInfo
+    }
+})
 export default ProfileScreen;

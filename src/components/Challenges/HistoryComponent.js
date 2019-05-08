@@ -7,7 +7,7 @@ import {SEASONS} from "../../network/Challenges.gql";
 
 export class HistoryComponent extends Component {
     static navigationOptions = {
-        title: 'Trophäen',
+        title: 'Trophaeen',
         tabBarIcon: ({focused, tintColor}) => (
             <Icon name='md-trophy' style={{fontSize: 20, color: tintColor}}/>
         ),

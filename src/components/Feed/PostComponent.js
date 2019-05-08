@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+    ActionSheet,
     Body,
     Button,
     Card,
@@ -27,119 +28,182 @@ import material from '../../../native-base-theme/variables/material';
 import env from '../../env';
 import {Util} from "../../util";
 import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
+import * as PropTypes from "prop-types";
 
 moment.locale('de');
 
 
-export default PostComponent = ({post, navigateToDetailedView, commentRefetch, close}) => {
-    let cardMedia, header, cardFooter, commentSection;
-    if (post.ytId) {
-        cardMedia = <Text>TODO render yt embed here</Text>
-    } else if (post.image) {
-        const url = `${env.dev.API_IMG_URL}${post.image.filename}`;
-        const imageAspectRatio = post.image.height / post.image.width;
-        const width = (Dimensions.get('window').width);
-        const height = (Dimensions.get('window').height);
-        //TODO ENHANCEMENT add lightbox?
-        cardMedia = <View style={
+class PostComponent extends Component {
+    overflowActionsConfig = {
+        config:
             {
-                flex: 1,
-            }
-        }>
-            <Image
-                style={{width: '100%', height: width * imageAspectRatio}}
-                source={{uri: url}}
-                resizeMode={navigateToDetailedView ? "cover" : "contain"}
-            />
-        </View>
-    }
-    if (navigateToDetailedView) {
-        cardFooter = <CardItem>
-            <Left>
-                <LikeButton post={post}/>
-            </Left>
-            <Button transparent
-                    onPress={navigateToDetailedView}>
-                <Text>{L.get("feed_comments", {commentCount: post.commentCount})}</Text>
-            </Button>
-            <Right>
-                <Button icon transparent
-                        onPress={navigateToDetailedView}>
-                    <Icon name="ios-more" style={{ /* this is a choice */
-                        transform: [{rotate: '90deg'}]
-                    }}/>
-                </Button>
-            </Right>
-        </CardItem>
-    } else {
-        cardFooter = <CardItem last style={{flexDirection: 'row', flex: 1}}>
-            <LikeButton post={post}/>
-            <AddCommentWidget postId={post.id}/>
-        </CardItem>
-    }
-    let displayedTime = moment(post.dateCreated).fromNow();
+                options: [
+                    {text: "Teilen", icon: "share", iconColor: material.textLight},
+                    {text: "Melden", icon: "md-alert", iconColor: material.textLight},
+                    {text: "Abbrechen", icon: "md-alert", iconColor: material.textLight}
+                ],
+                cancelButtonIndex: 2,
+                destructiveButtonIndex: 1,
+            },
+        callback: (buttonIndex) => {
+            this.overflowActionsConfig.actions[buttonIndex]();
+            this.actionSheetAction({
+                index: buttonIndex,
+                pressed: this.overflowActionsConfig.config.options[buttonIndex]
+            });
+        },
+        actions: [
+            () => {
+            },
+            () => {
+            },
+            () => {
+                console.log("action cancelled")
+            },
 
-    let card =
-        <Card style={{flex: 1}}>
-            <CardItem header bordered>
+        ],
+    };
+
+    actionSheetAction(param) {
+        this.overflowActionsConfig.actions[param.index]();
+    }
+
+    render() {
+        let {post, navigateToDetailedView, commentRefetch, close} = this.props;
+        let cardMedia, header, cardFooter, commentSection;
+        let displayedTime = moment(post.dateCreated).fromNow();
+
+        if (post.ytId) {
+            cardMedia = <Text>TODO render yt embed here</Text>
+        } else if (post.image) {
+            const url = `${env.dev.API_IMG_URL}${post.image.filename}`;
+            const imageAspectRatio = post.image.height / post.image.width;
+            const width = (Dimensions.get('window').width);
+            const height = (Dimensions.get('window').height);
+            //TODO ENHANCEMENT add lightbox?
+            cardMedia = <View style={
+                {
+                    flex: 1,
+                }
+            }>
+                <Image
+                    style={{width: '100%', height: width * imageAspectRatio}}
+                    source={{uri: url}}
+                    resizeMode={navigateToDetailedView ? "cover" : "contain"}
+                />
+            </View>
+        }
+        if (navigateToDetailedView) {
+            cardFooter = <CardItem>
                 <Left>
-                    <Image
-                        style={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: 16
-                        }}
-                        source={{uri: Util.AvatarToUri(post.author.avatar)}}
-                        resizeMode="contain"
-                    />
-                    <Body style={{justifyContent: 'center', alignItems: 'center'}}>
+                    <LikeButton post={post}/>
+                </Left>
+                <Right>
+                    <Button transparent
+                            onPress={navigateToDetailedView}>
+                        <Text>{L.get("feed_comments", {commentCount: post.commentCount})}</Text>
+                    </Button>
+                </Right>
+            </CardItem>
+        } else {
+            header = <View>
+                <Body style={{justifyContent: 'center', alignItems: 'center'}}>
                     <Text style={{alignSelf: 'center', flex: 1, alignItems: 'center'}}>
                         {L.get("feed_post_author_description",
                             {screenName: post.author.screenName, displayedTime: displayedTime})}
                     </Text>
-                    </Body>
-                </Left>
-            </CardItem>
-            <CardItem>
-                {cardMedia}
-            </CardItem>
-            <CardItem>
-                <H1>{post.title}</H1>
-            </CardItem>
-
-            {navigateToDetailedView
-                ? <CardItem button onPress={navigateToDetailedView}>
-                    <Text>
-                        {post.body.length > 140
-                            ? `${post.body.substr(0, 139)}...`
-                            : post.body}
-                    </Text>
-                </CardItem>
-                : <CardItem>
-                    <Text>{post.body}</Text>
-                </CardItem>
-            }
-
-            {cardFooter}
-        </Card>
-    if (navigateToDetailedView) {
-        return (
-            <View>
-                {card}
+                </Body>
             </View>
-        )
-    } else {
-        return (
-            <Container>
-                <Content>
-                    {card}
-                    {commentRefetch && <CommentTreeWidget comments={post.comments} postId={post.id}
-                                                          refetch={commentRefetch}/>}
-                </Content>
 
-            </Container>
-        )
+            cardFooter = <CardItem last style={{flexDirection: 'row', flex: 1}}>
+                <LikeButton post={post}/>
+                <AddCommentWidget postId={post.id}/>
+            </CardItem>
+        }
+
+        let card =
+            <Card style={{flex: 1}}>
+                <CardItem>
+                    {cardMedia}
+                </CardItem>
+                {navigateToDetailedView ?
+                    <CardItem>
+                        <Left>
+                            <Image
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 16
+                                }}
+                                source={{uri: Util.AvatarToUri(post.author.avatar)}}
+                                resizeMode="contain"
+                            />
+                            <Body style={{justifyContent: 'center', alignItems: 'flex-start'}}>
+                                <H1>{post.title}</H1>
+                                <Text style={{alignSelf: 'flex-start', flex: 1, alignItems: 'center'}}>
+                                    {L.get("feed_post_author_description",
+                                        {screenName: post.author.screenName, displayedTime: displayedTime})}
+                                </Text>
+                            </Body>
+                        </Left>
+                        <Right>
+                            <Button transparent onPress={() => {
+                                ActionSheet.show(
+                                    this.overflowActionsConfig.config,
+                                    this.overflowActionsConfig.callback
+                                )
+                            }}
+                                    style={{width: 25}}>
+                                <Icon name='md-more' style={{color: material.textLight}}/>
+                            </Button>
+                        </Right>
+                    </CardItem>
+                    : <CardItem>
+                        <H1>{post.title}</H1>
+                    </CardItem>}
+
+                {navigateToDetailedView
+                    ? <CardItem button onPress={navigateToDetailedView}>
+                        <Text>
+                            {post.body.length > 140
+                                ? `${post.body.substr(0, 139)}...`
+                                : post.body}
+                        </Text>
+                    </CardItem>
+                    : <CardItem>
+                        <Text>{post.body}</Text>
+                    </CardItem>
+                }
+
+                {cardFooter}
+            </Card>
+        if (navigateToDetailedView) {
+            return (
+                <View>
+                    {card}
+                </View>
+            )
+        } else {
+            return (
+                <Container>
+                    <Content>
+                        {!navigateToDetailedView && header}
+                        {card}
+                        {commentRefetch && <CommentTreeWidget comments={post.comments} postId={post.id}
+                                                              refetch={commentRefetch}/>}
+                    </Content>
+
+                </Container>
+            )
+        }
     }
+}
+
+PostComponent.propTypes = {
+    post: PropTypes.any,
+    navigateToDetailedView: PropTypes.any,
+    commentRefetch: PropTypes.any,
+    close: PropTypes.any
 }
 
 class AddCommentWidget extends Component {
@@ -197,18 +261,12 @@ class AddCommentWidget extends Component {
                     }}>
                     <Mutation key={this.props.postId}
                               mutation={ADD_COMMENT}
-                              update={(cache, {data: {addComment}}) => {
-                                  const data = cache.readQuery({
+                              refetchQueries={[{
                                       query: LOAD_POST,
                                       variables: {postId: this.props.postId}
-                                  });
-                                  data.post.comments.push(addComment);
-                                  cache.writeQuery({
-                                      id: this.props.postId,
-                                      query: LOAD_POST,
-                                      data
-                                  });
-                              }}
+                                  }
+                              ]}
+
                     >
                         {(addComment, {data}) => (
                             <Card transparent style={styles.modalContent}>
@@ -231,7 +289,7 @@ class AddCommentWidget extends Component {
 
                                         </Button>
                                     </Left>
-                                    <Right style={{width: 'auto', flex: 1}}>
+                                    <Right style={{width: 'auto', flex: 1, justifyContent: 'flex-end'}}>
                                         <Button transparent disabled={!this.state.body.length > 0}
                                                 onPress={async () => {
                                                     this.closeModal();
@@ -312,7 +370,7 @@ class CommentTreeWidget extends Component {
 
     render() {
         //let result = this.walkTree(this.state.commentTree);
-        //console.log(result);
+        console.log(this.props.comments);
         return (
             <View style={{flex: 1, flexShrink: 0, alignItems: 'stretch', width: '100%'}}>
                 {this.buildCommentTree(this.props.comments).map(tree => this._walkTree(tree, this.recursionDepth))}
@@ -372,7 +430,7 @@ class CommentWidget extends Component {
                 <View style={styles.commentCardText}>
                     <Text style={{
                         fontSize: 10,
-                        fontStyle: 'italic'
+                        fontStyle: 'normal'
                     }}>
                         {L.get("feed_post_author_description",
                             {screenName: comment.author.screenName, displayedTime: displayedTime})}
@@ -400,7 +458,12 @@ class LikeButton extends Component {
                     }}
             >
                 <Text
-                    style={{color: post.currentUserLikesPost ? '#ff0000' : material.textColor}}>{post.sentiment} Likes</Text>
+                    style={{color: post.currentUserLikesPost ? '#ff0000' : material.textColor}}
+                >
+                    {post.sentiment} <Icon
+                    style={{color: post.currentUserLikesPost ? '#ff0000' : material.textColor, fontSize: 14}}
+                    name={post.currentUserLikesPost ? "ios-heart" : "ios-heart-empty"}/>
+                </Text>
             </Button>
         )
     }
@@ -447,7 +510,7 @@ const styles = StyleSheet.create({
         padding: 10
     },
     commentWidget: {
-        borderLeftWidth: 1,
+        borderLeftWidth: 5,
         marginLeft: 10,
         marginRight: 0,
         padding: 0,
@@ -487,7 +550,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1,
         alignItems: 'flex-end',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
         flexShrink: 0,
     },
 });
+
+export default PostComponent;

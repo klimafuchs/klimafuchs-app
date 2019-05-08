@@ -19,11 +19,11 @@ export const FeedNavigation = createStackNavigator({
     }
 }, {
     navigationOptions: {
-        title: 'Feed',
         tabBarIcon: ({focused, tintColor}) => (
             <Icon name='list' style={{fontSize: 20, color: tintColor}}/>
         ),
     },
     initialRouteName: 'Feed',
+    headerMode: 'none'
 });
 

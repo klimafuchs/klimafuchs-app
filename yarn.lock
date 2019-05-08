@@ -5001,6 +5001,13 @@ react-native-branch@2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-2.2.5.tgz#4074dd63b4973e6397d9ce50e97b57c77a518e9d"
 
+react-native-draggable@^1.0.15:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/react-native-draggable/-/react-native-draggable-1.0.15.tgz#a5eb47ff7ac4a96d87b1c7496c84110ea27b3711"
+  integrity sha512-7nf8uU845WV5iyAlPaLiLsBrhZIIRS8uecPexvUVQi2pJzRqF947G4HfCEmTjRnYPZDIdu7TVKfCaB/mHxhjRw==
+  dependencies:
+    prop-types "^15.6.0"
+
 react-native-drawer@2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/react-native-drawer/-/react-native-drawer-2.5.0.tgz#022cba5c0516126a9fc9cce3185cb46c644b51c4"

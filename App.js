@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import {AsyncStorage, SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import {createAppContainer, createStackNavigator, createSwitchNavigator} from "react-navigation";
+import {AsyncStorage,  StatusBar, StyleSheet, Text, View} from 'react-native';
+import {createAppContainer, SafeAreaView, createStackNavigator, createSwitchNavigator} from "react-navigation";
 import {Root, Spinner, StyleProvider} from 'native-base';
 import LoginScreen from "./src/components/PreLogin/LoginScreen";
 import SignUpScreen from "./src/components/PreLogin/SignUpScreen";
@@ -14,7 +14,7 @@ import {ForgotPasswordScreen} from "./src/components/PreLogin/ForgotPasswordScre
 import {Font} from "expo";
 import ApolloProvider from "react-apollo/ApolloProvider";
 import client from "./src/network/client"
-
+const prefix = Expo.Linking.makeUrl('/');
 export default class AppRoot extends Component {
 
     constructor(props) {
@@ -43,11 +43,9 @@ export default class AppRoot extends Component {
             <ReduxProvider store={store}>
                 <ApolloProvider client={client}>
                     <StyleProvider style={getTheme(material)}>
-                        <SafeAreaView style={styles.safeArea}>
-                            <Root>
-                                <RootContainer/>
-                            </Root>
-                        </SafeAreaView>
+                        <Root>
+                            <RootContainer uriPrefix={prefix}/>
+                        </Root>
                     </StyleProvider>
                 </ApolloProvider>
             </ReduxProvider>

@@ -28,8 +28,6 @@
     "android": {
       "package": "org.klimafuchs"
     },
-    "androidStatusBar": {
-      "barStyle": "light-content"
-    }
+    "scheme": "klimafuchs"
   }
 }

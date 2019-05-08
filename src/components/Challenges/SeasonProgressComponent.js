@@ -2,34 +2,10 @@ import * as React from 'react';
 import {Button, Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 import {Icon} from "native-base";
-// You can import from local files
-// or any pure javascript modules available in npm
-class Sprite extends React.PureComponent {
-    render() {
-        const {loc, rot, scale, img} = this.props;
-        const {w, h} = scale;
-        const x = loc.x - w / 2;
-        const y = loc.y - h / 2;
-        console.log("render sprite with: " + JSON.stringify({loc, rot, scale}));
-        return (
-            <FadeIn>
-                <View
-                    style={[
-                        styles.sprite,
-                        {
-                            left: x,
-                            top: y,
-                            transform: [{rotateZ: rot + 'rad'}],
-                            width: w,
-                            height: h,
-                        },
-                    ]}>
-                    {img}
-                </View>
-            </FadeIn>
-        );
-    }
-}
+import Draggable from "react-native-draggable";
+import * as PropTypes from "prop-types";
+
+const leafTransforms = require("./leafTransforms");
 
 export class SeasonProgressComponent extends React.Component {
 
@@ -40,168 +16,61 @@ export class SeasonProgressComponent extends React.Component {
         ),
     };
 
-    leafTransforms = [
-        {
-            loc: {
-                x: 150,
-                y: 430,
-            },
-            rot: 190,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 140,
-                y: 420,
-            },
-            rot: 270,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 255,
-                y: 365,
-            },
-            rot: 70,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 250,
-                y: 380,
-            },
-            rot: 180,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 160,
-                y: 325,
-            },
-            rot: 230,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 157,
-                y: 305,
-            },
-            rot: 300,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 240,
-                y: 230,
-            },
-            rot: 20,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 230,
-                y: 274,
-            },
-            rot: 130,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 153,
-                y: 173,
-            },
-            rot: 230,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 153,
-                y: 142,
-            },
-            rot: 340,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 210,
-                y: 150,
-            },
-            rot: 0,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-
-        {
-            loc: {
-                x: 225,
-                y: 167,
-            },
-            rot: 100,
-            scale: {
-                w: 20,
-                h: 20,
-            },
-        },
-    ];
 
     state = {
-        leafCount: 0,
-        bgImageUri: () => {return require('../../../assets/vector/Backgrounds_Season/background1.png')}
+        leafCount: [0,0,0],
+        seasonType: 'SPRING',
+        seasonMonth: 0,
+        leafs: [[],[],[]]
     };
 
-    getBackgroundImage = (season) => {
-        switch (season) {
+    // TODO replace with something more expandable, fine for the first season
+    getBackgroundImage = (seasonType) => {
+        switch (seasonType) {
             case 'SPRING':
-                return () => {return require('../../../assets/vector/Backgrounds_Season/background1.png')};
+                return () => {
+                    return require('../../../assets/vector/Backgrounds_Season/background1.png') //@note this construction returning a function is not ideal, but prevents a 'invalid call to require()' error (in expo versions <= 32)
+                };
             case 'SUMMER':
-                return () => {return require('../../../assets/vector/Backgrounds_Season/background2.png')};
+                return () => {
+                    return require('../../../assets/vector/Backgrounds_Season/background2.png')
+                };
             case 'FALL':
-                return () => {return require('../../../assets/vector/Backgrounds_Season/background3.png')};
+                return () => {
+                    return require('../../../assets/vector/Backgrounds_Season/background3.png')
+                };
             case 'WINTER':
-                return () => {return require('../../../assets/vector/Backgrounds_Season/background4.png')};
+                return () => {
+                    return require('../../../assets/vector/Backgrounds_Season/background4.png')
+                };
+            default:
+                console.error(`SeasonType ${seasonType} not defined`)
+                return () => {
+                    return require('../../../assets/vector/Backgrounds_Season/background1.png')
+                };
 
+        }
+    };
+
+    getTreeImage = (seasonMonth) => {
+        switch (seasonMonth) {
+            case 0:
+                return () => {
+                    return require('../../../assets/vector/Baum_Season/baum_monat1.png')
+                };
+            case 1:
+                return () => {
+                    return require('../../../assets/vector/Baum_Season/baum_monat2.png')
+                };
+            case 2:
+                return () => {
+                    return require('../../../assets/vector/Baum_Season/baum_monat3.png')
+                };
+            default:
+                console.error(`seasonMonth ${seasonMonth} not defined`)
+                return () => {
+                    return require('../../../assets/vector/Baum_Season/baum_monat1.png')
+                };
         }
     };
 
@@ -235,7 +104,7 @@ export class SeasonProgressComponent extends React.Component {
                             width: '100%',
                         }
                     ]}
-                    source={require('../../../assets/vector/Baum_Season/baum_monat1.png')}
+                    source={this.getTreeImage(this.state.seasonMonth)()}
                     resizeMode="contain"
                 >
                 </Image>
@@ -243,37 +112,22 @@ export class SeasonProgressComponent extends React.Component {
         );
     };
 
-    drawLeaf = (key, {loc, rot, scale}) => {
-        console.log(JSON.stringify({key: key, t: {loc, rot, scale}}));
+    leafRefs = [];
 
-        const {w, h} = scale;
-        const x = loc.x - w / 2;
-        const y = loc.y - h / 2;
-        return (
-            <View style={{flex: 1}} key={key}>
-                <Image
-                    style={[
-                        styles.sprite,
-                        {
-                            top: y,
-                            left: x,
-                            height: w,
-                            width: h,
-                            transform: [{rotateZ: rot + 'deg'}],
-                            position: 'absolute'
-                        },
-                    ]}
-                    source={require('../../../assets/leaf.png')}
-                    resizeMode="cover"
-                />
-            </View>
-        );
 
-    };
 
     onPressAddLeaf = () => {
-        if (this.state.leafCount < 12) {
-            this.setState({leafCount: this.state.leafCount + 1});
+        if (this.state.leafCount[this.state.seasonMonth] < 12) {
+            let newLeafCount = this.state.leafCount;
+            let currentLeafs = this.state.leafCount[this.state.seasonMonth] + 1
+            newLeafCount[this.state.seasonMonth] =  currentLeafs;
+            console.log(newLeafCount)
+            this.state.leafs[this.state.seasonMonth].push(<Leaf key={newLeafCount}
+                                                                id={newLeafCount}
+                                                                month={this.state.seasonMonth}
+                                                                ref={(ref) => {this.leafRefs = ref}}/>);
+
+            this.setState({leafCount: newLeafCount})
         }
     };
 
@@ -283,6 +137,17 @@ export class SeasonProgressComponent extends React.Component {
         }
     };
 
+    onPressAddMonth = () => {
+        if (this.state.seasonMonth < 2) {
+            this.setState({seasonMonth: this.state.seasonMonth + 1});
+        }
+    };
+
+    onPressSubMonth = () => {
+        if (this.state.seasonMonth > 0) {
+            this.setState({seasonMonth: this.state.seasonMonth - 1});
+        }
+    };
     render() {
         const tree = this.drawTree(
             {
@@ -292,18 +157,9 @@ export class SeasonProgressComponent extends React.Component {
             0,
         );
 
-        let leafs = () => {
+        let {leafs, seasonMonth, seasonType} = this.state;
+        console.log(this.leafRefs);
 
-            let leafs = [];
-            for (let i = 0; this.state.leafCount > i; i++) {
-                leafs.push(this.drawLeaf(i, this.leafTransforms[i]))
-            }
-            return (
-                leafs
-            )
-        };
-
-        const leaf = this.drawLeaf(999, this.leafTransforms[0]);
         return (
             <View style={styles.container}>
 
@@ -315,43 +171,100 @@ export class SeasonProgressComponent extends React.Component {
                         height: "145%",
                         position: 'absolute'
                     }}
-                    source={this.state.bgImageUri()}
+                    source={this.getBackgroundImage(seasonType)()}
                     imageStyle={{overflow: 'hidden'}}
                     resizeMode="cover"
 
                 >
 
                 </Image>
-                {tree}{leafs()}
+                {tree}{leafs[seasonMonth]}
 
-                <View opacity={0.5} style={{height: 100, width: 200}}>
-                    <Text>Leafs: {this.state.leafCount}</Text>
+                {__DEV__ && <View opacity={0.5} style={{top: 100, left: 350, height: "100%", width: 75}}>
+                    <Text>BG: {seasonType}</Text>
                     <Button
+                        small
+                        style={styles.buttons}
+                        onPress={() => {
+                            this.setState({seasonType: 'SPRING'})
+                        }}
+                        title="Spr"
+                        color="#77ff77"
+                    />
+                    <Button
+                        small
+                        style={styles.button}
+                        onPress={() => {
+                            this.setState({seasonType: 'SUMMER'})
+                        }}
+                        title="Sum"
+                        color="#44aa44"
+                    />
+                    <Button
+                        small
+                        style={styles.buttons}
+                        onPress={() => {
+                            this.setState({seasonType: 'FALL'})
+                        }}
+                        title="Fall"
+                        color="#aaaa44"
+                    />
+                    <Button
+                        small
+                        style={styles.button}
+                        onPress={() => {
+                            this.setState({seasonType: 'WINTER'})
+                        }}
+                        title="Win"
+                        color="#4444aa"
+                    />
+                    <Text>Tree: {seasonMonth}</Text>
+                    <Button
+                        small
+                        style={styles.buttons}
+                        onPress={this.onPressAddMonth}
+                        title="+Mon"
+                        color="#44aa44"
+                    />
+                    <Button
+                        small
+                        style={styles.button}
+                        onPress={this.onPressSubMonth}
+                        title="-Mon"
+                        color="#aa4444"
+                    />
+
+                    <Text>{this.state.leafCount}</Text>
+                    <Button
+                        small
                         style={styles.buttons}
                         onPress={this.onPressAddLeaf}
                         title="+ Leaf"
                         color="#44aa44"
                     />
                     <Button
+                        small
                         style={styles.button}
                         onPress={this.onPressSubLeaf}
                         title="- Leaf"
                         color="#aa4444"
                     />
-                    <Text>Tree ctl</Text>
+                    <Text>Transforms</Text>
                     <Button
-                        style={styles.buttons}
-                        onPress={this.onPressAddLeaf}
-                        title=""
-                        color="#44aa44"
-                    />
-                    <Button
+                        small
                         style={styles.button}
-                        onPress={this.onPressSubLeaf}
-                        title="- Leaf"
-                        color="#aa4444"
+                        onPress={() => {
+                            this.leafRefs.forEach((month) => {
+                                month.forEach((leaf) => {
+                                    console.log(leaf.getPosition())
+                                })
+                            })
+                        }}
+                        title="dump"
+                        color="#aaaaaa"
                     />
-                </View>
+
+                </View>}
             </View>
         );
     }
@@ -367,6 +280,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
+
     },
     button: {
         width: '30%',
@@ -376,3 +290,56 @@ const styles = StyleSheet.create({
         position: 'absolute',
     },
 });
+
+class Leaf extends React.Component {
+    leafRef;
+    render() {
+        let {id, month, transform} = this.props;
+
+        if (!transform) transform = {loc: {x: 100, y: 100}, rot: 0, scale: {w: 20, h: 20}};
+        let {loc, rot, scale} = transform;
+        console.log(JSON.stringify({id: id, month: month, t: {loc, rot, scale}}));
+
+        const {w, h} = scale;
+        const x = loc.x - w / 2;
+        const y = loc.y - h / 2;
+        if (__DEV__) return (
+            <Draggable
+                       renderShape='image'
+                       imageSource={require('../../../assets/vector/Blaetter_Baum_und_Fortschritt/Blatt1.png')}
+                       renderSize={20}
+                       reverse={false}
+                       x={x}
+                       y={y}
+                       ref={(ref) => {
+                           this.leafRef = ref
+                       }}
+                       longPressDrag={(_) => console.log('long press' + _)}
+                       pressDrag={(_) => console.log('press drag' + _)}
+                       pressInDrag={(_) => console.log('in press' + _)}
+                       pressOutDrag={(_) => console.log('out press' * _)}
+                       pressDragRelease={(e, gestureState) => console.log(e, gestureState)}
+            />
+        );
+        return (
+            <View style={{flex: 1}}>
+                <Image
+                    style={[
+                        styles.sprite,
+                        {
+                            top: y,
+                            left: x,
+                            height: w,
+                            width: h,
+                            transform: [{rotateZ: rot + 'deg'}],
+                            position: 'absolute'
+                        },
+                    ]}
+                    source={require('../../../assets/vector/Blaetter_Baum_und_Fortschritt/Blatt1.png')}
+                    resizeMode="contain"
+                />
+            </View>
+        );
+
+    }
+}

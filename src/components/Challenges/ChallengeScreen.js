@@ -22,7 +22,6 @@ export const ChallengeViewsNav = createMaterialTopTabNavigator(
         }
     }, {
         navigationOptions: {
-            title: 'Challenge',
             tabBarIcon: ({focused, tintColor}) => (
                 <Icon name='star' style={{fontSize: 20, color: tintColor}}/>
             ),
@@ -51,7 +50,6 @@ export const ChallengeViewsNav = createMaterialTopTabNavigator(
         },
     }
 );
-
 
 export const ChallengeNav = createStackNavigator(
     {
