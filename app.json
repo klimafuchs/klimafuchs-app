@@ -28,6 +28,7 @@
     "android": {
       "package": "org.klimafuchs"
     },
-    "scheme": "klimafuchs"
+    "scheme": "klimafuchs",
+    "description": ""
   }
 }

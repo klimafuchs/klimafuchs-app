@@ -3,6 +3,7 @@
 schema {
     query: Query
     mutation: Mutation
+    subscription: Subscription
 }
 
 interface IUserChallenge {
@@ -179,12 +180,14 @@ type Mutation {
     removeSeasonPlan(seasonPlanId: Int!): SeasonPlan
     requestJoinTeam(teamId: Int!): Membership!
     resetLeaderBoard: [Team!]!
+    subscribe(pushToken: String!): Subscription
     syncWikiData: String!
     syncWikiPage(pageId: Float!): String!
     uncompleteChallenge(challengeCompletionId: Int!): ChallengeCompletion
     unlikeComment(commentId: Int!): FeedComment!
     unlikePost(postId: Int!): FeedPost!
     unmodMember(membershipId: Int!): Membership!
+    unsubscribe: Subscription
     updateProfile(avatarId: Int, screenName: String, userName: String): User!
     updateSeason(season: SeasonInput!): Season
     updateSeasonPlan(seasonPlan: SeasonPlanInput!): SeasonPlan
@@ -237,6 +240,7 @@ type Query {
     getMyTeam(teamId: Int!): Team!
     getPageProps(pageId: Int!): Props
     globalCurrentChallenges: SeasonPlan
+    isSubscribed: Subscription
     kategorie(kategorieId: String!): Kategorie
     kategories: [Kategorie!]
     myMedia: [Media!]!
@@ -251,6 +255,7 @@ type Query {
     seasonPlan(seasonId: Int!): SeasonPlan
     seasonPlans: [SeasonPlan!]
     seasons: [Season!]
+    testNotification: Boolean
     themenwoche(themenwocheId: String!): Themenwoche
     themenwoches: [Themenwoche!]
     user(userId: Int!): User
@@ -285,6 +290,12 @@ type SeasonPlanChallenge implements IUserChallenge {
     plan: SeasonPlan!
     rejections: ChallengeRejection!
     replaceable: Boolean
+}
+
+type Subscription {
+    id: Int
+    pushToken: String
+    user: User
 }
 
 type Team {
