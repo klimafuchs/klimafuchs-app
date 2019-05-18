@@ -183,6 +183,7 @@ type Mutation {
     subscribe(pushToken: String!): Subscription
     syncWikiData: String!
     syncWikiPage(pageId: Float!): String!
+    testNotification: Boolean
     uncompleteChallenge(challengeCompletionId: Int!): ChallengeCompletion
     unlikeComment(commentId: Int!): FeedComment!
     unlikePost(postId: Int!): FeedPost!
@@ -255,7 +256,6 @@ type Query {
     seasonPlan(seasonId: Int!): SeasonPlan
     seasonPlans: [SeasonPlan!]
     seasons: [Season!]
-    testNotification: Boolean
     themenwoche(themenwocheId: String!): Themenwoche
     themenwoches: [Themenwoche!]
     user(userId: Int!): User

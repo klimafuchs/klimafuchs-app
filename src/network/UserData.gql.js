@@ -56,7 +56,7 @@ export const UNSUBSCRIBE_FROM_NOTIFICATIONS = gql`
 `;
 
 export const TEST_NOTIFICATION = gql`
-    query testNptification {
+    mutation testNptification {
         testNotification 
     }
 `;

@@ -14,13 +14,10 @@ export const actions = createActions({
         SUCCESS: (response) => response,
         ERROR: (error) => error
     },
-    IMAGES: {
-        FETCH: undefined,
-        DOWNLOAD: undefined,
-        SUCCESS: undefined,
-        ERROR: undefined,
-        START: undefined,
-    },
+    NOTIFICATIONS: {
+        RECEIVE: notification => notification,
+        DELETE: notification => notification,
+    }
 });
 
 

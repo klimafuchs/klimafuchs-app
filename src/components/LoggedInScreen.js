@@ -3,7 +3,7 @@ import {createMaterialBottomTabNavigator} from "react-navigation-material-bottom
 import {FeedNavigation} from "./Feed/FeedScreen";
 import {ChallengeNav, ChallengeViewsNav} from "./Challenges/ChallengeScreen";
 import ProfileScreen from "./Profile/ProfileScreen";
-import {NotificationsScreen} from "./Notifications/NotificationsScreen";
+import NotificationsScreen from "./Notifications/NotificationsScreen";
 import TeamsNav from "./Competitve"
 import material from '../../native-base-theme/variables/material';
 

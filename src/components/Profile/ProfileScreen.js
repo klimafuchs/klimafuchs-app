@@ -24,7 +24,7 @@ import {Mutation, Query} from "react-apollo";
 import {
     CHANGE_PASSWORD,
     CURRENT_USER, IS_SUBSCRIBED_TO_NOTIFICATIONS,
-    SUBSCRIBE_TO_NOTIFICATIONS,
+    SUBSCRIBE_TO_NOTIFICATIONS, TEST_NOTIFICATION,
     UNSUBSCRIBE_FROM_NOTIFICATIONS,
     UPDATE_PROFILE
 } from "../../network/UserData.gql";
@@ -33,6 +33,7 @@ import {ValidatingTextField} from "../Common/ValidatingTextInput";
 import client from "../../network/client"
 import material from "../../../native-base-theme/variables/material";
 import {Permissions, Notifications} from 'expo';
+import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 
 class ProfileScreen extends Component {
 
@@ -210,7 +211,7 @@ class NotificationToggle extends Component {
 
     state = {
         hasPermission: false,
-        loading: false,
+        loading: true,
         optimisticResult: false,
         pushToken: ''
     };
@@ -224,42 +225,54 @@ class NotificationToggle extends Component {
         this.setState({hasPermission: status === 'granted'});
     };
 
+    _init = async () => {
+        await this._checkAndGetPermission();
+        await this._getPushToken();
+        this.setState({loading: false});
+        console.log(this.state)
+    };
+
     componentDidMount() {
-        this._checkAndGetPermission().catch(error => console.error(error))
-        this._getPushToken().catch(error => console.error(error))
+        this._init().catch(error => console.error(error));
     }
 
-    toggleSubscription = (isSubscribed, pushToken) => {
+    toggleSubscription = (isSubscribed, pushToken, refetch) => {
         if (isSubscribed) {
             return (
                 <Mutation mutation={UNSUBSCRIBE_FROM_NOTIFICATIONS}>
-                    {(subscribe, {loading, error}) => {
+                    {(unsubscribe, {loading, error}) => {
                         return (
                             <Switch
-                                value={this.state.optimisticResult}
+                                value={this.state.loading ? this.state.optimisticResult : isSubscribed}
                                 disabled={loading}
                                 onValueChange={async () => {
                                     this.setState({loading: true, optimisticResult: false})
-                                    await subscribe({
-                                        variables: {
-                                            pushToken
-                                        },
+                                    await unsubscribe().then(() => {
+                                        Toast.show({
+                                            text: L.get("success_unsubscribing_from_notification")
+                                        })
+
+                                    }).catch(error => {
+                                        Toast.show({
+                                            text: L.get("error_unsubscribing_from_notification")
+                                        })
                                     });
                                     refetch()
+
                                 }}
                             />
                         )
                     }}
                 </Mutation>
-
             )
         } else {
             return (
-                <Mutation mutation={SUBSCRIBE_TO_NOTIFICATIONS}>
+                <Mutation mutation={SUBSCRIBE_TO_NOTIFICATIONS} errorPolicy="all">
                     {(subscribe, {loading, error}) => {
+                        if(error) console.log(error.graphQLErrors.map(({message}) => message));
                         return (
                             <Switch
-                                value={this.state.optimisticResult}
+                                value={this.state.loading ? this.state.optimisticResult : isSubscribed}
                                 disabled={loading}
                                 onValueChange={async () => {
                                     this.setState({loading: true, optimisticResult: true})
@@ -267,6 +280,15 @@ class NotificationToggle extends Component {
                                         variables: {
                                             pushToken
                                         },
+                                    }).then(() => {
+                                        Toast.show({
+                                            text: L.get("success_subscribing_to_notification")
+                                        })
+
+                                    }).catch(error => {
+                                        Toast.show({
+                                            text: L.get("error_subscribing_to_notification")
+                                        })
                                     });
                                     refetch()
                                 }}
@@ -279,7 +301,7 @@ class NotificationToggle extends Component {
     };
 
     render() {
-        const {hasPermissino} = this.state;
+        const {hasPermission, pushToken} = this.state;
 
         return (
             <Query query={IS_SUBSCRIBED_TO_NOTIFICATIONS}>
@@ -290,17 +312,17 @@ class NotificationToggle extends Component {
                         )
                     }
                     console.log(data.isSubscribed);
-                    if(data && data.isSubscribed) {
-                        this.setState({optimisticResult: true})
-
-                    }
                     return (
                         <Fragment>
-                            {this.toggleSubscription(this.state.optimisticResult)}
-                            {__DEV__ &&
-                            <Button>
-                                <Text>send test notification</Text>
-                            </Button>
+                            {this.toggleSubscription(data && data.isSubscribed, pushToken, refetch)}
+                            {__DEV__ && data && data.isSubscribed &&
+                            <Mutation mutation={TEST_NOTIFICATION}>
+                                {(testNotification) => (
+                                    <Button onPress={() => testNotification().catch(error => console.error(error))}>
+                                        <Text>test</Text>
+                                    </Button>
+                                )}
+                            </Mutation>
                             }
                         </Fragment>
                     )

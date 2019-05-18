@@ -5,16 +5,19 @@ import {Root, Spinner, StyleProvider} from 'native-base';
 import LoginScreen from "./src/components/PreLogin/LoginScreen";
 import SignUpScreen from "./src/components/PreLogin/SignUpScreen";
 import CheckUserExistsScreen from "./src/components/PreLogin/CheckUserExistsScreen";
-import {Provider as ReduxProvider} from "react-redux";
+import {connect, Provider as ReduxProvider} from "react-redux";
 import getTheme from './native-base-theme/components';
 import material from './native-base-theme/variables/material';
-import store from "./src/persistence/store"
+import {store, persistor} from "./src/persistence/store"
+import { PersistGate } from 'redux-persist/integration/react'
+
 import {AppNav} from "./src/components/LoggedInScreen";
 import {ForgotPasswordScreen} from "./src/components/PreLogin/ForgotPasswordScreen";
-import {Font} from "expo";
+import {Font, Notifications} from "expo";
 import ApolloProvider from "react-apollo/ApolloProvider";
 import client from "./src/network/client"
 const prefix = Expo.Linking.makeUrl('/');
+
 export default class AppRoot extends Component {
 
     constructor(props) {
@@ -22,6 +25,16 @@ export default class AppRoot extends Component {
         this.state = {
             loading: true
         };
+    }
+
+    handleNotification = (notification) => {
+        store.dispatch({type: 'NOTIFICATIONS/RECEIVE', notification});
+        console.log("received notification: " + JSON.stringify(notification))
+    };
+
+    componentDidMount() {
+        console.log(this.props)
+        this._notificationSubscription = Notifications.addListener(this.handleNotification);
     }
 
     async componentWillMount() {
@@ -41,6 +54,7 @@ export default class AppRoot extends Component {
         }
         return (
             <ReduxProvider store={store}>
+                <PersistGate loading={<Spinner/>} persistor={persistor}>
                 <ApolloProvider client={client}>
                     <StyleProvider style={getTheme(material)}>
                         <Root>
@@ -48,10 +62,12 @@ export default class AppRoot extends Component {
                         </Root>
                     </StyleProvider>
                 </ApolloProvider>
+                </PersistGate>
             </ReduxProvider>
         )
     }
 }
+
 
 class AuthLoadingScreen extends Component {
     constructor() {
