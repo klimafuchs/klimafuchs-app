@@ -99,7 +99,7 @@ class ProfileScreen extends Component {
                         <Left/>
                         <Body>
                             <Title>
-                                <Text style={{color: '#fff'}}>Profil</Text>
+                                Profil
                             </Title>
                         </Body>
                         <Right>
@@ -121,11 +121,11 @@ class ProfileScreen extends Component {
                                 let {userName, screenName, avatar} = data.getCurrentUser;
                                 return (
                                     <Fragment>
-                                        <View style={{flex: 1, alignItems: 'center'}}>
+                                        <View style={{flex: 1, alignItems: 'flex-start'}}>
                                             <Mutation mutation={UPDATE_PROFILE}>
                                                 {(updateProfile, data, error) => {
                                                     return (
-                                                        <View style={{width: 200, height: 200, marginBottom: 50}}>
+                                                        <View style={{width: 200, height: 200, margin: 20}}>
                                                             <UploadImage placeholder={Util.AvatarToUri(avatar)}
                                                                          onUploadFinished={(media) => {
                                                                              console.log(media);

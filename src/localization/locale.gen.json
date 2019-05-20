@@ -126,5 +126,9 @@
   "hint_seasonplan_challenge_reject": {
     "default": "Wenn du die Challenge ablehnst, wird einer von ${jokerCount} Jokern verbraucht. Du erhältst eine zufällige Ersatzchallenge.\nBist du sicher, dass du die Challenge ablehnen möchtest?",
     "de": "Wenn du die Challenge ablehnst, wird einer von ${jokerCount} Jokern verbraucht. Du erhältst eine zufällige Ersatzchallenge.\nBist du sicher, dass du die Challenge ablehnen möchtest?"
+  },
+  "hint_dismiss_all_notifications": {
+    "default": "Alle Benachrichtigungen löschen?",
+    "de": "Alle Benachrichtigungen löschen?"
   }
 }

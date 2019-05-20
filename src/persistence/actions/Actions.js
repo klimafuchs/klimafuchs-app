@@ -16,7 +16,7 @@ export const actions = createActions({
     },
     NOTIFICATIONS: {
         RECEIVE: notification => notification,
-        DELETE: notification => notification,
+        DELETE: notificationId => notificationId,
     }
 });
 

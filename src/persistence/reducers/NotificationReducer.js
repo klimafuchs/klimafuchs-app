@@ -10,10 +10,14 @@ export default handleActions({
         console.log(state, action);
         return ({
             notifications: [action.notification, ...state.notifications]
-        })},
-            [actions.notifications.delete]: (state, action) => ({
-        notifications: state.notifications.filter(notification => notification !== action.notification)
-    })
+        })
+    },
+    [actions.notifications.delete]: (state, action) => {
+        console.log(state, action);
+        return ({
+            notifications: state.notifications.filter(notification => notification.notificationId !== action.notificationId)
+        })
+    }
 }, {
     notifications: []
 });
