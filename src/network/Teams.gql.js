@@ -149,6 +149,15 @@ export const DEL_USER = gql`
     }
 `;
 
+export const INVITE_USER = gql`
+    mutation inviteUserToTeam($teamId:Int!, $screenName:String!) {
+        inviteUserToTeam(teamId: $teamId, screeName: $screenName) {
+            id
+        }
+    }
+`;
+
+
 export const LEADERBOARD = gql`
     query getLeaderBoard($connectionArgs:ConnectionArgs!, $teamSize:TeamSize! ) {
         getLeaderBoard(connectionArgs:$connectionArgs, teamSize:$teamSize ) {

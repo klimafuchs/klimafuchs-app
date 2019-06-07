@@ -16,7 +16,7 @@ import {
 } from "native-base";
 import material from "../../../native-base-theme/variables/material";
 import {Mutation} from "react-apollo";
-import {CREATE_TEAM} from "../../network/Teams.gql";
+import {CREATE_TEAM, INVITE_USER} from "../../network/Teams.gql";
 import UploadImage from "../Common/UploadImage";
 import {ValidatingTextField} from "../Common/ValidatingTextInput";
 import PropTypes from 'prop-types';
@@ -41,7 +41,7 @@ export class CreateTeamScreen extends Component {
     render() {
         let {requestModalClose, onComplete} = this.props;
         return (
-            <SafeAreaView style={styles.container}  forceInset={{top: 'always'}}>
+            <SafeAreaView style={styles.container} forceInset={{top: 'always'}}>
                 <Container>
                     <Header>
 
@@ -134,8 +134,10 @@ export class CreateTeamScreen extends Component {
                                                                     avatarId: this.state.mediaId
                                                                 }
                                                             })
-                                                                .then((res) => {
-                                                                    this.props.navigation.navigate('InviteUsers')
+                                                                .then(({data}) => {
+                                                                    this.props.navigation.navigate('InviteUsers', {
+                                                                        teamId: data.id
+                                                                    })
                                                                 })
                                                                 .catch(err => {
                                                                     console.log(err.message);
@@ -167,19 +169,22 @@ export class InviteUsersScreen extends Component {
         headerTintColor: '#fff',
     }
     state = {
-        userName: '',
+        searchParam: '',
+        showSuccess: false,
+        showError: false,
     };
 
     render() {
-        let {requestModalClose, onComplete} = this.props;
+        let {requestModalClose, onComplete, navigation} = this.props;
+        const teamId = navigation.getParam('teamId', -1);
         return (
-            <SafeAreaView style={styles.container}  forceInset={{top: 'always'}}>
+            <SafeAreaView style={styles.container} forceInset={{top: 'always'}}>
                 <Container>
                     <Header>
 
                         <Left>
                             <Button transparent onPress={() => {
-                                this.props.navigation.navigate('MyTeams');
+                                navigation.navigate('MyTeams');
                             }}>
                                 <Icon name='md-arrow-back'/>
                             </Button>
@@ -218,48 +223,47 @@ export class InviteUsersScreen extends Component {
                                         fontSize: 12,
                                         marginBottom: 5
                                     }}>eMailadresse oder Nickname eingeben</Label>
-
-
                                 </Form>
                             </CardItem>
 
+                            <CardItem>
+                                <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                                    <Mutation mutation={INVITE_USER}>
+                                        {(inviteUserToTeam) => (
+
+                                            <Button transparent onPress={() => {
+                                                this.setState({showError: false, showSuccess: false});
+                                                inviteUserToTeam({
+                                                        variables: {
+                                                            teamId,
+                                                            screenName: searchParam
+                                                        }
+                                                    }
+                                                        .then(this.setState({showSuccess: true, showError: false}))
+                                                        .catch((err) => this.setState({showSuccess: false,showError: err}))
+                                                )
+                                            }}>
+                                                <Text>Einladen</Text>
+                                            </Button>
+                                        )}
+                                    </Mutation>
+                                </Right>
+                            </CardItem>
+
+                            <CardItem>
+                                {(this.state.showSuccess && !this.state.showError) &&
+                                <Text>Deine Einladung wurde erfolgreich verschickt!</Text>}
+                                {this.state.showError && <Text>{this.state.showError}</Text>}
+                            </CardItem>
 
                             <CardItem footer>
                                 <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
-                                    <Button transparent onPress={() => requestModalClose()}>
-                                        <Text>Abbrechen</Text>
+                                    <Button transparent
+                                            onPress={() => {
+                                                this.props.navigation.navigate('Main')
+                                            }}>
+                                        <Text>Fertig</Text>
                                     </Button>
-                                    <Mutation mutation={CREATE_TEAM} errorPolicy="all">
-                                        {(createTeam) => {
-                                            return (
-                                                <Button transparent
-                                                        onPress={() => {
-                                                            this.setState({showErrors: true});
-                                                            let validationError = this.teamNameInput.getErrors();
-                                                            console.log(validationError);
-                                                            if (validationError) {
-                                                                console.log(validationError);
-                                                                return
-                                                            }
-                                                            createTeam({
-                                                                variables: {
-                                                                    name: this.state.teamName,
-                                                                    description: this.state.teamDescription,
-                                                                    avatarId: this.state.mediaId
-                                                                }
-                                                            })
-                                                                .then((res) => {
-                                                                })
-                                                                .catch(err => {
-                                                                    console.log(err.message);
-                                                                    this.setState({nameError: err.message})
-                                                                })
-                                                        }}>
-                                                    <Text>Weiter</Text>
-                                                </Button>
-                                            )
-                                        }}
-                                    </Mutation>
                                 </Right>
                             </CardItem>
                         </Card>

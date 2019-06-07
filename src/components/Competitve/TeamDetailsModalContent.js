@@ -1,12 +1,14 @@
 import React, {Component, Fragment} from "react";
-import {AsyncStorage, Image, View} from "react-native"
-import {ActionSheet, Body, Button, Card, CardItem, Content, H3, Icon, Left, Right, Spinner, Text} from "native-base";
+import {AsyncStorage, Image, ImageBackground, View} from "react-native"
+import {ActionSheet, Body, Button, Card, CardItem, Content, H1, H3, Icon, Left, Right, Spinner, Text} from "native-base";
 import material from "../../../native-base-theme/variables/material";
 import {FSModalContentBase} from "../Common/FSModal";
 import {Mutation, Query} from "react-apollo";
 import {CONFIRM_MEMBER, DEL_USER, GET_MY_TEAM, GET_TEAM, MOD_USER, TeamSize, UNMOD_USER} from "../../network/Teams.gql";
 import {Util} from "../../util";
 import {MaterialDialog} from "react-native-material-dialog";
+import {BlurView, LinearGradient} from "expo";
+import * as env from "../../env";
 
 export class TeamDetailsModalContent extends FSModalContentBase {
 
@@ -28,13 +30,32 @@ export class TeamDetailsModalContent extends FSModalContentBase {
         return myMembership;
     };
 
-    cardContent = (team, myMembership, refetch, editMode) => {
+    cardContent = (team, myMembership, refetch, editMode, requestModalClose) => {
         let showUsers = team.closed ? (myMembership && myMembership.isActive) : true;
         let showRequests = myMembership && myMembership.isAdmin;
 
-        console.log(showUsers, team.closed, myMembership);
+        const teamAvatarUrl =
+            team.avatar
+                ? `${env.dev.API_IMG_URL}${team.avatar.filename}`
+                : `${env.dev.API_IMG_URL}image_select.png`;
+
+        console.log(showUsers, showRequests, team.closed, myMembership, editMode);
         return (
             <Fragment>
+                <Content style={{width:'100%'}}>
+                <View first style={{margin:0, padding: 0, width:'100%', height: 200}}>
+                    <ImageBackground source={{uri: teamAvatarUrl}} style={{ margin:0, padding: 0, width: '100%', height: '100%'}}>
+                        <View style={{top: '50%', height: '50%'}}>
+                            <LinearGradient           colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.8)']}  style={{ flex:1, flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', padding: 10,}}>
+                                <Fragment>
+                                    <H1 style={{color: "#fff"}}>{team.name}</H1>
+                                    <Text style={{color: "#fff"}}>{team.description}</Text>
+                                </Fragment>
+                            </LinearGradient>
+                        </View>
+                    </ImageBackground>
+
+                </View>
                 <CardItem>
                     <View style={{
                         flex: 1,
@@ -63,11 +84,26 @@ export class TeamDetailsModalContent extends FSModalContentBase {
                     {this.renderAdmins(team.members, myMembership, editMode, refetch)}
                     <CardItem style={{width: '100%', backgroundColor: '#ECECEC'}}/>
                     {this.renderUsers(team.members, myMembership, editMode, refetch)}
-                    <CardItem style={{width: '100%', backgroundColor: '#ECECEC'}}/>
-                    {showRequests && this.renderJoinRequests(team.members, myMembership, editMode, refetch)}
-                </Fragment>}
-
+                    {showRequests &&
+                    <Fragment>
+                        <CardItem style={{width: '100%', backgroundColor: '#ECECEC'}}/>
+                        {this.renderJoinRequests(team.members, myMembership, editMode, refetch)}
+                        {editMode && <CardItem style={{flex:1, flexDirection: 'row', justifyContent: 'center', width: '100%', backgroundColor: '#ECECEC'
+                        }}>
+                            <Button bordered dark onPress={() => {
+                                requestModalClose();
+                                editMode()
+                            }}>
+                                <Text>Nutzer einladen</Text>
+                            </Button>
+                        </CardItem>}
+                    </Fragment>
+                    }
+                </Fragment>
+                }
+                </Content>
             </Fragment>
+
         )
     };
 
@@ -76,7 +112,8 @@ export class TeamDetailsModalContent extends FSModalContentBase {
         return (
             <Fragment>
                 {admins.map(user => {
-                    return <UserRow key={user.id} member={user} ownStatus={myMembership} editMode={editMode} refetch={refetch}/>
+                    return <UserRow key={user.id} member={user} ownStatus={myMembership} editMode={editMode}
+                                    refetch={refetch}/>
                 })}
             </Fragment>
         )
@@ -87,7 +124,8 @@ export class TeamDetailsModalContent extends FSModalContentBase {
         return (
             <Fragment>
                 {users.map(user => {
-                    return <UserRow key={user.id} member={user} ownStatus={myMembership} editMode={editMode} refetch={refetch}/>
+                    return <UserRow key={user.id} member={user} ownStatus={myMembership} editMode={editMode}
+                                    refetch={refetch}/>
 
                 })}
             </Fragment>
@@ -99,7 +137,8 @@ export class TeamDetailsModalContent extends FSModalContentBase {
         return (
             <Fragment>
                 {users.map(user => {
-                    return <UserRow key={user.id} member={user} ownStatus={myMembership} editMode={editMode} refetch={refetch}/>
+                    return <UserRow key={user.id} member={user} ownStatus={myMembership} editMode={editMode}
+                                    refetch={refetch}/>
                 })}
             </Fragment>
         )
@@ -167,9 +206,10 @@ export class TeamDetailsModalContent extends FSModalContentBase {
 
                             {error ?
                                 <Content><Text>{JSON.stringify(error)}</Text></Content>
-                                : this.cardContent(data.getTeam, ownStatus, refetch, editMode)
-
+                                : this.cardContent(data.getTeam, ownStatus, refetch, editMode, requestModalClose)
                             }
+
+
                         </Card>
                     )
                 }}

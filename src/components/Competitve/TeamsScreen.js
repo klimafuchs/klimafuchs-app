@@ -35,6 +35,9 @@ export class TeamsScreen extends Component {
         title: 'Meine Teams',
     };
 
+    inviteToTeam = () => {
+        this.props.navigation.navigate("InviteUsers")
+    };
     renderTeamsGettingStarted = (refetch) => (
         <View style={{
             flex: 1,
@@ -98,7 +101,7 @@ export class TeamsScreen extends Component {
                     <List>
                         {memberships.map((membership) => {
                             return (
-                                <TeamCard key={membership.id} membership={membership}/>
+                                <TeamCard key={membership.id} membership={membership} editMode={this.inviteToTeam}/>
                             )
                         })}
                     </List>
@@ -184,7 +187,7 @@ class TeamCard extends Component {
 
 
     render() {
-        const {membership} = this.props;
+        const {membership, editMode} = this.props;
         const teamAvatarUrl =
             membership.team.avatar
                 ? `${env.dev.API_IMG_URL}${membership.team.avatar.filename}`
@@ -198,7 +201,7 @@ class TeamCard extends Component {
                 body={<TeamDetailsModalContent
                     teamId={membership.team.id}
                     ownStatus={membership}
-                    editMode="true"
+                    editMode={editMode}
                     requestModalClose={() => this.teamDetails.closeModal()}
                     ref={(ref) => {
                         this.teamDetailsContent = ref
