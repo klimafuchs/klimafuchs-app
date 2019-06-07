@@ -29,6 +29,10 @@
       "package": "org.klimafuchs",
       "googleServicesFile": "./google-services.json"
     },
+    "androidStatusBar": {
+      "backgroundColor": "#ffffff",
+      "barStyle": "dark-content"
+    },
     "scheme": "klimafuchs",
     "description": ""
   }

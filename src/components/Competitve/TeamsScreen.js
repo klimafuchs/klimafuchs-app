@@ -198,13 +198,14 @@ class TeamCard extends Component {
                 body={<TeamDetailsModalContent
                     teamId={membership.team.id}
                     ownStatus={membership}
+                    editMode="true"
                     requestModalClose={() => this.teamDetails.closeModal()}
                     ref={(ref) => {
                         this.teamDetailsContent = ref
                     }}
                 />}
             >
-                <ListItem avatar onPress={() => {
+                <ListItem onPress={() => {
                     this.teamDetails.openModal()
                 }}>
                     <Left>

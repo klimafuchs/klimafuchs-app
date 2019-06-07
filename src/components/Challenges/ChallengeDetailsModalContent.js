@@ -95,7 +95,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                 <View header style={{backgroundColor: material.brandInfo, flex: 2}}>
                     <ImageBackground
                         source={challenge.headerImage ? {uri: challenge.headerImage.url} : require('../../../assets/image_select.png')}
-                        style={{width: '100%', height: '100%'}}>
+                        style={{width: '100%', height: '100%', backgroundColor: "#ff0"}}>
                         <View>
                             <Button transparent info onPress={() => {
                                 requestModalClose();
@@ -190,7 +190,7 @@ ChallengeDetailsModalContent.propTypes = {
 
 const styles = StyleSheet.create({
     modal: {
-        backgroundColor: 'rgba(0,0,0,0)',
+        backgroundColor: '#ff0000',
         margin: '5%',
     },
 });

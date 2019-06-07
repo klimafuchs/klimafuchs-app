@@ -71,7 +71,7 @@ class NotificationsScreen extends Component {
                 <Container>
                     {notifications.length > 0 ?
                         this.renderList(notifications)
-                        : <H1>Keine Benachrichtiungen</H1>}
+                        : <H1>{L.get("notifications_list_empty")}</H1>}
                     <Fab style={{backgroundColor: material.brandInfo}} position="bottomRight"
                          onPress={() => this.setState({showDismissAllDialog: true})}>
                         <Fragment>

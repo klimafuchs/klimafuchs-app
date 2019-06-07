@@ -43,7 +43,7 @@ export class FSModal extends Component {
 
 const styles = StyleSheet.create({
     modal: {
-        backgroundColor: 'rgba(0,0,0,0)',
+        backgroundColor: '#ff0000',
         margin: '5%',
     },
 });

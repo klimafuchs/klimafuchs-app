@@ -146,5 +146,9 @@
   "hint_dismiss_all_notifications": {
     "default": "Alle Benachrichtigungen löschen?",
     "de": "Alle Benachrichtigungen löschen?"
+  },
+  "notifications_list_empty": {
+    "default": "Keine Benachrichtigungen",
+    "de": "Keine Benachrichtigungen"
   }
 }

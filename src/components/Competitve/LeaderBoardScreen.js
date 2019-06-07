@@ -7,6 +7,8 @@ import * as env from "../../env"
 import {MaterialDialog} from 'react-native-material-dialog';
 import { BlurView } from 'expo';
 import material from "../../../native-base-theme/variables/material";
+import {TeamDetailsModalContent} from "./TeamDetailsModalContent";
+import {FSModal} from "../Common/FSModal";
 export class LeaderBoardScreen extends Component {
     static navigationOptions = {
         title: 'Leaderboard',
@@ -173,6 +175,7 @@ class TeamCard extends Component {
     render() {
         let {index, team, currentUserId} = this.props;
         let {node, cursor} = team;
+        console.log(team)
         const teamAvatarUrl =
             node.avatar
                 ? `${env.dev.API_IMG_URL}${node.avatar.filename}`
@@ -200,7 +203,7 @@ class TeamCard extends Component {
                         </Text>
                     </Button>
                 </Fragment>
-                : <Fragment>
+                : team.node.closed ? <Fragment/> :<Fragment>
                     <Mutation mutation={REQUEST_JOIN_TEAM}
                               refetchQueries={[{query: LEADERBOARD}]}
                     >
@@ -213,7 +216,7 @@ class TeamCard extends Component {
                                         Beitreten
                                     </Text>
                                     <MaterialDialog
-                                        title={`Join team ${team.name}?`}
+                                        title={`Join team ${team.node.name}?`}
                                         visible={this.state.showJoinDialog}
                                         onOk={() => {
                                             console.log(team)
@@ -231,7 +234,7 @@ class TeamCard extends Component {
                                         }}
                                         onCancel={() => this.setState({showJoinDialog: false})}>
                                         <Text>
-                                            Join team {team.name}?
+                                            Join team {team.node.name}?
                                         </Text>
                                     </MaterialDialog>
                                 </Button>
@@ -250,7 +253,21 @@ class TeamCard extends Component {
             </ImageBackground>
         </View>;
         return (
-            <ListItem>
+            <FSModal
+                ref={(ref) => {
+                    this.teamDetails = ref;
+                }}
+                body={<TeamDetailsModalContent
+                    teamId={node.id}
+                    requestModalClose={() => this.teamDetails.closeModal()}
+                    ref={(ref) => {
+                        this.teamDetailsContent = ref
+                    }}
+                />}
+            >
+            <ListItem onPress={() => {
+                this.teamDetails.openModal()
+            }}>
                 <Left style={{flex:1}}>
                     {avatarAndPlaceIndicator}
                 </Left>
@@ -264,6 +281,7 @@ class TeamCard extends Component {
                     {rightContent}
                 </Right>
             </ListItem>
+            </FSModal>
         )
     }
 }
