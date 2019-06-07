@@ -7,7 +7,7 @@ export class FSModal extends Component {
 
     static propTypes = {
         children: PropTypes.element.isRequired,
-        body: PropTypes.element.isRequired
+        body: PropTypes.element.isRequired,
     };
 
     state = {
@@ -43,7 +43,7 @@ export class FSModal extends Component {
 
 const styles = StyleSheet.create({
     modal: {
-        backgroundColor: '#ff0000',
+        backgroundColor: 'rgba(0,0,0,0)',
         margin: '5%',
     },
 });

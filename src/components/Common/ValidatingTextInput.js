@@ -44,7 +44,6 @@ export class ValidatingTextField extends Component {
         let showsErrors = (error || externalError);
         return (
             <Fragment>
-                <Label style={showsErrors ? styles.formLabelError : styles.formLabel}>{label}</Label>
                 <Item regular style={showsErrors ? styles.formTextboxError : styles.formTextbox}>
                     <Input name={name}
                            secureTextEntry={secureTextEntry}
@@ -69,6 +68,8 @@ export class ValidatingTextField extends Component {
                            }}
                            value={this.state.value}/>
                 </Item>
+                <Label style={showsErrors ? styles.formLabelError : styles.formLabel}>{label}</Label>
+
                 <Text>
                     {showsErrors && <Text style={styles.formLabelError}>
                         {(error || externalError)}
@@ -98,7 +99,7 @@ const styles = StyleSheet.create(
         formTextbox: {
             color: material.textColor,
             borderColor: material.textColor,
-            marginBottom: 20
+            marginBottom: 5
         },
         formLabelError: {
             color: material.brandDanger,
