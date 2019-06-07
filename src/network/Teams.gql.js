@@ -1,10 +1,11 @@
 import gql from 'graphql-tag'
 
 export const CREATE_TEAM = gql`
-    mutation createTeam($name:String!, $avatarId:Int) {
-        createTeam(team: {teamName:$name, mediaId:$avatarId}) {
+    mutation createTeam($name:String!, $avatarId:Int, $description:String) {
+        createTeam(team: {teamName:$name, mediaId:$avatarId, teamDescription:$description}) {
             id,
             name,
+            description,
             inviteId,
             avatar{
                 filename            },
@@ -53,6 +54,7 @@ export const GET_MY_TEAM = gql`
             teamSize
             place
             score
+            description
             members {
                 id
                 user {
@@ -105,6 +107,7 @@ export const LEADERBOARD = gql`
                         place,
                         avatar{filename},
                         teamSize,
+                        description
                         members {
                             id,
                             user {

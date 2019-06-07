@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from 'react';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {
     Body,
     Button,
@@ -20,6 +20,8 @@ import {
 import {Mutation} from "react-apollo";
 import {ADD_POST} from "../../network/Feed.gql";
 import UploadImage from "../Common/UploadImage";
+import {SafeAreaView} from "react-navigation";
+import material from "../../../native-base-theme/variables/material";
 
 export default class NewPostComponent extends Component {
     static navigationOptions = ({navigation}) => {
@@ -56,8 +58,23 @@ export default class NewPostComponent extends Component {
 
     render() {
         return (
-            <Container style={{backgroundColor: '#fff', paddingLeft: 5, paddingRight: 5}}>
-                <Content>
+            <SafeAreaView style={styles.container} forceInset={{top: 'always'}}>
+
+            <Container >
+
+                <Header>
+                    <Left>
+                        <Button transparent
+                                onPress={() => this.props.navigation.goBack()}>
+                            <Icon name='arrow-back'/>
+                        </Button>
+                    </Left>
+                    <Body>
+                        <Title>Neuer Beitrag</Title>
+                    </Body>
+                    <Right/>
+                </Header>
+                <Content style={{backgroundColor: '#fff', paddingLeft: 5, paddingRight: 5}}>
                     <Mutation mutation={ADD_POST}>
                         {(addPost, {data}) => (
                             <Form style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
@@ -105,6 +122,7 @@ export default class NewPostComponent extends Component {
                     </Mutation>
                 </Content>
             </Container>
+            </SafeAreaView>
 
         )
     }
@@ -125,7 +143,6 @@ class MediaInput extends Component {
     }
 
     render() {
-        //if (this.state.awaitsMedia) {
         return (
             <View style={{height: 200, width: '100%'}}>
                 <UploadImage placeholder={'#'} onCancel={this.reset} onUploadFinished={(media) => {
@@ -136,32 +153,15 @@ class MediaInput extends Component {
                 }}/>
             </View>
         )
-        //}
-        /*
-        if (this.state.awaitsYt) {
-            return (
-                <Text>yt</Text>
-            )
-        }
-        return (
-            <View style={{flex: 1, flexDirection: 'row'}}>
-                <Button style={{flex: 1}} onPress={() => {
-                    this.setState({awaitsMedia: true});
-                    if (this.props.onSelecting) this.props.onSelecting();
-                }}>
-                    <Text>
-                        Bild hochladen
-                    </Text>
-                </Button>
-                <Button style={{flex: 1}} disabled>
-                    <Text>
-                        Youtube-Video einbetten
-                    </Text>
-                </Button>
-            </View>
-        )
-        */
+
     }
 
 
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: material.brandInfo
+    }
+});

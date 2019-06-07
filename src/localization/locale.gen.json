@@ -107,6 +107,22 @@
     "default": "Loading...",
     "de": "Loading..."
   },
+  "report_post_dialog_title": {
+    "default": "Wirklich melden?",
+    "de": "Wirklich melden?"
+  },
+  "report_post_dialog_body": {
+    "default": "Wirklich melden?",
+    "de": "Wirklich melden?"
+  },
+  "report_post_dialog_ok_label": {
+    "default": "Melden",
+    "de": "Melden"
+  },
+  "report_post_dialog_cancel_label": {
+    "default": "Abbrechen",
+    "de": "Abbrechen"
+  },
   "hint_seasonplan_progress": {
     "default": "Die Blattfarben repräsentieren deinen Fortschritt beim Erledigen der wöchentlichen Aufgaben.",
     "de": "Die Blattfarben repräsentieren deinen Fortschritt beim Erledigen der wöchentlichen Aufgaben."

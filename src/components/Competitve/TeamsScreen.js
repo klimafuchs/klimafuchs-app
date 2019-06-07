@@ -13,8 +13,10 @@ import {
     ListItem,
     Right,
     Text,
-    Thumbnail
+    Thumbnail,
+    StyleProvider,
 } from "native-base";
+import getTheme from '../../../native-base-theme/components';
 import {MY_MEMBERSHIPS} from "../../network/Teams.gql";
 import {Query} from "react-apollo";
 import material from "../../../native-base-theme/variables/material";
@@ -206,13 +208,18 @@ class TeamCard extends Component {
                     this.teamDetails.openModal()
                 }}>
                     <Left>
-                        <Thumbnail source={{uri: teamAvatarUrl}}/>
+                        <Image source={{uri: teamAvatarUrl}} style={{width:64, height: 64}}/>
                     </Left>
-                    <Body style={{height: '100%'}}>
-                    <Text>{membership.team.name}</Text>
+                    <Body style={{height: '100%', flex: 3, paddingLeft: 10}}>
+                        <View>
+                            <Text>{membership.team.name}</Text>
+                            <Text style={{color: material.textLight}}>{membership.team.description}</Text>
+                        </View>
                     </Body>
                     <Right>
-                        <Icon name='md-square' style={{color: membership.isAdmin ? '#ffaa00' : '#555555'}}/>
+                        {membership.isAdmin &&  <StyleProvider style={getTheme({iconFamily: "MaterialCommunityIcons"})}>
+                            <Icon type="MaterialCommunityIcons" name='account-check' style={{color: '#000'}}/>
+                        </StyleProvider>}
                     </Right>
                 </ListItem>
             </FSModal>
