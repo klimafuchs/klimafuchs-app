@@ -20,14 +20,11 @@ import {CREATE_TEAM, INVITE_USER} from "../../network/Teams.gql";
 import UploadImage from "../Common/UploadImage";
 import {ValidatingTextField} from "../Common/ValidatingTextInput";
 import PropTypes from 'prop-types';
-import {StyleSheet, View} from "react-native";
+import {StyleSheet, View, Switch} from "react-native";
 import {createStackNavigator, SafeAreaView} from "react-navigation";
-
+import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 
 export class CreateTeamScreen extends Component {
-    static propTypes = {
-        onComplete: PropTypes.func.isRequired
-    };
 
     state = {
         teamName: '',
@@ -35,7 +32,9 @@ export class CreateTeamScreen extends Component {
         nameError: '',
         mediaId: undefined,
         showErrors: false,
-        teamDescription: ''
+        teamDescription: '',
+        isPrivate: false
+
     };
 
     render() {
@@ -110,6 +109,21 @@ export class CreateTeamScreen extends Component {
                                 </Form>
                             </CardItem>
 
+                            <CardItem>
+
+                                <Left>
+                                    <Text>Geschlossene Gruppe</Text>
+                                </Left>
+                                <Right>
+                                    <Switch value={this.state.isPrivate} onValueChange={
+                                        () => {
+                                            this.setState({isPrivate: !this.state.isPrivate})
+                                        }
+                                    }/>
+                                </Right>
+
+                            </CardItem>
+
                             <CardItem footer>
                                 <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
                                     <Button transparent onPress={() => requestModalClose()}>
@@ -131,7 +145,8 @@ export class CreateTeamScreen extends Component {
                                                                 variables: {
                                                                     name: this.state.teamName,
                                                                     description: this.state.teamDescription,
-                                                                    avatarId: this.state.mediaId
+                                                                    avatarId: this.state.mediaId,
+                                                                    closed: this.state.isPrivate
                                                                 }
                                                             })
                                                                 .then(({data}) => {
@@ -209,10 +224,10 @@ export class InviteUsersScreen extends Component {
                             <CardItem>
                                 <Form style={{flex: 1, alignItems: 'stretch'}}>
                                     <Input
-                                        name=''
-                                        label='Name des Teams'
-                                        onChangeText={(text) => this.setState({teamName: text})}
-                                        value={this.state.teamName}
+                                        name='searchParam@'
+                                        label='searchParam'
+                                        onChangeText={(text) => this.setState({searchParam: text})}
+                                        value={this.state.searchParam}
                                         showErrors={this.state.showErrors}
                                         externalError={this.state.nameError}
                                         ref={(ref) => this.teamNameInput = ref}
@@ -228,20 +243,22 @@ export class InviteUsersScreen extends Component {
 
                             <CardItem>
                                 <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
-                                    <Mutation mutation={INVITE_USER}>
-                                        {(inviteUserToTeam) => (
+                                    <Mutation mutation={INVITE_USER} errorPolicy="all">
+                                        {(inviteUserToTeam, {loading, error}) => (
 
                                             <Button transparent onPress={() => {
                                                 this.setState({showError: false, showSuccess: false});
                                                 inviteUserToTeam({
                                                         variables: {
                                                             teamId,
-                                                            screenName: searchParam
+                                                            screenName: this.state.searchParam
                                                         }
-                                                    }
-                                                        .then(this.setState({showSuccess: true, showError: false}))
-                                                        .catch((err) => this.setState({showSuccess: false,showError: err}))
-                                                )
+                                                    })
+                                                        .then(() => this.setState({showSuccess: true, showError: false}))
+                                                        .catch((err) => {
+                                                            console.log(JSON.stringify(err, null, 4));
+                                                            this.setState({showSuccess: false,showError: L.get("invite_error")})
+                                                        })
                                             }}>
                                                 <Text>Einladen</Text>
                                             </Button>
@@ -250,13 +267,13 @@ export class InviteUsersScreen extends Component {
                                 </Right>
                             </CardItem>
 
-                            <CardItem>
+                            <CardItem  style={{flex:1,justifyContent: 'flex-end' }}>
                                 {(this.state.showSuccess && !this.state.showError) &&
                                 <Text>Deine Einladung wurde erfolgreich verschickt!</Text>}
                                 {this.state.showError && <Text>{this.state.showError}</Text>}
                             </CardItem>
 
-                            <CardItem footer>
+                            <CardItem footer style={{flex:1,justifyContent: 'flex-end' }}>
                                 <Right style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
                                     <Button transparent
                                             onPress={() => {

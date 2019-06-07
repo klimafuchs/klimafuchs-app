@@ -1,8 +1,37 @@
 import gql from 'graphql-tag'
 
 export const CREATE_TEAM = gql`
-    mutation createTeam($name:String!, $avatarId:Int, $description:String) {
-        createTeam(team: {teamName:$name, mediaId:$avatarId, teamDescription:$description}) {
+    mutation createTeam($name:String!, $avatarId:Int, $description:String, $closed:Boolean) {
+        createTeam(team: {teamName:$name, mediaId:$avatarId, teamDescription:$description, closed: $closed}) {
+            id,
+            name,
+            description,
+            closed,
+            inviteId,
+            avatar{
+                filename            },
+            members {
+                id,
+                user {
+                    id,
+                    screenName,
+                    avatar {
+                        filename
+                    }
+                },
+                dateCreated,
+                isActive,
+                activationDate,
+                isAdmin
+            },
+            score
+        }
+    }
+`;
+
+export const MOD_TEAM = gql`
+    mutation updateTeam($id:Int! $name:String, $avatarId:Int, $description:String, $closed:Boolean) {
+        updateTeam(team: {id:$id, teamName:$name, mediaId:$avatarId, teamDescription:$description, closed: $closed}) {
             id,
             name,
             description,
@@ -151,7 +180,7 @@ export const DEL_USER = gql`
 
 export const INVITE_USER = gql`
     mutation inviteUserToTeam($teamId:Int!, $screenName:String!) {
-        inviteUserToTeam(teamId: $teamId, screeName: $screenName) {
+        inviteUserToTeam(teamId: $teamId, screenName: $screenName) {
             id
         }
     }

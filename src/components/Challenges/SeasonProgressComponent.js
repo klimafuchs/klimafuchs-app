@@ -303,7 +303,7 @@ class Leaf extends React.Component {
         const {w, h} = scale;
         const x = loc.x - w / 2;
         const y = loc.y - h / 2;
-        if (__DEV__) return (
+        if (false) return (
             <Draggable
                        renderShape='image'
                        imageSource={require('../../../assets/vector/Blaetter_Baum_und_Fortschritt/Blatt1.png')}

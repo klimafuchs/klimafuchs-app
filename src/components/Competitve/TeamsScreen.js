@@ -35,8 +35,8 @@ export class TeamsScreen extends Component {
         title: 'Meine Teams',
     };
 
-    inviteToTeam = () => {
-        this.props.navigation.navigate("InviteUsers")
+    inviteToTeam = (teamId, users, teamData) => {
+        this.props.navigation.navigate((users ? "InviteUsers" : "EditTeam"), {teamId: teamId, teamData})
     };
     renderTeamsGettingStarted = (refetch) => (
         <View style={{
