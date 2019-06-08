@@ -269,7 +269,7 @@ export class InviteUsersScreen extends Component {
 
                             <CardItem  style={{flex:1,justifyContent: 'flex-end' }}>
                                 {(this.state.showSuccess && !this.state.showError) &&
-                                <Text>Deine Einladung wurde erfolgreich verschickt!</Text>}
+                                <Text style={{color: '#5f5'}}>Deine Einladung wurde erfolgreich verschickt!</Text>}
                                 {this.state.showError && <Text>{this.state.showError}</Text>}
                             </CardItem>
 

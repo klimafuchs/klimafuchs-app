@@ -72,7 +72,7 @@ export class LeaderBoardScreen extends Component {
                                         } else {
                                             return (
                                                 <Fragment>
-                                                    <Text>hm...</Text>
+                                                    <Text>Es gibt noch keine Teams in dieser Größe</Text>
                                                     {this.renderFetchMoreButton(data, loading, fetchMore)}
                                                 </Fragment>
                                             )
