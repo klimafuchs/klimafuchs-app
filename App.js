@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import {AsyncStorage,  StatusBar, StyleSheet, Text, View} from 'react-native';
-import {createAppContainer, SafeAreaView, createStackNavigator, createSwitchNavigator} from "react-navigation";
+import {AsyncStorage,  StatusBar, StyleSheet, Text, View,SafeAreaView} from 'react-native';
+import {createAppContainer,createStackNavigator, createSwitchNavigator} from "react-navigation";
 import {Root, Spinner, StyleProvider} from 'native-base';
 import LoginScreen from "./src/components/PreLogin/LoginScreen";
 import SignUpScreen from "./src/components/PreLogin/SignUpScreen";
@@ -59,7 +59,9 @@ export default class AppRoot extends Component {
                 <ApolloProvider client={client}>
                     <StyleProvider style={getTheme(material)}>
                         <Root>
-                            <RootContainer uriPrefix={prefix}/>
+                            <SafeAreaView style={styles.safeArea}>
+                                <RootContainer uriPrefix={prefix}/>
+                            </SafeAreaView>
                         </Root>
                     </StyleProvider>
                 </ApolloProvider>

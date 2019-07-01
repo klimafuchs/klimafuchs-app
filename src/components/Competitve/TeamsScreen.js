@@ -13,12 +13,14 @@ import {
     ListItem,
     Right,
     Text,
-    Thumbnail
+    Thumbnail,
+    StyleProvider,
 } from "native-base";
+import getTheme from '../../../native-base-theme/components';
 import {MY_MEMBERSHIPS} from "../../network/Teams.gql";
 import {Query} from "react-apollo";
 import material from "../../../native-base-theme/variables/material";
-import {CreateTeamModalContent} from "./CreateTeamModalContent";
+import {CreateTeamScreen} from "./CreateTeamScreen";
 import env from "../../env";
 import {FSModal} from "../Common/FSModal";
 import {TeamDetailsModalContent} from "./TeamDetailsModalContent";
@@ -33,6 +35,9 @@ export class TeamsScreen extends Component {
         title: 'Meine Teams',
     };
 
+    inviteToTeam = (teamId, users, teamData) => {
+        this.props.navigation.navigate((users ? "InviteUsers" : "EditTeam"), {teamId: teamId, teamData})
+    };
     renderTeamsGettingStarted = (refetch) => (
         <View style={{
             flex: 1,
@@ -54,7 +59,7 @@ export class TeamsScreen extends Component {
                 ref={(ref) => {
                     this.teamPicker = ref;
                 }}
-                body={<CreateTeamModalContent
+                body={<CreateTeamScreen
                     onComplete={refetch}
                     requestModalClose={() => this.teamPicker.closeModal()}/>}
             >
@@ -96,7 +101,7 @@ export class TeamsScreen extends Component {
                     <List>
                         {memberships.map((membership) => {
                             return (
-                                <TeamCard key={membership.id} membership={membership}/>
+                                <TeamCard key={membership.id} membership={membership} editMode={this.inviteToTeam}/>
                             )
                         })}
                     </List>
@@ -105,12 +110,12 @@ export class TeamsScreen extends Component {
                     ref={(ref) => {
                         this.teamPicker = ref;
                     }}
-                    body={<CreateTeamModalContent
+                    body={<CreateTeamScreen
                         onComplete={refetch}
                         requestModalClose={() => this.teamPicker.closeModal()}/>}
                 >
                     <Fab style={{backgroundColor: material.brandInfo}}
-                         onPress={() => this.teamPicker.openModal()}
+                         onPress={() => this.props.navigation.navigate('CreateTeam')}
                          position="bottomRight">
                         <Icon name='md-add' style={{color: material.brandDark}}/>
                     </Fab>
@@ -182,7 +187,7 @@ class TeamCard extends Component {
 
 
     render() {
-        const {membership} = this.props;
+        const {membership, editMode} = this.props;
         const teamAvatarUrl =
             membership.team.avatar
                 ? `${env.dev.API_IMG_URL}${membership.team.avatar.filename}`
@@ -196,23 +201,29 @@ class TeamCard extends Component {
                 body={<TeamDetailsModalContent
                     teamId={membership.team.id}
                     ownStatus={membership}
+                    editMode={editMode}
                     requestModalClose={() => this.teamDetails.closeModal()}
                     ref={(ref) => {
                         this.teamDetailsContent = ref
                     }}
                 />}
             >
-                <ListItem avatar onPress={() => {
+                <ListItem onPress={() => {
                     this.teamDetails.openModal()
                 }}>
                     <Left>
-                        <Thumbnail source={{uri: teamAvatarUrl}}/>
+                        <Image source={{uri: teamAvatarUrl}} style={{width:64, height: 64}}/>
                     </Left>
-                    <Body style={{height: '100%'}}>
-                    <Text>{membership.team.name}</Text>
+                    <Body style={{height: '100%', flex: 3, paddingLeft: 10}}>
+                        <View>
+                            <Text>{membership.team.name}</Text>
+                            <Text style={{color: material.textLight}}>{membership.team.description}</Text>
+                        </View>
                     </Body>
                     <Right>
-                        <Icon name='md-square' style={{color: membership.isAdmin ? '#ffaa00' : '#555555'}}/>
+                        {membership.isAdmin &&  <StyleProvider style={getTheme({iconFamily: "MaterialCommunityIcons"})}>
+                            <Icon type="MaterialCommunityIcons" name='account-check' style={{color: '#000'}}/>
+                        </StyleProvider>}
                     </Right>
                 </ListItem>
             </FSModal>

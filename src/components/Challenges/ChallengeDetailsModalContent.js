@@ -5,7 +5,12 @@ import {Button, Content, Container, Card, CardItem, H1, H3, Icon, Right, Body, L
 import material from "../../../native-base-theme/variables/material";
 import {Mutation} from "react-apollo";
 import PropTypes from 'prop-types';
-import {COMPLETE_CHALLENGE, REJECT_CHALLENGE, UNCOMPLETE_CHALLENGE} from "../../network/Challenges.gql";
+import {
+    COMPLETE_CHALLENGE,
+    CURRENT_CHALLENGES,
+    REJECT_CHALLENGE,
+    UNCOMPLETE_CHALLENGE
+} from "../../network/Challenges.gql";
 import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 import {FSModalContentBase} from "../Common/FSModal";
 import {MaterialDialog} from "react-native-material-dialog";
@@ -15,6 +20,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
         loading: false,
         optimisticResult: false,
         showRejectDialog: false,
+        showHint: false,
     };
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -31,7 +37,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                 <Mutation mutation={UNCOMPLETE_CHALLENGE}>
                     {(uncompleteChallenge, {loading, error}) => (
 
-                        <View>
+                        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
                             <Switch
                                 value={this.state.optimisticResult}
                                 disabled={loading}
@@ -46,6 +52,42 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                                     modalNotify(false);
                                     refetch()
                                 }}/>
+                            <View>
+                                <TouchableOpacity style={{
+                                    flex: 1,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    height: 24,
+                                    width: 24,
+                                    borderRadius: 24 / 2,
+                                    marginTop: 2,
+                                    marginBottom: 2,
+
+                                }} onPress={() => {
+                                    this.setState({showHint: true})
+                                }}
+                                >
+                                    <Icon style={{color: '#404040'}} name='md-information-circle'/>
+                                    <MaterialDialog
+                                        title={L.get('hint_challengecomplete_title')}
+                                        visible={this.state.showHint}
+                                        cancelLabel=''
+                                        onCancel={() => {
+                                            this.setState({showHint: false})
+                                        }}
+                                        okLabel={L.get('okay')}
+                                        onOk={() => {
+                                            this.setState({showHint: false})
+                                        }}
+                                        colorAccent={material.textLight}
+                                    >
+
+                                        <Text>
+                                            {L.get("hint_challengecomplete")}
+                                        </Text>
+                                    </MaterialDialog>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     )}
                 </Mutation>
@@ -55,7 +97,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                 <Mutation mutation={COMPLETE_CHALLENGE}>
                     {(completeChallenge, {loading, error}) => (
 
-                        <View>
+                        <View style={{flex: 1, flexDirection: 'row', justifyContent: 'flex-end'}}>
                             <Switch
 
                                 value={this.state.optimisticResult}
@@ -72,6 +114,42 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                                     });
                                     refetch()
                                 }}/>
+                            <View>
+                                <TouchableOpacity style={{
+                                    flex: 1,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    height: 24,
+                                    width: 24,
+                                    borderRadius: 24 / 2,
+                                    marginTop: 2,
+                                    marginBottom: 2,
+
+                                }} onPress={() => {
+                                    this.setState({showHint: true})
+                                }}
+                                >
+                                    <Icon style={{color: '#404040'}} name='md-information-circle'/>
+                                    <MaterialDialog
+                                        title={L.get('hint_challengecomplete_title')}
+                                        visible={this.state.showHint}
+                                        cancelLabel=''
+                                        onCancel={() => {
+                                            this.setState({showHint: false})
+                                        }}
+                                        okLabel={L.get('okay')}
+                                        onOk={() => {
+                                            this.setState({showHint: false})
+                                        }}
+                                        colorAccent={material.textLight}
+                                    >
+
+                                        <Text>
+                                            {L.get("hint_challengecomplete")}
+                                        </Text>
+                                    </MaterialDialog>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     )}
                 </Mutation>
@@ -95,7 +173,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                 <View header style={{backgroundColor: material.brandInfo, flex: 2}}>
                     <ImageBackground
                         source={challenge.headerImage ? {uri: challenge.headerImage.url} : require('../../../assets/image_select.png')}
-                        style={{width: '100%', height: '100%'}}>
+                        style={{width: '100%', height: '100%', backgroundColor: "#ff0"}}>
                         <View>
                             <Button transparent info onPress={() => {
                                 requestModalClose();
@@ -126,7 +204,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                         <Button transparent disabled={!userChallenge.replaceable} onPress={() => {
                             this.setState({showRejectDialog: true});
                         }}>
-                            <Mutation mutation={REJECT_CHALLENGE}>
+                            <Mutation mutation={REJECT_CHALLENGE} refetchQueries={[CURRENT_CHALLENGES]}>
                                 {(rejectChallenge, {loading, error}) => {
                                     return (
                                         <Fragment>
@@ -139,7 +217,7 @@ export class ChallengeDetailsModalContent extends FSModalContentBase {
                                                     this.setState({showRejectDialog: false})
                                                 }}
                                                 okLabel={L.get('yes')}
-                                                onOk={ async () => {
+                                                onOk={async () => {
                                                     this.setState({showRejectDialog: false});
                                                     console.log("!!");
                                                     this.setState({loading: true, optimisticResult: true});
@@ -190,7 +268,7 @@ ChallengeDetailsModalContent.propTypes = {
 
 const styles = StyleSheet.create({
     modal: {
-        backgroundColor: 'rgba(0,0,0,0)',
+        backgroundColor: '#ff0000',
         margin: '5%',
     },
 });

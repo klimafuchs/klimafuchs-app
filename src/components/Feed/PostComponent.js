@@ -18,7 +18,7 @@ import {
     Text,
     Toast
 } from "native-base";
-import {Dimensions, Image, StyleSheet, View} from "react-native";
+import {Dimensions, Image, StyleSheet, View, Share} from "react-native";
 import Modal from "react-native-modal";
 import {Mutation} from "react-apollo";
 import {ADD_COMMENT, LIKE_COMMENT, LIKE_POST, LOAD_POST, UNLIKE_COMMENT, UNLIKE_POST} from "../../network/Feed.gql";
@@ -29,11 +29,17 @@ import env from '../../env';
 import {Util} from "../../util";
 import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 import * as PropTypes from "prop-types";
+import {MaterialDialog} from "react-native-material-dialog";
 
 moment.locale('de');
 
 
 class PostComponent extends Component {
+    state = {
+        showReportDialog: false,
+        showDeleteDialog: false,
+
+    }
     overflowActionsConfig = {
         config:
             {
@@ -54,14 +60,40 @@ class PostComponent extends Component {
         },
         actions: [
             () => {
+                this.sharePost().catch(error => console.error(error));
+                console.log("action share")
             },
             () => {
+                this.setState({showReportDialog: true})
+                console.log("action report")
+
             },
             () => {
                 console.log("action cancelled")
             },
 
         ],
+    };
+
+    sharePost = async () => {
+        try {
+            const result = await Share.share({
+                message:
+                    `${this.props.post.title} | Klimafuchs App`,
+            });
+
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error) {
+            alert(error.message);
+        }
     };
 
     actionSheetAction(param) {
@@ -128,17 +160,16 @@ class PostComponent extends Component {
                 </CardItem>
                 {navigateToDetailedView ?
                     <CardItem>
-                        <Left>
+                        <Left style={{flex:4}}>
                             <Image
                                 style={{
                                     width: 32,
                                     height: 32,
-                                    borderRadius: 16
                                 }}
                                 source={{uri: Util.AvatarToUri(post.author.avatar)}}
                                 resizeMode="contain"
                             />
-                            <Body style={{justifyContent: 'center', alignItems: 'flex-start'}}>
+                            <Body style={{paddingLeft: 10, justifyContent: 'center', alignItems: 'flex-start'}}>
                                 <H1>{post.title}</H1>
                                 <Text style={{alignSelf: 'flex-start', flex: 1, alignItems: 'center'}}>
                                     {L.get("feed_post_author_description",
@@ -181,6 +212,20 @@ class PostComponent extends Component {
             return (
                 <View>
                     {card}
+                    <MaterialDialog
+                        title={L.get("report_post_dialog_title")}
+                        visible={this.state.showReportDialog}
+                        okLabel={L.get("report_post_dialog_ok_label")}
+                        cancelLabel={L.get("report_post_dialog_cancel_label")}
+                        onOk={() => {
+                            //TODO report post
+                            this.setState({showReportDialog: false})}
+                        }
+                        onCancel={() => this.setState({showReportDialog: false})}>
+                        <Text>
+                            {L.get("report_post_dialog_body")}
+                        </Text>
+                    </MaterialDialog>
                 </View>
             )
         } else {
@@ -394,8 +439,8 @@ class CommentWidget extends Component {
                                             await unlikeComment({variables: {commentId: comment.id}});
                                         }}
                             >
-                                <Text style={{color: '#f00'}}>{comment.sentiment}</Text>
-                                <Icon style={{color: '#f00'}} name="ios-heart"/>
+                                <Text style={{color: '#000'}}>{comment.sentiment}</Text>
+                                <Icon style={{color: '#000'}} name="md-thumbs-up"/>
                             </Button>
                         )
                     }}
@@ -411,8 +456,8 @@ class CommentWidget extends Component {
                                             await likeComment({variables: {commentId: comment.id}});
                                         }}
                             >
-                                <Text style={{color: '#000'}}>{comment.sentiment}</Text>
-                                <Icon style={{color: '#000'}} name="ios-heart-empty"/>
+                                <Text style={{color: '#aaa'}}>{comment.sentiment}</Text>
+                                <Icon style={{color: '#aaa'}} name="md-thumbs-up"/>
                             </Button>
                         )
                     }}
@@ -458,11 +503,11 @@ class LikeButton extends Component {
                     }}
             >
                 <Text
-                    style={{color: post.currentUserLikesPost ? '#ff0000' : material.textColor}}
+                    style={{color: post.currentUserLikesPost ? '#000' : '#aaa'}}
                 >
                     {post.sentiment} <Icon
-                    style={{color: post.currentUserLikesPost ? '#ff0000' : material.textColor, fontSize: 14}}
-                    name={post.currentUserLikesPost ? "ios-heart" : "ios-heart-empty"}/>
+                    style={{color: post.currentUserLikesPost ? '#000' : '#aaa', fontSize: 14}}
+                    name="md-thumbs-up" />
                 </Text>
             </Button>
         )

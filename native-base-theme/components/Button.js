@@ -83,7 +83,7 @@ export default (variables = variable) => {
   const buttonTheme = {
     ".disabled": {
       ".transparent": {
-        backgroundColor: null,
+        backgroundColor: "transparent",
         "NativeBase.Text": {
           color: variables.btnDisabledBg
         },
@@ -146,7 +146,7 @@ export default (variables = variable) => {
         borderWidth: variables.borderWidth * 2
       },
       ".disabled": {
-        backgroundColor: null,
+        backgroundColor: "transparent",
         borderColor: variables.btnDisabledBg,
         borderWidth: variables.borderWidth * 2,
         "NativeBase.Text": {
@@ -172,7 +172,7 @@ export default (variables = variable) => {
     ".light": {
       ".transparent": {
         ...lightCommon,
-        backgroundColor: null
+        backgroundColor: "transparent"
       },
       ".bordered": {
         ...lightCommon
@@ -242,31 +242,31 @@ export default (variables = variable) => {
       ...primaryCommon,
       ".dark": {
         ...darkCommon,
-        backgroundColor: null
+        backgroundColor: "transparent"
       },
       ".danger": {
         ...dangerCommon,
-        backgroundColor: null
+        backgroundColor: "transparent"
       },
       ".warning": {
         ...warningCommon,
-        backgroundColor: null
+        backgroundColor: "transparent"
       },
       ".info": {
         ...infoCommon,
-        backgroundColor: null
+        backgroundColor: "transparent"
       },
       ".primary": {
         ...primaryCommon,
-        backgroundColor: null
+        backgroundColor: "transparent"
       },
       ".success": {
         ...successCommon,
-        backgroundColor: null
+        backgroundColor: "transparent"
       },
       ".light": {
         ...lightCommon,
-        backgroundColor: null
+        backgroundColor: "transparent"
       },
       ".disabled": {
         backgroundColor: "transparent",

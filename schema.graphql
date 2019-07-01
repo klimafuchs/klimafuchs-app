@@ -166,7 +166,7 @@ type Mutation {
     createTeam(team: TeamInput!): Team!
     delMember(membershipId: Int!): Membership!
     delete(mediaId: Int!): Media!
-    inviteUserToTeam(screeName: String!, teamId: Int!): Membership!
+    inviteUserToTeam(screenName: String!, teamId: Int!): Membership!
     leaveTeam(membershipId: Int!): Membership!
     likeComment(commentId: Int!): FeedComment!
     likePost(postId: Int!): FeedPost!
@@ -240,6 +240,7 @@ type Query {
     getLeaderBoard(connectionArgs: ConnectionArgs!, teamSize: TeamSize!): LeaderBoardEntryPage
     getMyTeam(teamId: Int!): Team!
     getPageProps(pageId: Int!): Props
+    getTeam(teamId: Int!): Team!
     globalCurrentChallenges: SeasonPlan
     isSubscribed: Subscription
     kategorie(kategorieId: String!): Kategorie
@@ -300,6 +301,7 @@ type Subscription {
 
 type Team {
     avatar: Media
+    closed: Boolean!
     description: String
     id: Int!
     inviteId: String!
@@ -412,6 +414,7 @@ input SeasonPlanInput {
 }
 
 input TeamInput {
+    closed: Boolean
     id: Int
     mediaId: Int
     teamDescription: String

@@ -1,11 +1,14 @@
 import React, {Component, Fragment} from 'react';
-import {RefreshControl, Text, View} from 'react-native';
-import {Body, Button, Container, Content, Form, Icon, List, ListItem, Picker, Right, Spinner} from "native-base";
+import {RefreshControl, Text, View, ImageBackground} from 'react-native';
+import {Body, Button, Container, Content, Form, Icon, List, ListItem, Picker, Right, Left, Spinner} from "native-base";
 import {Mutation, Query} from "react-apollo";
 import {CURRENT_USER_ID, LEADERBOARD, REQUEST_JOIN_TEAM, TeamSize} from "../../network/Teams.gql";
 import * as env from "../../env"
 import {MaterialDialog} from 'react-native-material-dialog';
-
+import { BlurView } from 'expo';
+import material from "../../../native-base-theme/variables/material";
+import {TeamDetailsModalContent} from "./TeamDetailsModalContent";
+import {FSModal} from "../Common/FSModal";
 export class LeaderBoardScreen extends Component {
     static navigationOptions = {
         title: 'Leaderboard',
@@ -69,7 +72,7 @@ export class LeaderBoardScreen extends Component {
                                         } else {
                                             return (
                                                 <Fragment>
-                                                    <Text>hm...</Text>
+                                                    <Text>Es gibt noch keine Teams in dieser Größe</Text>
                                                     {this.renderFetchMoreButton(data, loading, fetchMore)}
                                                 </Fragment>
                                             )
@@ -172,6 +175,7 @@ class TeamCard extends Component {
     render() {
         let {index, team, currentUserId} = this.props;
         let {node, cursor} = team;
+        console.log(team)
         const teamAvatarUrl =
             node.avatar
                 ? `${env.dev.API_IMG_URL}${node.avatar.filename}`
@@ -199,7 +203,7 @@ class TeamCard extends Component {
                         </Text>
                     </Button>
                 </Fragment>
-                : <Fragment>
+                : team.node.closed ? <Fragment/> :<Fragment>
                     <Mutation mutation={REQUEST_JOIN_TEAM}
                               refetchQueries={[{query: LEADERBOARD}]}
                     >
@@ -212,7 +216,7 @@ class TeamCard extends Component {
                                         Beitreten
                                     </Text>
                                     <MaterialDialog
-                                        title={`Join team ${team.name}?`}
+                                        title={`Join team ${team.node.name}?`}
                                         visible={this.state.showJoinDialog}
                                         onOk={() => {
                                             console.log(team)
@@ -230,34 +234,54 @@ class TeamCard extends Component {
                                         }}
                                         onCancel={() => this.setState({showJoinDialog: false})}>
                                         <Text>
-                                            Join team {team.name}?
+                                            Join team {team.node.name}?
                                         </Text>
                                     </MaterialDialog>
                                 </Button>
                             )
                         }}
                     </Mutation>
-                </Fragment>
+                </Fragment>;
 
-        return (
-            <ListItem>
-                <Body style={{height: '100%'}}>
-                <View style={{flex: 1, flexDirection: 'row'}}>
-                    <View>
-                        <Text style={{color: '#008523'}}>Teamrang: </Text>
-                        <Text>Teamname: </Text>
-                    </View>
-                    <View>
-                        <Text>{node.place}</Text>
-                        <Text>{node.name}</Text>
-                    </View>
+        const avatarAndPlaceIndicator = <View style={{width: 64, height: 64}}>
+            <ImageBackground source={{uri: teamAvatarUrl}} style={{width: '100%', height: '100%'}}>
+                <View style={{top: '50%', height: '50%'}}>
+                    <BlurView tint="light" intensity={50} style={{ flex:1, justifyContent: 'center', alignItems: 'center'}}>
+                      <Text>{node.place}</Text>
+                    </BlurView>
                 </View>
+            </ImageBackground>
+        </View>;
+        return (
+            <FSModal
+                ref={(ref) => {
+                    this.teamDetails = ref;
+                }}
+                body={<TeamDetailsModalContent
+                    teamId={node.id}
+                    requestModalClose={() => this.teamDetails.closeModal()}
+                    ref={(ref) => {
+                        this.teamDetailsContent = ref
+                    }}
+                />}
+            >
+            <ListItem onPress={() => {
+                this.teamDetails.openModal()
+            }}>
+                <Left style={{flex:1}}>
+                    {avatarAndPlaceIndicator}
+                </Left>
+                <Body style={{height: '100%', flex: 3, paddingLeft: 10}}>
+                        <View>
+                            <Text>{node.name}</Text>
+                            <Text style={{color: material.textLight}}>{node.description}</Text>
+                        </View>
                 </Body>
-                <Right style={{}}>
-                    <Text> </Text>
+                <Right style={{flex:1,height: '100%'}}>
                     {rightContent}
                 </Right>
             </ListItem>
+            </FSModal>
         )
     }
 }

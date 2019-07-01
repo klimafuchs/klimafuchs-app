@@ -23,7 +23,7 @@ import material from "../../../native-base-theme/variables/material";
 import {ChallengeDetailsModal, ChallengeDetailsModalContent} from "./ChallengeDetailsModalContent";
 import * as PropTypes from "prop-types";
 import {FSModal} from "../Common/FSModal";
-import {CreateTeamModalContent} from "../Competitve/CreateTeamModalContent";
+import {CreateTeamScreen} from "../Competitve/CreateTeamScreen";
 import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 import {MaterialDialog} from "react-native-material-dialog";
 

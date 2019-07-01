@@ -107,6 +107,22 @@
     "default": "Loading...",
     "de": "Loading..."
   },
+  "report_post_dialog_title": {
+    "default": "Wirklich melden?",
+    "de": "Wirklich melden?"
+  },
+  "report_post_dialog_body": {
+    "default": "Wirklich melden?",
+    "de": "Wirklich melden?"
+  },
+  "report_post_dialog_ok_label": {
+    "default": "Melden",
+    "de": "Melden"
+  },
+  "report_post_dialog_cancel_label": {
+    "default": "Abbrechen",
+    "de": "Abbrechen"
+  },
   "hint_seasonplan_progress": {
     "default": "Die Blattfarben repräsentieren deinen Fortschritt beim Erledigen der wöchentlichen Aufgaben.",
     "de": "Die Blattfarben repräsentieren deinen Fortschritt beim Erledigen der wöchentlichen Aufgaben."
@@ -126,6 +142,26 @@
   "hint_seasonplan_challenge_reject": {
     "default": "Wenn du die Challenge ablehnst, wird einer von ${jokerCount} Jokern verbraucht. Du erhältst eine zufällige Ersatzchallenge.\nBist du sicher, dass du die Challenge ablehnen möchtest?",
     "de": "Wenn du die Challenge ablehnst, wird einer von ${jokerCount} Jokern verbraucht. Du erhältst eine zufällige Ersatzchallenge.\nBist du sicher, dass du die Challenge ablehnen möchtest?"
+  },
+  "hint_seasonprogress_title": {
+    "default": "SeasonBaum",
+    "de": "Seasonbaum"
+  },
+  "hint_seasonprogress": {
+    "default": "Mit jedem Monat der Season wächst dein Baum. Du kannst ihn mit Blättern schmücken, indem du die wöchentlichen Herausforderungen abschließt. Am Ende der Season wird dein Baum in eine Trophäe transformiert.",
+    "de": "Mit jedem Monat der Season wächst dein Baum. Du kannst ihn mit Blättern schmücken, indem du die wöchentlichen Herausforderungen abschließt. Am Ende der Season wird dein Baum in eine Trophäe transformiert."
+  },
+  "hint_challengecomplete": {
+    "default": "Bei Klimafuchs legst du den Status deiner Challenges selbstständig fest. Du entscheidest also, wann du eine Challenge erledigt hast. Wenn du dir unsicher bist, kannst du diese Entscheidung jederzeit rückgängig machen.",
+    "de": "Bei Klimafuchs legst du den Status deiner Challenges selbstständig fest. Du entscheidest also, wann du eine Challenge erledigt hast. Wenn du dir unsicher bist, kannst du diese Entscheidung jederzeit rückgängig machen."
+  },
+  "hint_challengecomplete_title": {
+    "default": "Challenge erledigt?",
+    "de": "Challenge erledigt?"
+  },
+  "notifications_list_empty": {
+    "default": "Keine Benachrichtigungen",
+    "de": "Keine Benachrichtigungen"
   },
   "hint_dismiss_all_notifications": {
     "default": "Alle Benachrichtigungen löschen?",
