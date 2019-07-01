@@ -3,7 +3,7 @@ import axios from 'axios'
 const verbose = false;
 var appContext = null;
 
-const baseUrl = "https://enviroommate.org/app-dev/"// works on android emulator ONLY!!
+const baseUrl = "https://klimafuchs.org/app-dev/"// works on android emulator ONLY!!
 
 function doPostAuthorized(url, token, data, onSuccess, onError) {
     axios.post(baseUrl + url,data,{
@@ -71,8 +71,8 @@ function doGet( url, token = "", onSuccess, onError ) {
 }
 
 export default {
-    setContext(context) {
-        appContext = context
+    checkTokenValid(token, onSuccess, onError) {
+        doGetWithParams('api/checkLogin', token, {}, onSuccess, onError);
     },
     checkEmailExists(email, onSuccess, onError) {
         doGetWithParams('api/checkEmail',"", {username: email}, onSuccess, onError);
@@ -87,57 +87,7 @@ export default {
     register(userdata, onSuccess, onError) {
         doPost('api/register', userdata, onSuccess, onError);
     },
-    createGroup(token, onSuccess, onError) {
-        doPostAuthorized('api/auth/new-wg', token, {}, onSuccess, onError);
-    },
-    joinGroup(token, joinId, onSuccess, onError) {
-        doPostAuthorized('api/auth/join-wg', token, {inviteLink: joinId}, onSuccess, onError);
-    },
-    leaveGroup(token, onSuccess, onError) {
-        doPostAuthorized('api/auth/leave-wg', token, {}, onSuccess, onError);
-    },
-    renameGroup(token, newName, onSuccess, onError) {
-        doPostAuthorized('api/auth/update-wg', token, {newName: newName}, onSuccess, onError);
-    },
-    fetchUserData(token, onSuccess, onError) {
-        doGet("/api/auth/profile", token, onSuccess, onError );
-    },
-    fetchGroupData(token, onSuccess, onError) {
-        doGet("/api/auth/wg", token, onSuccess, onError );
-    },
-    searchGroup(token, query, onSuccess, onError) {
-        doGetWithParams("/api/auth/search-wg", token, {query: query},onSuccess, onError );
-    },
-    fetchFollowedGroups(token, onSuccess, onError) {
-        doGet("/api/auth/followed-wgs", token, onSuccess, onError );
-    },
-    followGroup(token, id,onSuccess, onError) {
-        doPostAuthorized("/api/auth/follow-wg", token, {id: id}, onSuccess, onError );
-    },
-    viewGroup(token, id,onSuccess, onError) {
-        doGetWithParams("/api/auth/completed-challenges", token, {id: id}, onSuccess, onError );
-    },
-    unfollowGroup(token, id,onSuccess, onError) {
-        doPostAuthorized("/api/auth/unfollow-wg", token, {id: id}, onSuccess, onError );
-    },
-    fetchCurrentChallenge(token, onSuccess, onError) {
-        doGet("/api/auth/current-challenge", token, onSuccess, onError );
-    },
-    completeCurrentChallenge(token, challengeId,onSuccess, onError) {
-        doPostAuthorized("/api/auth/complete-challenge", token, {id: challengeId}, onSuccess, onError );
-    },
-    fetchCompletedChallenges(token, onSuccess, onError) {
-        doGet("/api/auth/completed-challenges", token, onSuccess, onError );
-    },
-    fetchPastChallenges(token, onSuccess, onError) {
-        doGet("/api/auth/past-challenges", token, onSuccess, onError );
-    },
-    fetchScore(token, onSuccess, onError) {
-        doGet("/api/auth/score", token, onSuccess, onError );
-    },
-    registerPushNotifications(subscription, onSuccess, onError) {
-        doPost("/api/push/register", {subscription: subscription}, onSuccess, onError)
-    },
+
     requestPasswordReset(email, onSuccess, onError) {
         axios.get("/api/resetPassword", {
             params: {username: email}
@@ -148,11 +98,6 @@ export default {
             onError(err)
         })
     },
-    resetPassword(resetToken, password, onSuccess, onError) {
-        doPost("/api/resetPassword", {password: password, resettoken: resetToken}, onSuccess, onError)
-    },
-    fetchAlerts(token, onSuccess, onError) {
-        doGet("/api/alerts", token, onSuccess, onError)
-    }
+
 
 };

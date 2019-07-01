@@ -16,6 +16,7 @@ import {ForgotPasswordScreen} from "./src/components/PreLogin/ForgotPasswordScre
 import {Font, Notifications} from "expo";
 import ApolloProvider from "react-apollo/ApolloProvider";
 import client from "./src/network/client"
+import Api from "./src/network/api";
 const prefix = Expo.Linking.makeUrl('/');
 
 export default class AppRoot extends Component {
@@ -78,8 +79,10 @@ class AuthLoadingScreen extends Component {
     async _bootstrapAsync() {
         console.log("Is logged in?");
         const userToken = await AsyncStorage.getItem('token');
-        console.log("Logged In");
-        this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+        const isValid = await this.checkLogin(userToken);
+
+        console.log("Logged In ? " + isValid);
+        this.props.navigation.navigate(isValid ? 'App' : 'Auth');
     }
 
     render() {
@@ -89,6 +92,11 @@ class AuthLoadingScreen extends Component {
                 <StatusBar barStyle="default"/>
             </View>
         )
+    }
+
+    checkLogin = async (userToken) => {
+      return  Api.checkTokenValid(userToken, () => {return  true}, () => { return  false})
+
     }
 }
 
