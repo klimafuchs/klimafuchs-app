@@ -72,7 +72,7 @@ function doGet( url, token = "", onSuccess, onError ) {
 
 export default {
     checkTokenValid(token, onSuccess, onError) {
-        doGetWithParams('api/checkLogin', token, {}, onSuccess, onError);
+        doGet('api/checkToken', token, onSuccess, onError);
     },
     checkEmailExists(email, onSuccess, onError) {
         doGetWithParams('api/checkEmail',"", {username: email}, onSuccess, onError);

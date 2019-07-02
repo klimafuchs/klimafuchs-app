@@ -38,6 +38,7 @@ class UploadImage extends React.Component {
     pickImage = async (upload, destroy) => { //TODO ENHANCEMENT replace with https://github.com/ivpusic/react-native-image-crop-picker? (requires ejecting)
         let result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
+            aspect: [1, 1],
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             exif: false,
         });

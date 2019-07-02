@@ -148,7 +148,7 @@
     "de": "Seasonbaum"
   },
   "hint_seasonprogress": {
-    "default": "Mit jedem Monat der Season wächst dein Baum. Du kannst ihn mit Blättern schmücken, indem du die wöchentlichen Herausforderungen abschließt. Am Ende der Season wird dein Baum in eine Trophäe transformiert.",
+    "default": "Mit jedem Monat der Season wächst dein Baum. Du kannst ihn mit Blättern schmücken, indem du die wöchentlichen Herausforderungen abschließt. Am Ende der Season wird dein Baum in eine Trophäe transformiert.\n\nJe mehr Herausforderungen Du abschließt desto besser besser wird Deine Trophäe:\n- bis 10%: braun\n- bis 40%: gelb\n- bis 80%: hell grün\n- bis 99%: dunkel grün\n- alle Herausforderungen erfüllt: goldener Rahmen\n\nDie Prozentzahl zeigt an, wie viele Challenges Du diese Seai",
     "de": "Mit jedem Monat der Season wächst dein Baum. Du kannst ihn mit Blättern schmücken, indem du die wöchentlichen Herausforderungen abschließt. Am Ende der Season wird dein Baum in eine Trophäe transformiert."
   },
   "hint_challengecomplete": {

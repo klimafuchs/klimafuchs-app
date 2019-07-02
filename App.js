@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
-import {AsyncStorage,  StatusBar, StyleSheet, Text, View,SafeAreaView} from 'react-native';
-import {createAppContainer,createStackNavigator, createSwitchNavigator} from "react-navigation";
+import {AsyncStorage, SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {createAppContainer, createStackNavigator, createSwitchNavigator} from "react-navigation";
 import {Root, Spinner, StyleProvider} from 'native-base';
 import LoginScreen from "./src/components/PreLogin/LoginScreen";
 import SignUpScreen from "./src/components/PreLogin/SignUpScreen";
 import CheckUserExistsScreen from "./src/components/PreLogin/CheckUserExistsScreen";
-import {connect, Provider as ReduxProvider} from "react-redux";
+import {Provider as ReduxProvider} from "react-redux";
 import getTheme from './native-base-theme/components';
 import material from './native-base-theme/variables/material';
-import {store, persistor} from "./src/persistence/store"
-import { PersistGate } from 'redux-persist/integration/react'
+import {persistor, store} from "./src/persistence/store"
+import {PersistGate} from 'redux-persist/integration/react'
 
 import {AppNav} from "./src/components/LoggedInScreen";
 import {ForgotPasswordScreen} from "./src/components/PreLogin/ForgotPasswordScreen";
@@ -17,6 +17,7 @@ import {Font, Notifications} from "expo";
 import ApolloProvider from "react-apollo/ApolloProvider";
 import client from "./src/network/client"
 import Api from "./src/network/api";
+
 const prefix = Expo.Linking.makeUrl('/');
 
 export default class AppRoot extends Component {
@@ -81,10 +82,10 @@ class AuthLoadingScreen extends Component {
     async _bootstrapAsync() {
         console.log("Is logged in?");
         const userToken = await AsyncStorage.getItem('token');
-        const isValid = await this.checkLogin(userToken);
+        console.log(userToken);
+        //let isValid = await this.checkLogin(userToken);
 
-        console.log("Logged In ? " + isValid);
-        this.props.navigation.navigate(isValid ? 'App' : 'Auth');
+        this.props.navigation.navigate(userToken ? 'App' : 'Auth');
     }
 
     render() {
@@ -97,7 +98,17 @@ class AuthLoadingScreen extends Component {
     }
 
     checkLogin = async (userToken) => {
-      return  Api.checkTokenValid(userToken, () => {return  true}, () => { return  false})
+        return await Api.checkTokenValid(userToken, (res) => {
+            console.log(`Token valid!`);
+            return true
+        }, async (err) => {
+            console.log(err);
+            await AsyncStorage.removeItem('uId');
+            await AsyncStorage.removeItem('token');
+            await client.clearStore();
+            console.log(`Token invalid! Cleared token store, reauthenticating...`);
+            return false
+        })
 
     }
 }

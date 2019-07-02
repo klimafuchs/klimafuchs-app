@@ -18,7 +18,7 @@ import {
     Text,
     Toast
 } from "native-base";
-import {Dimensions, Image, StyleSheet, View, Share} from "react-native";
+import {Dimensions, Image, Share, StyleSheet, View} from "react-native";
 import Modal from "react-native-modal";
 import {Mutation} from "react-apollo";
 import {ADD_COMMENT, LIKE_COMMENT, LIKE_POST, LOAD_POST, UNLIKE_COMMENT, UNLIKE_POST} from "../../network/Feed.gql";
@@ -371,8 +371,11 @@ class CommentTreeWidget extends Component {
         tree.sort(this.sortComments);
 
         tree.forEach((branchRoot) => {
+            if (!branchRoot.children) return;
             this._buildCommentTree(comments, branchRoot, this.maxRecursionDepth)
         });
+        console.log("tree:");
+        console.log(tree);
 
         return tree;
     };
@@ -392,6 +395,7 @@ class CommentTreeWidget extends Component {
     };
 
     walkTree = (commentTree) => {
+
         let tree = commentTree.map(branch => this._walkTree(branch, this.maxRecursionDepth))
         return tree;
     };
@@ -399,6 +403,7 @@ class CommentTreeWidget extends Component {
     _walkTree = (currentNode, recursionDepth) => {
         let below;
         if (currentNode.childComments && currentNode.childComments.length > 0 && recursionDepth >= 0) {
+            console.log("reached below");
             below =
                 <View style={styles.commentWidget}>
                     {currentNode.childComments.map(branch => this._walkTree(branch, recursionDepth - 1))}
@@ -415,11 +420,9 @@ class CommentTreeWidget extends Component {
 
     render() {
         //let result = this.walkTree(this.state.commentTree);
-        console.log(this.props.comments);
         return (
             <View style={{flex: 1, flexShrink: 0, alignItems: 'stretch', width: '100%'}}>
                 {this.buildCommentTree(this.props.comments).map(tree => this._walkTree(tree, this.recursionDepth))}
-                {this.walkTree(this.buildCommentTree(this.props.comments))}
             </View>
         );
     }
