@@ -4,6 +4,7 @@ import {Body, Button, Container, Content, Form, Header, Icon, Left, Right, Title
 import Api from "../../network/api";
 import material from '../../../native-base-theme/variables/material';
 import {ValidatingTextField} from "../Common/ValidatingTextInput";
+import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 
 class SignUpScreen extends Component {
     state = {
@@ -24,7 +25,7 @@ class SignUpScreen extends Component {
     checkPasswords = () => {
         let {password, password2} = this.state;
         if (password !== password2) {
-            this.setState({passwordError: "Die Passwörter stimmen nicht überein"})
+            this.setState({passwordError: L.get("error_password_repeat_not_matching")})
         }
     };
 
@@ -83,7 +84,7 @@ class SignUpScreen extends Component {
                         </Button>
                     </Left>
                     <Body>
-                    <Title>Registrieren</Title>
+                    <Title>{L.get("signupscreen_title")}</Title>
                     </Body>
                     <Right/>
                 </Header>
@@ -95,7 +96,7 @@ class SignUpScreen extends Component {
                                 <ValidatingTextField
                                     name='userName'
                                     validateAs='userName'
-                                    label='eMail'
+                                    label={L.get("email_placeholder")}
                                     onChangeText={(text) => this.setState({userName: text})}
                                     value={this.state.userName}
                                     externalError={this.state.userNameError}
@@ -108,7 +109,7 @@ class SignUpScreen extends Component {
                                 <ValidatingTextField
                                     name='screenName'
                                     validateAs='screenName'
-                                    label='Name'
+                                    label={L.get("screenname_placeholder")}
                                     onChangeText={(text) => this.setState({screenName: text})}
                                     value={this.state.screenName}
                                     externalError={this.state.screenNameError}
@@ -122,7 +123,7 @@ class SignUpScreen extends Component {
                                 <ValidatingTextField
                                     name='password'
                                     validateAs='password'
-                                    label='password'
+                                    label={L.get("password_placeholder")}
                                     secureTextEntry
                                     onChangeText={(text) => this.setState({password: text})}
                                     value={this.state.password}
@@ -137,7 +138,7 @@ class SignUpScreen extends Component {
                                 <ValidatingTextField
                                     name='password2'
                                     validateAs='password2'
-                                    label='Passwort bestätigen'
+                                    label={L.get("password_repeat")}
                                     secureTextEntry
                                     onChangeText={(text) => this.setState({password2: text})}
                                     value={this.state.password2}

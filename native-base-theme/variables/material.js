@@ -112,7 +112,7 @@ export default {
     brandLight: "#fafafa",
 
     //Container
-    containerBgColor: "#cfcfcf",
+    containerBgColor: "#ffffff",
 
     //Date Picker
     datePickerTextColor: "#000",
@@ -147,7 +147,7 @@ export default {
     // Header
     toolbarBtnColor: "#fff",
     get toolbarDefaultBg() {
-        return this.brandPrimary
+        return this.brandInfo
     },
     toolbarHeight: 56,
     toolbarSearchIconSize: 23,
@@ -242,6 +242,7 @@ export default {
 
     // Text
     textColor: "#2f2f2f",
+    textLight: "#535353",
     inverseTextColor: "#fff",
     noteFontSize: 14,
     get defaultTextColor() {

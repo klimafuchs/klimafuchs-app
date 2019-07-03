@@ -3,6 +3,7 @@ import {AsyncStorage, Image, KeyboardAvoidingView, StyleSheet, View} from 'react
 import {Button, Card, CardItem, Container, Content, Form, H1, H3, Input, Item, Text, Toast} from "native-base";
 import {LinearGradient} from "expo";
 import Api from "../../network/api";
+import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
 
 import material from '../../../native-base-theme/variables/material';
 
@@ -10,7 +11,7 @@ import material from '../../../native-base-theme/variables/material';
 class LoginScreen extends Component {
 
     static navigationOptions = {
-        title: 'Please sign in'
+        title: L.get("loginscreen_title")
     };
 
 
@@ -77,7 +78,7 @@ class LoginScreen extends Component {
                                 </View>
                                 <Card style={loginScreenStyles.loginCard}>
                                     <CardItem style={loginScreenStyles.loginCardItem}>
-                                        <H1>Login</H1>
+                                        <H1>{L.get("login_card_title")}</H1>
                                     </CardItem>
                                     <CardItem style={loginScreenStyles.loginCardItem}>
                                         <Form style={{flex: 1}}>
@@ -87,7 +88,7 @@ class LoginScreen extends Component {
                                             >
 
                                                 <Input name="email"
-                                                       placeholder="eMail"
+                                                       placeholder={L.get("email_placeholder")}
                                                        onChangeText={(text) => this.setState({email: text})}
                                                        value={this.state.email}
                                                        placeholderTextColor={material.brandInfo}
@@ -99,7 +100,7 @@ class LoginScreen extends Component {
                                             >
 
                                                 <Input name="password"
-                                                       placeholder="Passwort"
+                                                       placeholder={L.get("password_placeholder")}
                                                        secureTextEntry
                                                        onChangeText={(text) => this.setState({password: text})}
                                                        value={this.state.password}
@@ -132,7 +133,7 @@ class LoginScreen extends Component {
                                                   console.log(`${this.constructor.name}: eula clicked!`);
 
                                               }}>
-                                            AGBs
+                                            {L.get("eula")}
                                         </Text>
                                         <Text>|</Text>
                                         <Text style={{color: material.textColor}}
@@ -140,13 +141,13 @@ class LoginScreen extends Component {
                                                   console.log(`${this.constructor.name}: privacy clicked!`)
 
                                               }}>
-                                            Datenschutzerklärung
+                                            {L.get("privacy_policy")}
                                         </Text>
                                     </CardItem>
                                 </Card>
                                 <Button full primary rounded style={loginScreenStyles.loginButton}
                                         onPress={() => this.signIn()}>
-                                    <Text style={{fontWeight: 'bold'}}>Login</Text>
+                                    <Text style={{fontWeight: 'bold'}}>{L.get('login')}</Text>
                                 </Button>
                             </View>
                         </KeyboardAvoidingView>

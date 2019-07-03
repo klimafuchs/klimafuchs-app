@@ -12,7 +12,8 @@ export const CURRENT_CHALLENGES = gql`
                     },
                     content,
                     
-                }
+                },
+                position
             },
             challenge {
                 id,
@@ -21,9 +22,8 @@ export const CURRENT_CHALLENGES = gql`
                 headerImage {
                     url
                 },
-                
-
             },
+            replaceable,
             challengeCompletion {id}
         }
     }
@@ -62,6 +62,7 @@ export const CURRENT_SEASONPLAN = gql`
     query globalCurrentChallenges {
         globalCurrentChallenges {
             themenwoche {
+                
                 title
                 content
                 headerImage {url}
@@ -77,6 +78,15 @@ export const COMPLETE_CHALLENGE = gql`
     mutation completeChallenge($challengeId: Int!) {
         completeChallenge(challengeId:$challengeId) {
             id
+            
+        }
+    }
+`;
+
+export const UNCOMPLETE_CHALLENGE = gql`
+    mutation uncompleteChallenge($challengeCompletionId: Int!) {
+        uncompleteChallenge(challengeCompletionId:$challengeCompletionId) {
+            createdAt
         }
     }
 `;

@@ -1,6 +1,5 @@
 import gql from 'graphql-tag'
 
-//TODO add ńotification setting on here
 export const UPDATE_PROFILE = gql`
     mutation updateProfile($userName: String, $screenName: String, $avatarId: Int){
         updateProfile(userName: $userName, screenName: $screenName, avatarId: $avatarId) {
@@ -28,5 +27,36 @@ export const CURRENT_USER = gql`
             screenName,
             avatar {filename},
         }
+    }
+`;
+
+export const IS_SUBSCRIBED_TO_NOTIFICATIONS = gql`
+    query isSubscribed {
+        isSubscribed {
+            id
+            pushToken
+        }
+    }
+`;
+
+export const SUBSCRIBE_TO_NOTIFICATIONS = gql`
+    mutation subscribe($pushToken: String!){
+        subscribe(pushToken: $pushToken) {
+            id
+        }
+    }
+`;
+
+export const UNSUBSCRIBE_FROM_NOTIFICATIONS = gql`
+    mutation unsubscribe {
+        unsubscribe {
+            pushToken
+        }
+    }
+`;
+
+export const TEST_NOTIFICATION = gql`
+    mutation testNptification {
+        testNotification 
     }
 `;

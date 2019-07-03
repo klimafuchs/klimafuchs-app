@@ -8,12 +8,17 @@ import CheckUserExistsScreen from "./src/components/PreLogin/CheckUserExistsScre
 import {Provider as ReduxProvider} from "react-redux";
 import getTheme from './native-base-theme/components';
 import material from './native-base-theme/variables/material';
-import store from "./src/persistence/store"
+import {persistor, store} from "./src/persistence/store"
+import {PersistGate} from 'redux-persist/integration/react'
+
 import {AppNav} from "./src/components/LoggedInScreen";
 import {ForgotPasswordScreen} from "./src/components/PreLogin/ForgotPasswordScreen";
-import {Font} from "expo";
+import {Font, Notifications} from "expo";
 import ApolloProvider from "react-apollo/ApolloProvider";
 import client from "./src/network/client"
+import Api from "./src/network/api";
+
+const prefix = Expo.Linking.makeUrl('/');
 
 export default class AppRoot extends Component {
 
@@ -22,6 +27,16 @@ export default class AppRoot extends Component {
         this.state = {
             loading: true
         };
+    }
+
+    handleNotification = (notification) => {
+        store.dispatch({type: 'NOTIFICATIONS/RECEIVE', notification});
+        console.log("received notification: " + JSON.stringify(notification))
+    };
+
+    componentDidMount() {
+        console.log(this.props)
+        this._notificationSubscription = Notifications.addListener(this.handleNotification);
     }
 
     async componentWillMount() {
@@ -41,19 +56,22 @@ export default class AppRoot extends Component {
         }
         return (
             <ReduxProvider store={store}>
+                <PersistGate loading={<Spinner/>} persistor={persistor}>
                 <ApolloProvider client={client}>
                     <StyleProvider style={getTheme(material)}>
-                        <SafeAreaView style={styles.safeArea}>
-                            <Root>
-                                <RootContainer/>
-                            </Root>
-                        </SafeAreaView>
+                        <Root>
+                            <SafeAreaView style={styles.safeArea}>
+                                <RootContainer uriPrefix={prefix}/>
+                            </SafeAreaView>
+                        </Root>
                     </StyleProvider>
                 </ApolloProvider>
+                </PersistGate>
             </ReduxProvider>
         )
     }
 }
+
 
 class AuthLoadingScreen extends Component {
     constructor() {
@@ -64,8 +82,19 @@ class AuthLoadingScreen extends Component {
     async _bootstrapAsync() {
         console.log("Is logged in?");
         const userToken = await AsyncStorage.getItem('token');
-        console.log("Logged In");
-        this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+        console.log(userToken);
+        await Api.checkTokenValid(userToken, async (res) => {
+            console.log(`Token valid!`);
+            this.props.navigation.navigate('App');
+        }, async (err) => {
+            console.log(err);
+            await AsyncStorage.removeItem('uId');
+            await AsyncStorage.removeItem('token');
+            await client.clearStore();
+            console.log(`Token invalid! Cleared token store, reauthenticating...`);
+            this.props.navigation.navigate('Auth');
+        })
+
     }
 
     render() {
@@ -76,6 +105,7 @@ class AuthLoadingScreen extends Component {
             </View>
         )
     }
+
 }
 
 
@@ -119,6 +149,6 @@ const styles = StyleSheet.create({
     },
     safeArea: {
         flex: 1,
-        backgroundColor: material.brandLight
+        backgroundColor: material.brandInfo
     }
 });

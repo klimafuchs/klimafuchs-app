@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+    ActionSheet,
     Body,
     Button,
     Card,
@@ -17,7 +18,7 @@ import {
     Text,
     Toast
 } from "native-base";
-import {Dimensions, Image, StyleSheet, View} from "react-native";
+import {Dimensions, Image, Share, StyleSheet, View} from "react-native";
 import Modal from "react-native-modal";
 import {Mutation} from "react-apollo";
 import {ADD_COMMENT, LIKE_COMMENT, LIKE_POST, LOAD_POST, UNLIKE_COMMENT, UNLIKE_POST} from "../../network/Feed.gql";
@@ -26,118 +27,228 @@ import de from 'moment/locale/de';
 import material from '../../../native-base-theme/variables/material';
 import env from '../../env';
 import {Util} from "../../util";
+import {LocalizationProvider as L} from "../../localization/LocalizationProvider";
+import * as PropTypes from "prop-types";
+import {MaterialDialog} from "react-native-material-dialog";
 
 moment.locale('de');
 
 
-export default PostComponent = ({post, navigateToDetailedView, commentRefetch, close}) => {
-    let cardMedia, header, cardFooter, commentSection;
-    if (post.ytId) {
-        cardMedia = <Text>TODO render yt embed here</Text>
-    } else if (post.image) {
-        const url = `${env.dev.API_IMG_URL}${post.image.filename}`;
-        const imageAspectRatio = post.image.height / post.image.width;
-        const width = (Dimensions.get('window').width);
-        const height = (Dimensions.get('window').height);
-        //TODO ENHANCEMENT add lightbox?
-        cardMedia = <View style={
+class PostComponent extends Component {
+    state = {
+        showReportDialog: false,
+        showDeleteDialog: false,
+
+    }
+    overflowActionsConfig = {
+        config:
             {
-                flex: 1,
+                options: [
+                    {text: "Teilen", icon: "share", iconColor: material.textLight},
+                    {text: "Melden", icon: "md-alert", iconColor: material.textLight},
+                    {text: "Abbrechen", icon: "md-alert", iconColor: material.textLight}
+                ],
+                cancelButtonIndex: 2,
+                destructiveButtonIndex: 1,
+            },
+        callback: (buttonIndex) => {
+            this.overflowActionsConfig.actions[buttonIndex]();
+            this.actionSheetAction({
+                index: buttonIndex,
+                pressed: this.overflowActionsConfig.config.options[buttonIndex]
+            });
+        },
+        actions: [
+            () => {
+                this.sharePost().catch(error => console.error(error));
+                console.log("action share")
+            },
+            () => {
+                this.setState({showReportDialog: true})
+                console.log("action report")
+
+            },
+            () => {
+                console.log("action cancelled")
+            },
+
+        ],
+    };
+
+    sharePost = async () => {
+        try {
+            const result = await Share.share({
+                message:
+                    `${this.props.post.title} | Klimafuchs App`,
+            });
+
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
             }
-        }>
-            <Image
-                style={{width: '100%', height: width * imageAspectRatio}}
-                source={{uri: url}}
-                resizeMode={navigateToDetailedView ? "cover" : "contain"}
-            />
-        </View>
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    actionSheetAction(param) {
+        this.overflowActionsConfig.actions[param.index]();
     }
-    if (navigateToDetailedView) {
-        cardFooter = <CardItem>
-            <Left>
-                <LikeButton post={post}/>
-            </Left>
-            <Button transparent
-                    onPress={navigateToDetailedView}>
-                <Text>{post.commentCount} Kommentare</Text>
-            </Button>
-            <Right>
-                <Button icon transparent
-                        onPress={navigateToDetailedView}>
-                    <Icon name="ios-more" style={{ /* this is a choice */
-                        transform: [{rotate: '90deg'}]
-                    }}/>
-                </Button>
-            </Right>
-        </CardItem>
-    } else {
-        cardFooter = <CardItem last style={{flexDirection: 'row', flex: 1}}>
-            <LikeButton post={post}/>
-            <AddCommentWidget postId={post.id}/>
-        </CardItem>
-    }
-    let displayedTime = moment(post.dateCreated).fromNow();
 
-    let card =
-        <Card style={{flex: 1}}>
-            <CardItem header bordered>
-                <Left>
-                    <Image
-                        style={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: 16
-                        }}
-                        source={{uri: Util.AvatarToUri(post.author.avatar)}}
-                        resizeMode="contain"
-                    />
-                    <Body style={{justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{alignSelf: 'center', flex: 1, alignItems: 'center'}}>
-                        {`Gepostet von ${post.author.screenName} ${displayedTime}`}
-                    </Text>
-                    </Body>
-                </Left>
-            </CardItem>
-            <CardItem>
-                {cardMedia}
-            </CardItem>
-            <CardItem>
-                <H1>{post.title}</H1>
-            </CardItem>
+    render() {
+        let {post, navigateToDetailedView, commentRefetch, close} = this.props;
+        let cardMedia, header, cardFooter, commentSection;
+        let displayedTime = moment(post.dateCreated).fromNow();
 
-            {navigateToDetailedView
-                ? <CardItem button onPress={navigateToDetailedView}>
-                    <Text>
-                        {post.body.length > 140
-                            ? `${post.body.substr(0, 139)}...`
-                            : post.body}
-                    </Text>
-                </CardItem>
-                : <CardItem>
-                    <Text>{post.body}</Text>
-                </CardItem>
-            }
-
-            {cardFooter}
-        </Card>
-    if (navigateToDetailedView) {
-        return (
-            <View>
-                {card}
+        if (post.ytId) {
+            cardMedia = <Text>TODO render yt embed here</Text>
+        } else if (post.image) {
+            const url = `${env.dev.API_IMG_URL}${post.image.filename}`;
+            const imageAspectRatio = post.image.height / post.image.width;
+            const width = (Dimensions.get('window').width);
+            const height = (Dimensions.get('window').height);
+            //TODO ENHANCEMENT add lightbox?
+            cardMedia = <View style={
+                {
+                    flex: 1,
+                }
+            }>
+                <Image
+                    style={{width: '100%', height: width * imageAspectRatio}}
+                    source={{uri: url}}
+                    resizeMode={navigateToDetailedView ? "cover" : "contain"}
+                />
             </View>
-        )
-    } else {
-        return (
-            <Container>
-                <Content>
-                    {card}
-                    {commentRefetch && <CommentTreeWidget comments={post.comments} postId={post.id}
-                                                          refetch={commentRefetch}/>}
-                </Content>
+        }
+        if (navigateToDetailedView) {
+            cardFooter = <CardItem>
+                <Left>
+                    <LikeButton post={post}/>
+                </Left>
+                <Right>
+                    <Button transparent
+                            onPress={navigateToDetailedView}>
+                        <Text>{L.get("feed_comments", {commentCount: post.commentCount})}</Text>
+                    </Button>
+                </Right>
+            </CardItem>
+        } else {
+            header = <View>
+                <Body style={{justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{alignSelf: 'center', flex: 1, alignItems: 'center'}}>
+                        {L.get("feed_post_author_description",
+                            {screenName: post.author.screenName, displayedTime: displayedTime})}
+                    </Text>
+                </Body>
+            </View>
 
-            </Container>
-        )
+            cardFooter = <CardItem last style={{flexDirection: 'row', flex: 1}}>
+                <LikeButton post={post}/>
+                <AddCommentWidget postId={post.id}/>
+            </CardItem>
+        }
+
+        let card =
+            <Card style={{flex: 1}}>
+                <CardItem>
+                    {cardMedia}
+                </CardItem>
+                {navigateToDetailedView ?
+                    <CardItem>
+                        <Left style={{flex:4}}>
+                            <Image
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                }}
+                                source={{uri: Util.AvatarToUri(post.author.avatar)}}
+                                resizeMode="contain"
+                            />
+                            <Body style={{paddingLeft: 10, justifyContent: 'center', alignItems: 'flex-start'}}>
+                                <H1>{post.title}</H1>
+                                <Text style={{alignSelf: 'flex-start', flex: 1, alignItems: 'center'}}>
+                                    {L.get("feed_post_author_description",
+                                        {screenName: post.author.screenName, displayedTime: displayedTime})}
+                                </Text>
+                            </Body>
+                        </Left>
+                        <Right>
+                            <Button transparent onPress={() => {
+                                ActionSheet.show(
+                                    this.overflowActionsConfig.config,
+                                    this.overflowActionsConfig.callback
+                                )
+                            }}
+                                    style={{width: 25}}>
+                                <Icon name='md-more' style={{color: material.textLight}}/>
+                            </Button>
+                        </Right>
+                    </CardItem>
+                    : <CardItem>
+                        <H1>{post.title}</H1>
+                    </CardItem>}
+
+                {navigateToDetailedView
+                    ? <CardItem button onPress={navigateToDetailedView}>
+                        <Text>
+                            {post.body.length > 140
+                                ? `${post.body.substr(0, 139)}...`
+                                : post.body}
+                        </Text>
+                    </CardItem>
+                    : <CardItem>
+                        <Text>{post.body}</Text>
+                    </CardItem>
+                }
+
+                {cardFooter}
+            </Card>
+        if (navigateToDetailedView) {
+            return (
+                <View>
+                    {card}
+                    <MaterialDialog
+                        title={L.get("report_post_dialog_title")}
+                        visible={this.state.showReportDialog}
+                        okLabel={L.get("report_post_dialog_ok_label")}
+                        cancelLabel={L.get("report_post_dialog_cancel_label")}
+                        onOk={() => {
+                            //TODO report post
+                            this.setState({showReportDialog: false})}
+                        }
+                        onCancel={() => this.setState({showReportDialog: false})}>
+                        <Text>
+                            {L.get("report_post_dialog_body")}
+                        </Text>
+                    </MaterialDialog>
+                </View>
+            )
+        } else {
+            return (
+                <Container>
+                    <Content>
+                        {!navigateToDetailedView && header}
+                        {card}
+                        {commentRefetch && <CommentTreeWidget comments={post.comments} postId={post.id}
+                                                              refetch={commentRefetch}/>}
+                    </Content>
+
+                </Container>
+            )
+        }
     }
+}
+
+PostComponent.propTypes = {
+    post: PropTypes.any,
+    navigateToDetailedView: PropTypes.any,
+    commentRefetch: PropTypes.any,
+    close: PropTypes.any
 }
 
 class AddCommentWidget extends Component {
@@ -195,18 +306,12 @@ class AddCommentWidget extends Component {
                     }}>
                     <Mutation key={this.props.postId}
                               mutation={ADD_COMMENT}
-                              update={(cache, {data: {addComment}}) => {
-                                  const data = cache.readQuery({
+                              refetchQueries={[{
                                       query: LOAD_POST,
                                       variables: {postId: this.props.postId}
-                                  });
-                                  data.post.comments.push(addComment);
-                                  cache.writeQuery({
-                                      id: this.props.postId,
-                                      query: LOAD_POST,
-                                      data
-                                  });
-                              }}
+                                  }
+                              ]}
+
                     >
                         {(addComment, {data}) => (
                             <Card transparent style={styles.modalContent}>
@@ -229,7 +334,7 @@ class AddCommentWidget extends Component {
 
                                         </Button>
                                     </Left>
-                                    <Right style={{width: 'auto', flex: 1}}>
+                                    <Right style={{width: 'auto', flex: 1, justifyContent: 'flex-end'}}>
                                         <Button transparent disabled={!this.state.body.length > 0}
                                                 onPress={async () => {
                                                     this.closeModal();
@@ -264,11 +369,13 @@ class CommentTreeWidget extends Component {
     buildCommentTree = (comments) => {
         let tree = comments.filter((c) => !c.parent);
         tree.sort(this.sortComments);
-        let childComments = comments.filter((c) => c.parent);
 
         tree.forEach((branchRoot) => {
+            if (!branchRoot.children) return;
             this._buildCommentTree(comments, branchRoot, this.maxRecursionDepth)
         });
+        console.log("tree:");
+        console.log(tree);
 
         return tree;
     };
@@ -288,6 +395,7 @@ class CommentTreeWidget extends Component {
     };
 
     walkTree = (commentTree) => {
+
         let tree = commentTree.map(branch => this._walkTree(branch, this.maxRecursionDepth))
         return tree;
     };
@@ -295,6 +403,7 @@ class CommentTreeWidget extends Component {
     _walkTree = (currentNode, recursionDepth) => {
         let below;
         if (currentNode.childComments && currentNode.childComments.length > 0 && recursionDepth >= 0) {
+            console.log("reached below");
             below =
                 <View style={styles.commentWidget}>
                     {currentNode.childComments.map(branch => this._walkTree(branch, recursionDepth - 1))}
@@ -311,10 +420,9 @@ class CommentTreeWidget extends Component {
 
     render() {
         //let result = this.walkTree(this.state.commentTree);
-        //console.log(result);
         return (
             <View style={{flex: 1, flexShrink: 0, alignItems: 'stretch', width: '100%'}}>
-                {this.walkTree(this.buildCommentTree(this.props.comments))}
+                {this.buildCommentTree(this.props.comments).map(tree => this._walkTree(tree, this.recursionDepth))}
             </View>
         );
     }
@@ -334,8 +442,8 @@ class CommentWidget extends Component {
                                             await unlikeComment({variables: {commentId: comment.id}});
                                         }}
                             >
-                                <Text style={{color: '#f00'}}>{comment.sentiment}</Text>
-                                <Icon style={{color: '#f00'}} name="ios-heart"/>
+                                <Text style={{color: '#000'}}>{comment.sentiment}</Text>
+                                <Icon style={{color: '#000'}} name="md-thumbs-up"/>
                             </Button>
                         )
                     }}
@@ -351,8 +459,8 @@ class CommentWidget extends Component {
                                             await likeComment({variables: {commentId: comment.id}});
                                         }}
                             >
-                                <Text style={{color: '#000'}}>{comment.sentiment}</Text>
-                                <Icon style={{color: '#000'}} name="ios-heart-empty"/>
+                                <Text style={{color: '#aaa'}}>{comment.sentiment}</Text>
+                                <Icon style={{color: '#aaa'}} name="md-thumbs-up"/>
                             </Button>
                         )
                     }}
@@ -370,8 +478,11 @@ class CommentWidget extends Component {
                 <View style={styles.commentCardText}>
                     <Text style={{
                         fontSize: 10,
-                        fontStyle: 'italic'
-                    }}>{`Gepostet von ${comment.author.screenName} ${displayedTime}`}</Text>
+                        fontStyle: 'normal'
+                    }}>
+                        {L.get("feed_post_author_description",
+                            {screenName: comment.author.screenName, displayedTime: displayedTime})}
+                    </Text>
                 </View>
                 <View style={styles.commentCardText}>
                     <Text>{comment.body}</Text>
@@ -395,7 +506,12 @@ class LikeButton extends Component {
                     }}
             >
                 <Text
-                    style={{color: post.currentUserLikesPost ? '#ff0000' : material.textColor}}>{post.sentiment} Likes</Text>
+                    style={{color: post.currentUserLikesPost ? '#000' : '#aaa'}}
+                >
+                    {post.sentiment} <Icon
+                    style={{color: post.currentUserLikesPost ? '#000' : '#aaa', fontSize: 14}}
+                    name="md-thumbs-up" />
+                </Text>
             </Button>
         )
     }
@@ -442,7 +558,7 @@ const styles = StyleSheet.create({
         padding: 10
     },
     commentWidget: {
-        borderLeftWidth: 1,
+        borderLeftWidth: 5,
         marginLeft: 10,
         marginRight: 0,
         padding: 0,
@@ -482,7 +598,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1,
         alignItems: 'flex-end',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
         flexShrink: 0,
     },
 });
+
+export default PostComponent;

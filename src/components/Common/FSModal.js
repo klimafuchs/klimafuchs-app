@@ -7,7 +7,7 @@ export class FSModal extends Component {
 
     static propTypes = {
         children: PropTypes.element.isRequired,
-        body: PropTypes.element.isRequired
+        body: PropTypes.element.isRequired,
     };
 
     state = {

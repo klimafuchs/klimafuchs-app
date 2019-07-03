@@ -41,8 +41,7 @@ export class ForgotPasswordScreen extends Component {
         Api.requestPasswordReset(this.state.email,
             (res) => {
                 Toast.show({
-                    text: 'STR_TOAST_PASSWD_RESET_SUCCESS',
-                    buttonText: 'Okay'
+                    text: renderList.get("toast_password_reset_success"),
                 })
             },
             (err) => {
@@ -84,13 +83,13 @@ export class ForgotPasswordScreen extends Component {
                             <Row size={2}>
                                 <Card style={loginScreenStyles.loginCard}>
                                     <CardItem style={loginScreenStyles.loginCardItem}>
-                                        <H1>Passwort zurücksetzen</H1>
+                                        <H1>{renderList.get("reset_password_title")}</H1>
                                     </CardItem>
                                     <CardItem style={loginScreenStyles.loginCardItem}>
                                         <Form style={{flex: 1}}>
                                             <Item regular style={loginScreenStyles.loginFormTextInput}>
                                                 <Input name="email"
-                                                       placeholder="eMail"
+                                                       placeholder={renderList.get("email_placeholder")}
                                                        onChangeText={(text) => this.setState({email: text})}
                                                        value={this.state.email}/>
                                             </Item>
@@ -103,7 +102,7 @@ export class ForgotPasswordScreen extends Component {
                             <Row size={1} style={loginScreenStyles.row}>
                                 <Button primary style={loginScreenStyles.loginButton}
                                         onPress={() => this.resetPassword()}>
-                                    <Text>Passwort zurücksetzen</Text>
+                                    <Text>{renderList.get("reset_password_action")}</Text>
                                 </Button>
                             </Row>
                         </Grid>

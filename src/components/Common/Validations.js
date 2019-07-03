@@ -23,7 +23,7 @@ export const constraints = {
     password: {
         length: {
             minimum: env.MIN_PASSWORD_LEN,
-            message: `Bitte gib ein mindestens  Zeichen langes Passwort ein`
+            message: `Bitte gib ein mindestens ${env.MIN_PASSWORD_LEN} Zeichen langes Passwort ein`
         },
     },
 

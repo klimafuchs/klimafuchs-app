@@ -3,7 +3,8 @@ import axios from 'axios';
 import axiosMiddleWare from 'redux-axios-middleware';
 import rootReducer from './reducers';
 import {AsyncStorage} from 'react-native';
-
+import { persistStore, persistReducer } from 'redux-persist'
+import ExpoFileSystemStorage from "redux-persist-expo-filesystem"
 
 const token = async() => await AsyncStorage.getItem('token');
 const client = axios.create({
@@ -16,13 +17,21 @@ const client = axios.create({
     } : {}
 });
 
+const persistConfig = {
+    key: 'root',
+    storage: ExpoFileSystemStorage,
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 const initialState = {};
 const middleware = [axiosMiddleWare(client)];
 
-const store = createStore(
-    rootReducer,
+export const store = createStore(
+    persistedReducer,
     initialState,
     applyMiddleware(...middleware)
 );
 
-export default store;
+export const persistor = persistStore(store);
+

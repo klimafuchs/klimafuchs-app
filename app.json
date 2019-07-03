@@ -22,14 +22,18 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "android": {
-      "package": "org.klimafuchs.app"
-    },
     "ios": {
       "supportsTablet": true
     },
+    "android": {
+      "package": "org.klimafuchs",
+      "googleServicesFile": "./google-services.json"
+    },
     "androidStatusBar": {
-      "barStyle": "light-content"
-    }
+      "backgroundColor": "#ffffff",
+      "barStyle": "dark-content"
+    },
+    "scheme": "klimafuchs",
+    "description": ""
   }
 }

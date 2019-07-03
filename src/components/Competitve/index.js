@@ -5,48 +5,59 @@ import {Body, Header, Icon, Left, Right, Title} from "native-base";
 import material from "../../../native-base-theme/variables/material";
 import {TeamsScreen} from "./TeamsScreen";
 import {LeaderBoardScreen} from "./LeaderBoardScreen";
+import CreateTeamScreen from "./CreateTeamScreen";
+import {EditTeamScreen} from "./EditTeamScreen";
 
 
-const TeamsNav = createMaterialTopTabNavigator(
-    {
-        Teams: {
-            screen: LeaderBoardScreen
-        },
-        MyTeams: {
-            screen: TeamsScreen
-        }
-    }, {
-        navigationOptions: {
-            header: (
-                <Fragment>
-                    <Header transparent style={{backgroundColor: material.brandPrimary}}>
-                        <Left/>
-                        <Body>
-                        <Title>Teams</Title>
-                        </Body>
-                        <Right/>
-                    </Header>
-                </Fragment>
-            ),
-            headerMode: 'screen'
-        },
-        tabBarOptions: {
-            style: {
-                backgroundColor: material.brandPrimary,
-            },
-            indicatorStyle: {
-                backgroundColor: material.brandLight,
-            }
-        },
-        initialRouteName: 'Teams',
-    }
-);
 
-const HeaderProxyThing = createStackNavigator(
+const TeamsNav = createStackNavigator(
     {
         Main: {
-            screen: TeamsNav,
+            screen: createMaterialTopTabNavigator(
+                {
+                    Teams: {
+                        screen: LeaderBoardScreen
+                    },
+                    MyTeams: {
+                        screen: TeamsScreen
+                    },
+                }, {
+                    navigationOptions: {
+                        header: (
+                            <Fragment>
+                                <Header transparent style={{backgroundColor: material.brandInfo}}>
+                                    <Left/>
+                                    <Body>
+                                        <Title>Teams</Title>
+                                    </Body>
+                                    <Right/>
+                                </Header>
+                            </Fragment>
+                        ),
+                    },
+                    headerMode: 'screen',
+
+                    tabBarOptions: {
+                        style: {
+                            backgroundColor: material.brandInfo,
+                        },
+                        indicatorStyle: {
+                            backgroundColor: material.brandLight,
+                        }
+                    },
+                    initialRouteName: 'Teams',
+
+                },
+
+),
         },
+
+        CreateTeam: {
+            screen: CreateTeamScreen
+        },
+        EditTeam: {
+            screen: EditTeamScreen
+        }
 
     }, {
         navigationOptions: {
@@ -54,10 +65,9 @@ const HeaderProxyThing = createStackNavigator(
             tabBarIcon: ({focused, tintColor}) => (
                 <Icon name='md-people' style={{fontSize: 20, color: tintColor}}/>
             ),
-            headerMode: 'screen'
-
+            header: null
         },
 
     }
 );
-export default HeaderProxyThing;
+export default TeamsNav;
