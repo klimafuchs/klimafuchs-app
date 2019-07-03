@@ -216,7 +216,7 @@ class TeamCard extends Component {
                                         Beitreten
                                     </Text>
                                     <MaterialDialog
-                                        title={`Join team ${team.node.name}?`}
+                                        title={`Team ${team.node.name} beitreten?`}
                                         visible={this.state.showJoinDialog}
                                         onOk={() => {
                                             console.log(team)

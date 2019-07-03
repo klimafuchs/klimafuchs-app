@@ -23,7 +23,7 @@ export class TeamDetailsModalContent extends FSModalContentBase {
 
     getOwnStatus = (members) => {
         let {uId} = this.state;
-        let myMembership = members.filter((membership) => membership.id == uId)[0];
+        let myMembership = members.filter((membership) => membership.user.id == uId)[0];
         if (!myMembership) {
             console.log(members, myMembership, uId)
         }

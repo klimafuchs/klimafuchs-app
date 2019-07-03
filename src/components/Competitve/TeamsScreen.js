@@ -65,13 +65,10 @@ export class TeamsScreen extends Component {
             >
                 <Button block
                         style={styles.ctaButton}
-                        onPress={() => this.teamPicker.openModal()}>
+                        onPress={() => this.props.navigation.navigate('CreateTeam')}>
                     <Text style={{color: material.tabBarTextColor}}>Team erstellen</Text>
                 </Button>
             </FSModal>
-
-
-
             <Button block
                     style={styles.ctaButton}
                     onPress={() => {

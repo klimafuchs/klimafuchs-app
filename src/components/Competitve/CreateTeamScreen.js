@@ -150,8 +150,10 @@ export class CreateTeamScreen extends Component {
                                                                 }
                                                             })
                                                                 .then(({data}) => {
+                                                                    //this.props.navigation.navigate((users ? "InviteUsers" : "EditTeam"), {teamId: teamId, teamData})
+                                                                    console.log(data);
                                                                     this.props.navigation.navigate('InviteUsers', {
-                                                                        teamId: data.id
+                                                                        teamId: data.createTeam.id
                                                                     })
                                                                 })
                                                                 .catch(err => {

@@ -83,9 +83,18 @@ class AuthLoadingScreen extends Component {
         console.log("Is logged in?");
         const userToken = await AsyncStorage.getItem('token');
         console.log(userToken);
-        //let isValid = await this.checkLogin(userToken);
+        await Api.checkTokenValid(userToken, async (res) => {
+            console.log(`Token valid!`);
+            this.props.navigation.navigate('App');
+        }, async (err) => {
+            console.log(err);
+            await AsyncStorage.removeItem('uId');
+            await AsyncStorage.removeItem('token');
+            await client.clearStore();
+            console.log(`Token invalid! Cleared token store, reauthenticating...`);
+            this.props.navigation.navigate('Auth');
+        })
 
-        this.props.navigation.navigate(userToken ? 'App' : 'Auth');
     }
 
     render() {
@@ -97,20 +106,6 @@ class AuthLoadingScreen extends Component {
         )
     }
 
-    checkLogin = async (userToken) => {
-        return await Api.checkTokenValid(userToken, (res) => {
-            console.log(`Token valid!`);
-            return true
-        }, async (err) => {
-            console.log(err);
-            await AsyncStorage.removeItem('uId');
-            await AsyncStorage.removeItem('token');
-            await client.clearStore();
-            console.log(`Token invalid! Cleared token store, reauthenticating...`);
-            return false
-        })
-
-    }
 }
 
 
